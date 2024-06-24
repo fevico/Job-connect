@@ -1,0 +1,98 @@
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+
+@Schema()
+export class User {
+  @Prop({type: String, required: true, unique: true})
+  email: string;
+
+  @Prop({type: Boolean, default: false})
+  isVerified: boolean;
+
+  @Prop({type: String, required: true})
+  password: string;
+
+  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter'], default: 'jobseeker' })
+  role: string;
+
+
+  // @Prop()
+  // dateOfBirth: string;
+
+  // @Prop()
+  // phoneNumber: string;
+
+  // @Prop()
+  // gender: string;
+
+  // @Prop()
+  // country: string;
+
+  // @Prop()
+  // stateOfResidence: string;
+
+  // @Prop()
+  // city: string;
+
+  // @Prop()
+  // password: string;
+  
+  // @Prop()
+  // jobPosition: string;
+  
+  // @Prop()
+  // carrerObjective: string;
+  
+  // @Prop({ type: [String] })
+  // skills: string[];
+
+  // // Work experience
+   
+  // @Prop()
+  // jobTitle: string;
+
+  // @Prop()
+  // companyName: string;
+
+  // @Prop()
+  // loacation: string;
+
+  // @Prop()
+  // startDate: Date;
+
+  // @Prop()
+  // endDate: Date;
+
+  // @Prop()
+  // responsibilities: string;
+
+  // Education Background
+  // @Prop()
+  // nameOfDegree: string;
+
+  // @Prop()
+  // nameOfInstitution: string;
+ 
+  // @Prop()
+  // from: Date;
+
+  // @Prop()
+  // to: Date;
+
+  // // Prefernce 
+  // @Prop({ type: [String] })
+  // jobType: string[];
+
+  // @Prop()
+  // relocate: string;
+
+  // @Prop()
+  // preferedLocation: string;
+
+  // @Prop()
+  // expectedSalary: string;
+
+  // @Prop()
+  // resumeUrl?: string;
+}
+
+export const userSchema = SchemaFactory.createForClass(User);
