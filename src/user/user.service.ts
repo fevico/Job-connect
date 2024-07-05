@@ -6,8 +6,12 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto'; // For generating random tokens
 import { JwtService } from '@nestjs/jwt';
 import { PasswordResetToken } from './schema/passwordResetToken';
-import { generateToken } from './utils/user.token';
+import { generateToken } from '../utils/user.token';
 import { SignInDto, SignUpDto } from './dto/user.dto';
+import { EmailVerificationToken } from './schema/emailVerificationToken';
+import { sendVerificationToken } from 'src/utils/mail';
+import { CvWriterDto, EmployerDto, JobseekerDto } from './dto/profile.dto';
+import { Profile } from './schema/profile.schema';
 
 
 @Injectable()
@@ -15,8 +19,12 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(PasswordResetToken.name) private passwordResetModel: Model<PasswordResetToken>,
+    @InjectModel(EmailVerificationToken.name) private EmailVerificationTokenModel: Model<EmailVerificationToken>,
+    @InjectModel(Profile.name) private profileModel: Model<Profile>,   
+
     private readonly jwtService: JwtService,
   ) {}
+
   async register(registerDto: SignUpDto) {
     const { email, password, role } = registerDto;
 
@@ -25,6 +33,7 @@ export class UserService {
     if (emailExist) {
       throw new UnauthorizedException('Email already exists');
     }
+
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,10 +45,45 @@ export class UserService {
       role,
     });
 
+    
+    if(role === 'jobseeker'){
+      newUser.isActive = true
+    }
+
     // Save user to database
     await newUser.save();
 
+    const token = generateToken()
+
+    const hashedToken = await bcrypt.hash(token, 10)
+
+    await this.EmailVerificationTokenModel.create({
+      userId: newUser._id,
+      token: hashedToken,
+    })
+    sendVerificationToken(email, token)
+    console.log(token)
+
     return { message: 'User registered successfully' };
+  }
+
+  async verifyEmail(id, token){
+    const user = await this.userModel.findById(id)
+    if(!user){
+      throw new NotFoundException('User not found')
+    }
+    const emailVerificationToken = await this.EmailVerificationTokenModel.findOne({userId: id})
+    if(!emailVerificationToken){
+      throw new NotFoundException('Email verification token not found')
+    }
+    const hashedToken = emailVerificationToken.token
+    const isMatch = await bcrypt.compare(token, hashedToken)
+    if(!isMatch){
+      throw new UnauthorizedException('Invalid token')
+    }
+    user.isVerified = true
+    await user.save()
+    return { message: 'Email verified successfully' }
   }
 
       async login(loginDto: SignInDto){
@@ -149,5 +193,37 @@ export class UserService {
     await this.passwordResetModel.findOneAndDelete({ userId: userExist._id });
   
     return { message: 'Password reset successfully' };
+  }
+
+  async updateJobSeekerProfile(updateProfileDto: JobseekerDto, userId: string) {
+    // Logic to update jobseeker profile
+    const jobseekerProfile = new this.profileModel({
+      ...updateProfileDto,
+      userId,
+    })
+    
+    await jobseekerProfile.save()
+    return jobseekerProfile
+  }
+
+  async updateEmployerProfile(updateProfileDto: EmployerDto, userId: string) { 
+    // Logic to update employer profile
+    const employerProfile = new this.profileModel({
+      ...updateProfileDto,
+      userId,
+    })
+    
+    await employerProfile.save()
+    return employerProfile
+  }
+
+  async updateCvWriterProfile(updateProfileDto: CvWriterDto, userId: string) {
+    // Logic to update admin profile
+    const cvWriterProfile = new this.profileModel({
+      ...updateProfileDto,
+      userId,
+    })
+    await cvWriterProfile.save()
+    return cvWriterProfile
   }
     }

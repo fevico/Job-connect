@@ -11,8 +11,14 @@ export class User {
   @Prop({type: String, required: true})
   password: string;
 
-  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter'], default: 'jobseeker' })
+  @Prop({type: Boolean, default: false})
+  isActive: boolean
+
+  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter', 'linkdinoptimizer'], default: 'jobseeker' })
   role: string;
+
+  @Prop({ type: Number, default: 0 })
+  referalBalance: number;
 
 
   // @Prop()

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class JobDto{
     @IsNotEmpty()
@@ -25,3 +25,43 @@ export class JobDto{
     categoryId: string
 
 }
+export class UpdateJobDto {
+    @IsNotEmpty()
+    @IsString()
+    jobId: string;
+    
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    title?: string;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    description?: string;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    location?: string;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsNumber()
+    price?: number;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    duration?: string;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    skills?: string;
+  
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    categoryId?: string;
+  }

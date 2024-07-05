@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Roles } from 'src/decorator/role.decorator';
-import { JobDto } from './dto/job.dto';
+import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { Request } from "express";
 
 
@@ -30,11 +30,6 @@ export class JobController {
         return this.jobService.getJobById(id);
     }
 
-    // @Get('job/:id/applications')
-    // getJobApplications(@Param('id') id: string){
-    //     return this.jobService.getJobApplications(id);
-    // }
-
     @Roles(['admin', 'employer'])
     @Get('get-jobs-by-employer/:id')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
@@ -42,5 +37,63 @@ export class JobController {
         const userId = req.userId;
 
         return this.jobService.getJobsByEmployer(id, userId);
+    }
+
+    @Post('apply-job')
+    @UseGuards(AuthenitcationGuard)
+    async applyJob(@Body() applyJobDto: any, @Req() req: Request){
+        const userId = req.userId;
+
+        return this.jobService.applyJob(applyJobDto, userId);
+    }
+
+    @Get('get-applied-jobs')
+    @UseGuards(AuthenitcationGuard)
+    getAppliedJobs( @Req() req: Request){
+        const userId = req.userId;
+        
+        return this.jobService.getAppliedJobs(userId);
+    }
+
+    @Get('get-applications-by-job/:id')
+    getApplicationsByJob(@Param('id') id: string){
+        return this.jobService.getApplicationsByJob(id);
+    }
+
+    @Roles(['admin', 'employer'])
+    @Get('get-employer-application')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    getEmployerApplication(@Req() req: Request){
+        const userId = req.userId;
+
+        return this.jobService.getEmployerApplication(userId);
+    }
+
+    // @Roles(['admin', 'employer'])
+    // @Patch('update-job-status')
+    // @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    // getEmployerApplications(@Body('id') body: any, @Req() req: Request){
+    //     const userId = req.userId;
+
+    //     return this.jobService.getEmployerApplications(body, userId);
+    // }
+
+    @Roles(['admin', 'employer'])
+    @Patch('update-job')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    updateJob(@Body() jobDto: UpdateJobDto, @Req() req: Request){
+        
+        const userId = req.userId;
+
+        return this.jobService.updateJob(jobDto, userId);
+    }
+
+    @Roles(['admin', 'employer'])
+    @Patch('hire-applicant/:id')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    hireApplicant(@Body() body: any, @Param('id') id: any, @Req() req: Request){
+        const userId = req.userId;
+
+        return this.jobService.hireApplicant(body, userId, id);
     }
 }

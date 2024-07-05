@@ -7,6 +7,11 @@ import { UserModule } from './user/user.module';
 import { EmployerModule } from './employer/employer.module';
 import { JobModule } from './job/job.module';
 import { CategoryModule } from './category/category.module';
+import { CvModule } from './cv/cv.module';
+import { PaymentModule } from './payment/payment.module';
+import { WalletModule } from './wallet/wallet.module';
+import { ReferalModule } from './referal/referal.module';
+import { PlansModule } from './plans/plans.module';
 
 
 @Module({
@@ -20,7 +25,12 @@ import { CategoryModule } from './category/category.module';
     UserModule,
     EmployerModule,
     JobModule,
-    CategoryModule
+    CategoryModule,
+    CvModule,
+    PaymentModule,
+    WalletModule,
+    ReferalModule,
+    PlansModule
   ],
   controllers: [AppController],
   providers: [AppService],

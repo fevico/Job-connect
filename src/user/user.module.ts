@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, userSchema } from './schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PasswordResetToken, PasswordResetTokenSchema } from './schema/passwordResetToken';
+import { EmailVerificationToken, EmailVerificationTokenSchema } from './schema/emailVerificationToken';
+import { Profile, ProfileSchema } from './schema/profile.schema';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { PasswordResetToken, PasswordResetTokenSchema } from './schema/passwordR
     MongooseModule.forFeature([
       { name: User.name, schema: userSchema },
       { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
+      { name: EmailVerificationToken.name, schema: EmailVerificationTokenSchema },
+      { name: Profile.name, schema: ProfileSchema },
     ])
   ],
   providers: [UserService],
