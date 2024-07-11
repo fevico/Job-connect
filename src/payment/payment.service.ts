@@ -69,19 +69,16 @@ export class PaymentService {
     };
 
     const reqPaystack = https.request(options, async (respaystack) => {
-      // Mark the callback function as async
       let data = '';
-
+    
       respaystack.on('data', (chunk) => {
         data += chunk;
       });
-
+    
       respaystack
         .on('end', async () => {
-          // Mark the callback function as async
           const responseData = JSON.parse(data);
-          // console.log(responseData); // Log the response for debugging purposes
-
+    
           // Check if payment was successful
           if (
             responseData.status === true &&
@@ -89,7 +86,7 @@ export class PaymentService {
           ) {
             // Payment was successful, extract relevant information
             const { customer, id, reference, status, currency, metadata } = responseData.data;
-
+    
             const paymentData = {
               referenceId: reference,
               email: customer.email,
@@ -101,16 +98,40 @@ export class PaymentService {
               totalPrice: metadata.totalPrice,
               userId: metadata.customerId,
             };
-
+    
+            // Calculate 80% and 20% of the total price
+            const totalPrice = parseFloat(metadata.totalPrice);
+            const eightyPercent = totalPrice * 0.8;
+            const twentyPercent = totalPrice * 0.2;
+    
+            // Update the paymentData to include the 80% and 20% values
+            paymentData.totalPrice = eightyPercent;
+            paymentData.totalPrice = twentyPercent;
+    
             console.log(paymentData);
-
-            // Correct the property name from "refrenceId" to "referenceId" in the Order instantiation
+    
+            // Save the payment details
             const paymentDetails = await this.paymentModel.create(paymentData);
-
-            const creatWallet = await this.walletModel.create({
-                balance: metadata.totalPrice,
-            })
-
+    
+            // Create or update the wallet balance with the 80% amount
+            let wallet = await this.walletModel.findOne({ userId: metadata.customerId });
+            if (wallet) {
+              wallet.balance += eightyPercent;
+              await wallet.save();
+            } else {
+              wallet = await this.walletModel.create({
+                userId: metadata.customerId,
+                balance: eightyPercent,
+              });
+            }
+    
+            // Save the 20% amount separately (e.g., for a commission account or another use case)
+            // await this.commissionModel.create({
+            //   userId: metadata.customerId,
+            //   amount: twentyPercent,
+            //   referenceId: reference,
+            // });
+    
             reqPaystack.end();
           }
         })
@@ -118,5 +139,6 @@ export class PaymentService {
           console.error(error);
         });
     });
+    
   }
 }

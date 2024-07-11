@@ -174,40 +174,31 @@ export class JobService {
         return employerApplications;
     
 }
-    async getEmployerApplications(body: any, userId: string) {
-        const {id, status} = body
-        const user = await this.userModel.findById(userId);
-        if (!user) throw new NotFoundException("User not found!");
+
+    // async getEmployerApplications(body: any, userId: string) {
+    //     const {id, status} = body
+    //     const user = await this.userModel.findById(userId);
+    //     if (!user) throw new NotFoundException("User not found!");
     
-        const applications = await this.jobModel.findById({ id });
-        if(!applications) throw new NotFoundException("Job application not found!")
+    //     const applications = await this.jobModel.findById({ id });
+    //     if(!applications) throw new NotFoundException("Job application not found!")
 
-        if(applications.referal !== 'yes') throw new ForbiddenException("You are not authorized to view this job application!")
-            const updateJobStatus = await this.appliedJobModel.findOne({id})
-            if(!updateJobStatus) throw new NotFoundException("Job application not found!")
-                await updateJobStatus.updateOne({status})
+    //     if(applications.referal !== 'yes') throw new ForbiddenException("You are not authorized to view this job application!")
+    //         const updateJobStatus = await this.appliedJobModel.findOne({id})
+    //         if(!updateJobStatus) throw new NotFoundException("Job application not found!")
+    //             await updateJobStatus.updateOne({status})
                 
-                return updateJobStatus
-    }
+    //             return updateJobStatus
+    // }
+    
 
-    async updateJob(jobDto: UpdateJobDto, userId: string){
-        // const {id} = jobDto
-        const user = await this.userModel.findById(userId);
-        if (!user) throw new NotFoundException("User not found!");
-        const jobExist = await this.jobModel.findOne({userId})
-        if(!jobExist) throw new NotFoundException("No job for this user!")
-            const updateJob = await this.jobModel.findByIdAndUpdate(jobDto.jobId, {jobDto})
-        if(!updateJob) throw new UnprocessableEntityException("Cannot update job something went wrong!")
-            return updateJob
-    }
-
-    async hireApplicant(body: any, userId: string, jobId: any){
+    async updateJobApplication(body: any, userId: string, jobId: any){
         const {id, status} = body
         const jobExist = await this.jobModel.findById(jobId)
         if(!jobExist) throw new NotFoundException("Job not found!")
             const jobOwner = await this.jobModel.findOne({userId})
             if(!jobOwner) throw new NotFoundException("Job owner not found!")
-            const updateJobStatus = await this.appliedJobModel.findOne({userId:id})
+            const updateJobStatus = await this.appliedJobModel.findOne({_id:id, jobId})
             if(!updateJobStatus) throw new NotFoundException("Job application not found!")
                 
                 await updateJobStatus.updateOne({status})
@@ -215,7 +206,13 @@ export class JobService {
                     const updateUserStatus = await this.appliedJobModel.findByIdAndUpdate(id, {status: 'hired'})
                     if(!updateUserStatus) throw new UnprocessableEntityException("Cannot update user status something went wrong!")
                         jobExist.status = 'closed'
+                        await jobExist.save()
                         return updateUserStatus
+                }else{
+                    jobExist.status = 'active'
+                    await jobExist.save()
                 }
+                
+                return updateJobStatus
     }
 }

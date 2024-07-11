@@ -26,10 +26,7 @@ export class JobDto{
 
 }
 export class UpdateJobDto {
-    @IsNotEmpty()
-    @IsString()
-    jobId: string;
-    
+
     @IsOptional()
     @IsNotEmpty()
     @IsString()

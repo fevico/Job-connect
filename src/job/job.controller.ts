@@ -10,6 +10,7 @@ import { Request } from "express";
 @Controller('job')
 export class JobController {
     constructor(private jobService: JobService){}
+
     @Roles(['admin', 'employer'])
     @Post('create')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
@@ -79,21 +80,11 @@ export class JobController {
     // }
 
     @Roles(['admin', 'employer'])
-    @Patch('update-job')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
-    updateJob(@Body() jobDto: UpdateJobDto, @Req() req: Request){
-        
-        const userId = req.userId;
-
-        return this.jobService.updateJob(jobDto, userId);
-    }
-
-    @Roles(['admin', 'employer'])
     @Patch('hire-applicant/:id')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
-    hireApplicant(@Body() body: any, @Param('id') id: any, @Req() req: Request){
+    hireApplicant(@Body() body: any, @Param('id') jobId: any, @Req() req: Request){
         const userId = req.userId;
 
-        return this.jobService.hireApplicant(body, userId, id);
+        return this.jobService.updateJobApplication(body, userId, jobId);
     }
 }
