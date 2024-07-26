@@ -14,22 +14,20 @@ export class JobService {
         @InjectModel(Job.name) private jobModel: Model<Job>, 
         @InjectModel(User.name) private userModel: Model<User>,  
         @InjectModel(AppliedJob.name) private appliedJobModel: Model<AppliedJob>,  
-        @InjectModel(Profile.name) private profileModel: Model<Profile>,  
+        // @InjectModel(Profile.name) private profileModel: Model<Profile>,  
         @InjectModel(Referal.name) private referalModel: Model<Referal>,  
     ) {}
 
     async createJob(jobDto: JobDto, userId: string): Promise<Job> {
         const user = await this.userModel.findById(userId);
         if (!user) throw new NotFoundException("User not found!");
-    
-        const profile = await this.profileModel.findOne({ userId: userId });
-        if (!profile) throw new BadRequestException("Please update your profile first!");
-        if (!profile.companyName) throw new BadRequestException("Company name is required in the profile!");
+        if (user.role !== 'employer') throw new ForbiddenException("You are not authorized to create a job!");
+        if(user.isVerified === false) throw new UnprocessableEntityException("Your account is not verified, please verify your account before you can create a job!")
     
         const createdJob = new this.jobModel({
             ...jobDto,
             userId: userId, // Assign the userId to the job
-            companyName: profile.companyName,
+            companyName: user.companyName,
         });
     
         return createdJob.save();
@@ -96,10 +94,7 @@ export class JobService {
   const user = await this.userModel.findById(userId);
   if (!user) throw new NotFoundException("User not found!");
 
-  const profile = await this.profileModel.findOne({ userId: userId });
-  if (!profile) throw new NotFoundException("Profile not found!");
-
-  const cv = resume || profile.CV;
+  const cv = resume || user.Cv;
 
   if (!user.email) {
     throw new BadRequestException("User email is required to apply for a job");
@@ -122,8 +117,7 @@ export class JobService {
     resume: cv,
     jobTitle: job.title, // Populate the job title
     companyName: job.companyName, // Populate the company name
-    firstName: profile.firstName,
-    lastName: profile.lastName,
+    name: user.name, // Populate the user's name
   });
 
   await appliedJob.save();
