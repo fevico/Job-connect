@@ -17,7 +17,8 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "typeRoots": ["./node_modules/@types", "./src/typings"], // Adjusted to point to your typings folder
+    "typeRoots": ["./src/typings"], 
+    // "types": ["node", "jest", "moment"]
   },
   "include": ["src"]
 }

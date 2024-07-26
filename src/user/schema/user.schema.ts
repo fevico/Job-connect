@@ -2,8 +2,38 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class User {
+  @Prop({type: String, required: true})
+  name: string;
+
   @Prop({type: String, required: true, unique: true})
   email: string;
+
+  @Prop({type: String})
+  companyName: string;
+
+  @Prop({type: String})
+  companyAddress: string;
+
+  @Prop({type: String})
+  gender: string;
+
+  @Prop({type: String})
+  nationlity: string;
+
+  @Prop({type: String})
+  location: string;
+
+  @Prop({type: String, required: true})
+  phone: string;
+
+  @Prop({type: String})
+  qualification: string;
+
+  @Prop({type: Number})
+  yearsOfExperience: number;
+
+  @Prop({type: String})
+  Cv: string;
 
   @Prop({type: Boolean, default: false})
   isVerified: boolean;
@@ -14,7 +44,7 @@ export class User {
   @Prop({type: Boolean, default: false})
   isActive: boolean
 
-  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter', 'linkdinoptimizer'], default: 'jobseeker' })
+  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
   role: string;
 
   @Prop({ type: Number, default: 0 })

@@ -13,8 +13,16 @@ export class UserController {
 
     @Post('register')
     async register(@Body() registerDto: SignUpDto) {
+      if(!registerDto.role) return new BadRequestException('Role is required');
+      // if(registerDto.role === 'jobseeker') return this.userService.registerJobseeker(registerDto);
+      
       return this.userService.register(registerDto);
     }
+
+    @Post('resend-verification-email')
+    async resendVerificationEmail(@Body('email') email: string) {
+      return this.userService.resendVerificationEmail(email);
+}
 
     @Post('verify-email/:id')
     async verifyEmail(@Param('id') id: string, @Body('token') token: string){

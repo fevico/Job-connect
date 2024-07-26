@@ -108,7 +108,7 @@ export class PaymentService {
             paymentData.totalPrice = eightyPercent;
             paymentData.totalPrice = twentyPercent;
     
-            console.log(paymentData);
+            console.log(paymentData); 
     
             // Save the payment details
             const paymentDetails = await this.paymentModel.create(paymentData);

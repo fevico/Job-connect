@@ -38,11 +38,9 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
     const newUser = new this.userModel({
-      email,
-      password: hashedPassword,
-      role,
+      ...registerDto, // Spread registerDto first
+      password: hashedPassword, // Then overwrite the password with the hashed password
     });
 
     
@@ -65,6 +63,21 @@ export class UserService {
     console.log(token)
 
     return { message: 'User registered successfully' };
+  }
+
+  async resendVerificationEmail(email){
+    const user = await this.userModel.findOne(email)
+    if(!user){
+      throw new NotFoundException('User not found')
+    }
+    const token = generateToken()
+    const hashedToken = await bcrypt.hash(token, 10)
+    await this.EmailVerificationTokenModel.create({
+      userId: user._id,
+      token: hashedToken,
+    })
+    sendVerificationToken(user.email, token)
+    return { message: 'Verification email sent successfully' }
   }
 
   async verifyEmail(id, token){
@@ -93,6 +106,7 @@ export class UserService {
         if(!user){
           throw new UnauthorizedException('Invalid credentials');
         }
+        if(!user.isVerified) throw new UnauthorizedException('Email not verified');
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
           throw new UnauthorizedException('Invalid credentials');

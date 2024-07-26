@@ -11,7 +11,9 @@ import { CvModule } from './cv/cv.module';
 import { PaymentModule } from './payment/payment.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ReferalModule } from './referal/referal.module';
-import { PlansModule } from './plans/plans.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { SchedulerModule } from './schduler/schduler.module';
+import { GoogleModule } from './google/google.module';
 
 
 @Module({
@@ -30,7 +32,9 @@ import { PlansModule } from './plans/plans.module';
     PaymentModule,
     WalletModule,
     ReferalModule,
-    PlansModule
+    SubscriptionModule,
+    SchedulerModule,
+    GoogleModule
   ],
   controllers: [AppController],
   providers: [AppService],
