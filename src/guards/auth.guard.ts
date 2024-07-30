@@ -23,7 +23,7 @@ export class AuthenitcationGuard implements CanActivate {
             request.user = decoded;
             request.userId = decoded.id;
 
-            return true;
+            return true; 
         } catch (error) {
             if (error instanceof TokenExpiredError) {
                 throw new UnauthorizedException('Token has expired');
