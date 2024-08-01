@@ -55,13 +55,14 @@ export class PaymentService {
     reqPaystack.end();
   }
 
-  async verifyPayment(id: string, userId: string) {
-    // const reference = req.query.reference;
+  async verifyPayment(id: string, userId: string, reference) {
+  //  const reference = req.query.reference;
     // console.log(reference);
+    const ref = reference;
     const options = {
       hostname: 'api.paystack.co',
       port: 443,
-      //   path: `/transaction/verify/${reference}`,
+        path: `/transaction/verify/${reference}`,
       method: 'GET',
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -124,6 +125,11 @@ export class PaymentService {
                 balance: eightyPercent,
               });
             }
+            const adminbalance = await this.walletModel.findOne({ userId: '6476f4f5c8d8e5a6b7c8d9e0' });
+            if (adminbalance) {
+              adminbalance.balance += twentyPercent;
+              await adminbalance.save();
+}
     
             // Save the 20% amount separately (e.g., for a commission account or another use case)
             // await this.commissionModel.create({

@@ -16,7 +16,8 @@ export class PaymentController {
     @Get('verify-payment/:id')
     verifyPayment( @Param('id') id: string, @Req() req: Request){
         // console.log(req.query)
+        const reference = req.query
         const userId = req.user.id
-        return this.paymentService.verifyPayment(id, userId);
+        return this.paymentService.verifyPayment(id, userId, reference);
     }
 }

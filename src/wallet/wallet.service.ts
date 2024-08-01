@@ -27,7 +27,7 @@ export class WalletService {
       }
 
     async getAccountName(req) {
-      const {bank_code, account_number} = req.body
+      const {bank_code, account_number} = req.query
 
         const options = {
           method: 'GET',
@@ -52,7 +52,7 @@ export class WalletService {
       }
 
     async bankTransfer(req) {
-      const {bank_code, account_number, narration, amount, name_enquiry_reference} = req.body
+      const {bank_code, account_number, narration, amount, name_enquiry_reference} = req.query
         const options = {
           method: 'POST',
           url: `https://strowallet.com/api/banks/request/`,
