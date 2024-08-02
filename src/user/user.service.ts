@@ -1,17 +1,15 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto'; // For generating random tokens
 import { JwtService } from '@nestjs/jwt';
 import { PasswordResetToken } from './schema/passwordResetToken';
 import { generateToken } from '../utils/user.token';
 import { SignInDto, SignUpDto } from './dto/user.dto';
 import { EmailVerificationToken } from './schema/emailVerificationToken';
 import { sendVerificationToken } from 'src/utils/mail';
-import { CvWriterDto, EmployerDto, JobseekerDto } from './dto/profile.dto';
-import { Profile } from './schema/profile.schema';
+import { EmployerDto, userDto } from './dto/profile.dto';
 
 
 @Injectable()
@@ -20,7 +18,6 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(PasswordResetToken.name) private passwordResetModel: Model<PasswordResetToken>,
     @InjectModel(EmailVerificationToken.name) private EmailVerificationTokenModel: Model<EmailVerificationToken>,
-    @InjectModel(Profile.name) private profileModel: Model<Profile>,   
 
     private readonly jwtService: JwtService,
   ) {}
@@ -117,9 +114,9 @@ export class UserService {
           role: user.role, 
         } 
   
-         const access_token = await this.jwtService.sign(payload, {secret: process.env.JWT_SECRET})
+         const token = await this.jwtService.sign(payload, {secret: process.env.JWT_SECRET})
     
-      return access_token
+      return token;
 
     }
 
@@ -209,35 +206,24 @@ export class UserService {
     return { message: 'Password reset successfully' };
   }
 
-  async updateJobSeekerProfile(updateProfileDto: JobseekerDto, userId: string) {
-    // Logic to update jobseeker profile
-    const jobseekerProfile = new this.profileModel({
-      ...updateProfileDto,
-      userId,
-    })
-    
-    await jobseekerProfile.save()
-    return jobseekerProfile
-  }
+  async updateUserProfile(userProfileDto: userDto, userId: string) {
+    try {
+        const userProfile = await this.userModel.findByIdAndUpdate(userId, userProfileDto, { new: true });
+        if (!userProfile) {
+            throw new NotFoundException('User not found');
+        }
+        return userProfile;
+    } catch (error) {
+        throw new InternalServerErrorException('Failed to update user profile');
+    }
+}
+
 
   async updateEmployerProfile(updateProfileDto: EmployerDto, userId: string) { 
     // Logic to update employer profile
-    const employerProfile = new this.profileModel({
-      ...updateProfileDto,
-      userId,
-    })
-    
-    await employerProfile.save()
-    return employerProfile
+   const updateEmployerProfile = await this.userModel.findByIdAndUpdate(userId, updateProfileDto, { new: true });
+    if(!updateEmployerProfile) throw new NotFoundException('User not found');
+    return updateEmployerProfile
   }
 
-  async updateCvWriterProfile(updateProfileDto: CvWriterDto, userId: string) {
-    // Logic to update admin profile
-    const cvWriterProfile = new this.profileModel({
-      ...updateProfileDto,
-      userId,
-    })
-    await cvWriterProfile.save()
-    return cvWriterProfile
-  }
     }

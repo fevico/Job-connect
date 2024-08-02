@@ -6,7 +6,6 @@ import { Job, JobSchema } from './schema/job.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { User, userSchema } from 'src/user/schema/user.schema';
 import { AppliedJob, AppliedJobSchema } from './schema/appliedJob.schema';
-import { Profile, ProfileSchema } from 'src/user/schema/profile.schema';
 import { Referal, ReferalSchema } from 'src/referal/schema/referal.schema';
 
 @Module({
@@ -19,7 +18,6 @@ import { Referal, ReferalSchema } from 'src/referal/schema/referal.schema';
       { name: Job.name, schema: JobSchema },
       { name: User.name, schema: userSchema },
       { name: AppliedJob.name, schema: AppliedJobSchema },
-      { name: Profile.name, schema: ProfileSchema },
       { name: Referal.name, schema: ReferalSchema },
     ])
   ],

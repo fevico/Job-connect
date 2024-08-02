@@ -1,10 +1,10 @@
-import {  BadRequestException, Body, Controller, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {  BadRequestException, Body, Controller, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { RoleGuard } from 'src/guards/role.guard';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
 import { SignInDto, SignUpDto } from './dto/user.dto';
 import { Request } from "express";
-import { CvWriterDto, EmployerDto, JobseekerDto } from './dto/profile.dto';
+import { EmployerDto, userDto } from './dto/profile.dto';
 
 
 @Controller('user')
@@ -64,25 +64,21 @@ export class UserController {
     return this.userService.resetPassword(id, newPassword);
   }
 
-  @Post('update-profile')
+  @Patch('update-profile')
   @UseGuards(AuthenitcationGuard)
   async updateProfile(@Body() body: any, @Req() req: Request) {
     const userRole = req.user.role;
     const userId = req.user.id;
 
-    if (userRole === 'jobseeker') {
-      const updateProfileDto = new JobseekerDto();
-      Object.assign(updateProfileDto, body);
-      return this.userService.updateJobSeekerProfile(updateProfileDto, userId);
+    if (userRole === 'jobseeker' || userRole === 'cvwriter' || userRole === 'linkdinOptimizer') {
+      const userProfileDto = new userDto();
+      Object.assign(userProfileDto, body);
+      return this.userService.updateUserProfile(userProfileDto, userId);
     } else if (userRole === 'employer') {
       const updateProfileDto = new EmployerDto();
       Object.assign(updateProfileDto, body);
       return this.userService.updateEmployerProfile(updateProfileDto, userId);
-    } else if (userRole === 'cvwriter') {
-      const updateProfileDto = new CvWriterDto();
-      Object.assign(updateProfileDto, body);
-      return this.userService.updateCvWriterProfile(updateProfileDto, userId);
-    } else {
+    }else {
       throw new BadRequestException('Invalid user role');
     }
   }

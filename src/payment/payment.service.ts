@@ -12,14 +12,14 @@ export class PaymentService {
         @InjectModel(Wallet.name) private walletModel: Model<Wallet>, 
     ){}
 
-  async createPaymentIntent(body: any, userId: string) {
-    const { amount, email, metadata } = body;
+  async createPaymentIntent(body: any, userId: string, res: any) {
+    const { amount, email } = body;
 
     const params = JSON.stringify({
       email,
       amount,
       callback_url: 'https://ekomas-react-new.vercel.app/',
-      metadata,
+      // metadata,
     });
 
     const options = {
@@ -44,7 +44,8 @@ export class PaymentService {
         respaystack.on('end', () => {
           console.log(JSON.parse(data));
           // Assuming res is the response object from the caller context
-          // res.send(data);
+           res.send(data);
+           console.log(data)
         });
       })
       .on('error', (error) => {
@@ -55,14 +56,13 @@ export class PaymentService {
     reqPaystack.end();
   }
 
-  async verifyPayment(id: string, userId: string, reference) {
-  //  const reference = req.query.reference;
-    // console.log(reference);
-    const ref = reference;
+  async verifyPayment(reference: string) {
+    const encodedReference = encodeURIComponent(reference);
+    console.log(reference);
     const options = {
       hostname: 'api.paystack.co',
       port: 443,
-        path: `/transaction/verify/${reference}`,
+        path: `/transaction/verify/${encodedReference}`,
       method: 'GET',
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -79,17 +79,20 @@ export class PaymentService {
       respaystack
         .on('end', async () => {
           const responseData = JSON.parse(data);
+          console.log(responseData.data)
     
           // Check if payment was successful
           if (
             responseData.status === true &&
             responseData.data.status === 'success'
           ) {
+
+            console.log(responseData.data)
+            // res.send(responseData.data)
             // Payment was successful, extract relevant information
             const { customer, id, reference, status, currency, metadata } = responseData.data;
-    
             const paymentData = {
-              referenceId: reference,
+              referenceId: reference, 
               email: customer.email,
               status,
               currency,
@@ -137,7 +140,7 @@ export class PaymentService {
             //   amount: twentyPercent,
             //   referenceId: reference,
             // });
-    
+     
             reqPaystack.end();
           }
         })

@@ -5,7 +5,6 @@ import { Model } from 'mongoose';
 import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
-import { Profile } from 'src/user/schema/profile.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
 
 @Injectable()

@@ -1,170 +1,77 @@
-import { IsNotEmpty } from "class-validator";
+import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class JobseekerDto{
-    @IsNotEmpty()
-    firstName: string;
+export class userDto{
+    @IsOptional()
+    @IsString()
+    name?: string;
 
-    @IsNotEmpty()
-    lastName: string;
+    @IsOptional()
+    @IsString()
+    gender?: string;
 
-    @IsNotEmpty()
-    gender: string;
+    @IsOptional()
+    @IsDate()
+    dateOfBirth?: Date;
 
-    @IsNotEmpty()
-    dateOfBirth: Date;
+    @IsOptional()
+    @IsString()
+    location?: string;
 
-    @IsNotEmpty()
-    country: string;
+    @IsOptional()
+    @IsString()
+    phoneNumber?: string;
 
-    @IsNotEmpty()
-    city: string;
+    @IsOptional()
+    @IsString()
+    nationality?: string
+    
+    @IsOptional()
+    @IsString()
+    yearOfExperience?: string
 
-    @IsNotEmpty()
-    phoneNumber: string;
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    skills?: string[];
 
-    @IsNotEmpty()
-    nationality: string
+    @IsOptional()
+    @IsString()
+    qualification?: string
 
-    @IsNotEmpty()
-    state: string
-
-    @IsNotEmpty()
-    professionalInformation: string
-
-    @IsNotEmpty()
-    workExperience: string
-
-    @IsNotEmpty()
-    educationalBackground: string
-
-    @IsNotEmpty()
-    preferences: string
-
-    @IsNotEmpty()
-    CV: string
-}
-
-export class CvWriterDto{
-    @IsNotEmpty()
-    firstName: string;
-
-    @IsNotEmpty()
-    lastName: string;
-
-    @IsNotEmpty()
-    gender: string;
-
-    @IsNotEmpty()
-    dateOfBirth: Date;
-
-    @IsNotEmpty()
-    country: string;
-
-    @IsNotEmpty()
-    city: string;
-
-    @IsNotEmpty()
-    phoneNumber: string;
-
-    @IsNotEmpty()
-    nationality: string
-
-    @IsNotEmpty()
-    state: string
-
-    @IsNotEmpty()
-    yearOfExperience: string
-
-    @IsNotEmpty()
-    bio: string
-
-    @IsNotEmpty()
-    skills: string
-
-    @IsNotEmpty()
-    profilePicture: string
-
-    @IsNotEmpty()
-    educationalBackground: string
-}
-export class LinkdinOptimizerDto{
-    @IsNotEmpty()
-    firstName: string;
-
-    @IsNotEmpty()
-    lastName: string;
-
-    @IsNotEmpty()
-    gender: string;
-
-    @IsNotEmpty()
-    dateOfBirth: Date;
-
-    @IsNotEmpty()
-    country: string;
-
-    @IsNotEmpty()
-    city: string;
-
-    @IsNotEmpty()
-    phoneNumber: string;
-
-    @IsNotEmpty()
-    nationality: string
-
-    @IsNotEmpty()
-    state: string
-
-    @IsNotEmpty()
-    yearOfExperience: string
-
-    @IsNotEmpty()
-    bio: string
-
-    @IsNotEmpty()
-    skills: string
-
-    @IsNotEmpty()
-    profilePicture: string
-
-    @IsNotEmpty()
-    educationalBackground: string
+    @IsOptional()
+    @IsString()
+    Cv?: string
 }
 
 export class EmployerDto{
-    @IsNotEmpty()
-    firstName: string;
+    @IsOptional()
+    @IsString()
+    name?: string;
+
+    @IsOptional()
+    @IsString()
+    companyName?: string;
 
     @IsNotEmpty()
-    lastName: string;
+    phone?: string;
 
-    @IsNotEmpty()
-    companyName: string;
+    @IsOptional()
+    @IsString()
+    companyAddress?: string;
 
-    @IsNotEmpty()
-    phoneNumber: string;
+    @IsOptional()
+    @IsString()
+    companyDescription?: string;
 
-    @IsNotEmpty()
-    companyAddress: string;
+    @IsOptional()
+    @IsString()
+    nationality?: string;
 
-    @IsNotEmpty()
-    companyDescription: string;
+    @IsOptional()
+    @IsString()
+    state?: string;
 
-    @IsNotEmpty()
-    industry: string;
-
-    @IsNotEmpty()
-    country: string;
-
-    @IsNotEmpty()
-    companyUrl: string;
-
-    @IsNotEmpty()
-    state: string;
-
-    @IsNotEmpty()
-    city: string;
-
-    @IsNotEmpty()
-    jobTitle: string;
+    @IsOptional()
+    @IsString()
+    location?: string;
 }

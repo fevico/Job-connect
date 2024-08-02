@@ -15,6 +15,9 @@ export class User {
   companyAddress: string;
 
   @Prop({type: String})
+  companyDescription: string;
+
+  @Prop({type: String})
   gender: string;
 
   @Prop({type: String})
@@ -37,6 +40,9 @@ export class User {
 
   @Prop({type: Boolean, default: false})
   isVerified: boolean;
+
+  @Prop({type: [String]})
+  skills: string[];
 
   @Prop({type: String, required: true})
   password: string;
