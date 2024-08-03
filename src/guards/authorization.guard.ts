@@ -22,8 +22,8 @@ export class AuthorizationGuard implements CanActivate {
         }
 
         // Log and set additional properties if needed
-        console.log('Required roles:', requiredRole);
-        console.log('User ID:', userId);
+        // console.log('Required roles:', requiredRole);
+        // console.log('User ID:', userId);
 
         // Optionally, set userId and requiredRole in request for downstream use
         request.userId = userId;

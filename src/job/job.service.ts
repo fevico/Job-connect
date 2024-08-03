@@ -6,6 +6,8 @@ import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
+import { Document, Schema as MongooseSchema } from "mongoose";
+
 
 @Injectable()
 export class JobService {
@@ -16,21 +18,30 @@ export class JobService {
         // @InjectModel(Profile.name) private profileModel: Model<Profile>,  
         @InjectModel(Referal.name) private referalModel: Model<Referal>,  
     ) {}
-
     async createJob(jobDto: JobDto, userId: string): Promise<Job> {
-        const user = await this.userModel.findById(userId);
+
+        try {
+            const user = await this.userModel.findById(userId);
         if (!user) throw new NotFoundException("User not found!");
         if (user.role !== 'employer') throw new ForbiddenException("You are not authorized to create a job!");
-        if(user.isVerified === false) throw new UnprocessableEntityException("Your account is not verified, please verify your account before you can create a job!")
+        if (user.isVerified === false) throw new UnprocessableEntityException("Your account is not verified, please verify your account before you can create a job!");
+    
     
         const createdJob = new this.jobModel({
             ...jobDto,
-            userId: userId, // Assign the userId to the job
+             userId: user._id,  // Assign the userId to the job
             companyName: user.companyName,
         });
+        await createdJob.save()  
     
-        return createdJob.save();
-    }
+        return createdJob;
+ 
+        } catch (error) {
+            console.log(error)
+            throw new BadRequestException(error.message)
+        }
+           }
+    
     
 
     async getAllJobs(){ 

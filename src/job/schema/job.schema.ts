@@ -3,9 +3,7 @@ import { Document, Schema as MongooseSchema } from "mongoose";
 
 @Schema()
 export class Job extends Document {
-  @Prop({type: MongooseSchema.Types.ObjectId})
-  _id: MongooseSchema.Types.ObjectId;
-
+  
   @Prop({ type: String, required: true })
   title: string;
 
