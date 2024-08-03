@@ -116,7 +116,7 @@ export class UserService {
   
          const token = await this.jwtService.sign(payload, {secret: process.env.JWT_SECRET})
     
-      return token;
+      return {token, data:{name: user.name, email: user.email, id: user._id, role: user.role}};
 
     }
 
