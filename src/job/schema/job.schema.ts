@@ -21,8 +21,8 @@ export class Job extends Document {
   })
   location: { state: string; country: string };
 
-  @Prop({ type: [String] })
-  skills: string[];
+  @Prop({ type: String, required: true })
+  skills: string;
 
   @Prop({ type: Number })
   price: number;
