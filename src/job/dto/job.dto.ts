@@ -12,7 +12,11 @@ export class JobDto{
 
     @IsNotEmpty()
     @IsNumber()
-    price: number;
+    priceFrom: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    priceTo: number;
 
     @IsNotEmpty()
     duration: string
