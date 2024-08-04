@@ -103,8 +103,11 @@ export class JobService {
 
   const user = await this.userModel.findById(userId);
   if (!user) throw new NotFoundException("User not found!");
-
+  
   const cv = resume || user.Cv;
+
+//   const cvDetails = await user.Cv
+//   if(!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
 
   if (!user.email) {
     throw new BadRequestException("User email is required to apply for a job");
@@ -117,7 +120,7 @@ export class JobService {
   });
   if (existingApplication) {
     throw new BadRequestException("You have already applied for this job");
-  }
+  } 
 
   const appliedJob = new this.appliedJobModel({
     jobId: id,
@@ -126,9 +129,10 @@ export class JobService {
     coverLetter,
     resume: cv,
     jobTitle: job.title, // Populate the job title
-    companyName: job.companyName, // Populate the company name
+    companyName: job.companyName, // Populate the company name 
     name: user.name, // Populate the user's name
   });
+  console.log(appliedJob)
 
   await appliedJob.save();
 

@@ -12,23 +12,20 @@ export class AppliedJob extends Document {
   @Prop({ type: String })
   coverLetter: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   resume: string;
 
   @Prop({ type: String, required: true })
   userEmail: string;
 
   @Prop({ type: String, required: true })
-  firstName: string;
-
-  @Prop({ type: String, required: true })
-  lastName: string;
+  name: string;
 
   @Prop({ type: Date, default: Date.now })
   appliedAt: Date;
 
   @Prop({ type: String, enum: ['applied', 'reviewed', 'interview', 'hired', 'rejected'], default: 'applied' })
-  status: string;
+  status: string; 
 
   @Prop({ type: String })
   jobTitle: string;
