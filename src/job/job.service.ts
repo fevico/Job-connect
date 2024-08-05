@@ -106,8 +106,8 @@ export class JobService {
   
   const cv = resume || user.Cv;
 
-//   const cvDetails = await user.Cv
-//   if(!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
+  const cvDetails = await user.Cv
+  if(!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
 
   if (!user.email) {
     throw new BadRequestException("User email is required to apply for a job");
@@ -208,7 +208,7 @@ export class JobService {
             if(!jobOwner) throw new NotFoundException("Job owner not found!")
             const updateJobStatus = await this.appliedJobModel.findOne({_id:id, jobId})
             if(!updateJobStatus) throw new NotFoundException("Job application not found!")
-                
+                 
                 await updateJobStatus.updateOne({status})
                 if(status === 'hired'){
                     const updateUserStatus = await this.appliedJobModel.findByIdAndUpdate(id, {status: 'hired'})

@@ -8,7 +8,7 @@ import { PasswordResetToken } from './schema/passwordResetToken';
 import { generateToken } from '../utils/user.token';
 import { SignInDto, SignUpDto } from './dto/user.dto';
 import { EmailVerificationToken } from './schema/emailVerificationToken';
-import { sendVerificationToken } from 'src/utils/mail';
+import { resetPasswordToken, sendVerificationToken } from 'src/utils/mail';
 import { EmployerDto, userDto } from './dto/profile.dto';
 
 
@@ -23,7 +23,7 @@ export class UserService {
   ) {}
 
   async register(registerDto: SignUpDto) {
-    const { email, password, role } = registerDto;
+    const { email, password, role, name } = registerDto;
 
     // Check if user with email already exists
     const emailExist = await this.userModel.findOne({ email });
@@ -56,7 +56,7 @@ export class UserService {
       userId: newUser._id,
       token: hashedToken,
     })
-    sendVerificationToken(email, token)
+    sendVerificationToken(email, token, name)
     console.log(token)
 
     return { message: 'User registered successfully' };
@@ -73,7 +73,7 @@ export class UserService {
       userId: user._id,
       token: hashedToken,
     })
-    sendVerificationToken(user.email, token)
+    sendVerificationToken(user.email, token, user.name)
     return { message: 'Verification email sent successfully' }
   }
 
@@ -154,15 +154,13 @@ export class UserService {
 
       const hashedToken = await bcrypt.hash(token, 10)
       // Save token and expiry time to user document
-      // const passwordResetLink = `${process.env.PASSWORD_RESET_LINK}?id=${user._id}&token=${token}`;
 
       const resetToken = await this.passwordResetModel.create({
         userId: user._id,
         token: hashedToken,
       })
-  
-      // Send reset token to the user (e.g., via email)
-      // Example: SendEmailService.sendResetPasswordEmail(user.email, resetToken);
+
+      resetPasswordToken(user.email, token, user.name)
   
       return { message: 'Password reset token generated and sent', token };
     }

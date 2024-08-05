@@ -9,10 +9,7 @@ export class AppliedJob extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: String })
-  coverLetter: string;
-
-  @Prop({ type: String })
+  @Prop({ type: String, required: true})
   resume: string;
 
   @Prop({ type: String, required: true })

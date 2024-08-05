@@ -1,32 +1,113 @@
 import * as nodemailer from 'nodemailer';
-import * as dotenv from 'dotenv';
+import { MailtrapClient } from "mailtrap";
 
-dotenv.config(); // Load environment variables from .env file
+const ENDPOINT = "https://send.api.mailtrap.io/";
+const TOKEN = "1e422935e908fc8f93bab3638f9bcac8";
+
+
+interface MailtrapClientConfig {
+  endpoint: string;
+  token: string;
+}
+
+const clientConfig: MailtrapClientConfig = {
+  endpoint: ENDPOINT,
+  token: TOKEN
+}
+
+const client = new MailtrapClient(clientConfig);
+
 
 const transporter = nodemailer.createTransport({
   host: 'sandbox.smtp.mailtrap.io',
   port: 2525,
-  auth: {
+  auth: { 
     user: process.env.MAIL_TRAP_USER,
     pass: process.env.MAIL_TRAP_PASS,
   },
 });
 
 
-export const sendVerificationToken = async (email: string, token: string) => {
-  await transporter.sendMail({
-    from: 'no-reply@example.com',
-    to: email,
-    subject: 'Verify your account',
-    html: `Kindly use the otp to verify your account ${token}`,
-  });
+export const sendVerificationToken = async (email: string, token: string, name: string) => {
+
+const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "a7be1d59-1645-40d4-a6b5-6703014aa02f",
+    template_variables: {
+      "user_name": name,
+      "user_otp": token,
+    }
+  })
 }
 
-export const referCandidateMail = async (email: string, name: string, jobLink: string) => {
-  await transporter.sendMail({
-    from: 'no-reply@example.com',
-    to: email,
-    subject: 'Verify your account',
-    html: `Hi ${name} you have just been refered to a job by a friend lindly apply for this role using the link <a href="${jobLink}">apply here</a>`,
-  });
+export const referCandidateMail = async (email: string, name: string, jobId: string, title: string, location: string, companyName: string, description: string) => {
+  const jobLink = `https://jobkonnecta.com/job/${jobId}`;
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+  const sender = {
+    email: VERIFICATION_EMAIL,
+    name: "Jobkonnecta",
+  };
+  const recipients = [
+    {
+      email,
+    }
+  ];
+
+  client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "d2835849-1420-4754-93cd-634bd072f1ae",
+    template_variables: {
+      "user_name": name,
+      "Job_Title": title,
+      "company_name": companyName,
+      "job_location": location,
+      "job_description": description,
+      "next_step_link": jobLink,
+    }
+  })
+
+};
+
+export const resetPasswordToken = async (email: string, token: string, name: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+  client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "818a7355-96fe-49f3-ae81-7b80cb943b48",
+    template_variables: {
+      "user_name": name,
+      "user_otp": token,
+    }
+  })
 };

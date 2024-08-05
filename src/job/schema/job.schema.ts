@@ -22,19 +22,19 @@ export class Job extends Document {
   @Prop({ type: String, required: true })
   skills: string;
 
-  @Prop({ type: Number })
+  @Prop({ type: Number, required: true })
   priceFrom: number;
 
-  @Prop({ type: Number })
+  @Prop({ type: Number, required: true })
   priceTo: number;
 
   @Prop({ type: String })
   duration: string;
 
-  @Prop({type: String})
+  @Prop({type: String, required: true})
   description: string;
 
-  @Prop({type: String})
+  @Prop({type: String, required: true})
   companyName: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })

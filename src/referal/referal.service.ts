@@ -15,8 +15,13 @@ constructor(
 ){}
 
     async referCandidate(body: any, userId: string){
-        const {jobId, candidateEmail, candidateName, jobLink} = body
+        const {jobId, candidateEmail, candidateName} = body
 
+        const user = await this.userModel.findById(userId)
+        if(!user){
+            throw new NotFoundException('User does not exist')
+        
+        }
         //check if job exists
         const job = await this.jobModel.findById(jobId)
         if(!job){
@@ -31,7 +36,7 @@ constructor(
             jobId,
             userId
         })
-        referCandidateMail(candidateEmail, candidateName, jobLink,)
+        referCandidateMail(candidateEmail, candidateName, jobId, job.title, job.location.state, job.companyName, job.description )
         return referal
     }
 
