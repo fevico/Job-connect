@@ -61,20 +61,34 @@ export class UserService {
     return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
   }
 
-  async resendVerificationEmail(email){
-    const user = await this.userModel.findOne(email)
-    if(!user){
-      throw new NotFoundException('User not found')
+  async resendVerificationEmail(email: string) {
+    // Find the user by email
+    const user = await this.userModel.findOne({ email });
+    
+    // If the user doesn't exist, throw an error
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    const token = generateToken()
-    const hashedToken = await bcrypt.hash(token, 10)
+  
+    // Generate a verification token
+    const token = generateToken();
+    
+    // Hash the token before storing it in the database
+    const hashedToken = await bcrypt.hash(token, 10);
+    
+    // Save the hashed token to the database
     await this.EmailVerificationTokenModel.create({
       userId: user._id,
       token: hashedToken,
-    })
-    sendVerificationToken(user.email, token, user.name)
-    return { message: 'Verification email sent successfully' }
+    });
+  
+    // Send the verification email
+    await sendVerificationToken(user.email, token, user.name);
+  
+    // Return a success message
+    return { message: 'Verification email sent successfully', token: token, id: user._id };
   }
+  
 
   async verifyEmail(id, token){
     const user = await this.userModel.findById(id)
@@ -161,7 +175,7 @@ export class UserService {
 
       resetPasswordToken(user.email, token, user.name)
   
-      return { message: 'Password reset token generated and sent', token };
+      return { message: 'Password reset token generated and sent', token, id: user._id };
     }
 
     async verifyToken(id: string, token: string) {

@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @UseGuards(AuthenitcationGuard) // Apply your authentication guard
-  @Put(':userId/change-password') // Use dynamic route parameter for userId
+  @Put('/change-password/:userId') // Use dynamic route parameter for userId
   async changePassword(
     @Param('userId') userId: string,
     @Body('newPassword') newPassword: string
