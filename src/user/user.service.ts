@@ -57,9 +57,8 @@ export class UserService {
       token: hashedToken,
     })
     sendVerificationToken(email, token, name)
-    console.log(token)
 
-    return { message: 'User registered successfully' };
+    return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
   }
 
   async resendVerificationEmail(email){
