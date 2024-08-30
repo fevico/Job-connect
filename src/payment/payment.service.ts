@@ -1,23 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as https from 'https';
 import { Payment } from './schema/payment.schema';
 import { Model } from 'mongoose';
 import { Wallet } from 'src/wallet/shema/wallet.schema';
+import { newOrder, successfulPayment } from 'src/utils/mail';
+import { Product } from 'src/product/schema/product.schema';
+import { User } from 'src/user/schema/user.schema';
 
 @Injectable()
 export class PaymentService {
     constructor(
         @InjectModel(Payment.name) private paymentModel: Model<Payment>, 
         @InjectModel(Wallet.name) private walletModel: Model<Wallet>, 
+        @InjectModel(Product.name) private productModel: Model<Product>, 
+        @InjectModel(User.name) private userModel: Model<User>, 
     ){}
 
-  async createPaymentIntent(body: any, userId: string, res: any) {
-    const { amount, email } = body;
+  async createPaymentIntent(body: any, res: any) {
+    const { amount, email, metadata } = body;
 
     const params = JSON.stringify({
       email,
       amount,
+      metadata,
       callback_url: 'https://ekomas-react-new.vercel.app/',
       // metadata,
     });
@@ -56,98 +62,116 @@ export class PaymentService {
     reqPaystack.end();
   }
 
-  async verifyPayment(reference: string) {
-    const encodedReference = encodeURIComponent(reference);
-    console.log(reference);
+  async verifyPayment(reference: string, res: any) {
     const options = {
       hostname: 'api.paystack.co',
       port: 443,
-        path: `/transaction/verify/${encodedReference}`,
+      path: `/transaction/verify/${reference}`,
       method: 'GET',
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       },
     };
-
-    const reqPaystack = https.request(options, async (respaystack) => {
+  
+    const reqPaystack = https.request(options, (respaystack) => {
       let data = '';
-    
+  
       respaystack.on('data', (chunk) => {
         data += chunk;
       });
-    
-      respaystack
-        .on('end', async () => {
+  
+      respaystack.on('end', async () => {
+        try {
           const responseData = JSON.parse(data);
-          console.log(responseData.data)
-    
-          // Check if payment was successful
+  
+          // Log the entire response from Paystack for debugging
+  
           if (
-            responseData.status === true &&
-            responseData.data.status === 'success'
+            responseData.status === true
+            // responseData.data.status === 'success'
           ) {
-
-            console.log(responseData.data)
-            // res.send(responseData.data)
-            // Payment was successful, extract relevant information
-            const { customer, id, reference, status, currency, metadata } = responseData.data;
+            const { customer, id, reference, status, currency, metadata } =
+              responseData.data;
+            const totalPrice = parseFloat(metadata.totalPrice);
+            const eightyPercent = totalPrice * 0.8;
+            const twentyPercent = totalPrice * 0.2;
+            console.log(totalPrice, eightyPercent, twentyPercent)
+  
             const paymentData = {
-              referenceId: reference, 
+              referenceId: reference,
               email: customer.email,
               status,
               currency,
               name: metadata.customerName,
               transactionId: id,
               phone: metadata.phone,
-              totalPrice: metadata.totalPrice,
-              userId: metadata.customerId,
+              totalPrice: totalPrice, // Save the full total price here
+              userId: metadata.userId,
+              productId: metadata.productId,
             };
-    
-            // Calculate 80% and 20% of the total price
-            const totalPrice = parseFloat(metadata.totalPrice);
-            const eightyPercent = totalPrice * 0.8;
-            const twentyPercent = totalPrice * 0.2;
-    
-            // Update the paymentData to include the 80% and 20% values
-            paymentData.totalPrice = eightyPercent;
-            paymentData.totalPrice = twentyPercent;
-    
-            console.log(paymentData); 
-    
+  
             // Save the payment details
-            const paymentDetails = await this.paymentModel.create(paymentData);
-    
+            await this.paymentModel.create(paymentData);
+  
             // Create or update the wallet balance with the 80% amount
-            let wallet = await this.walletModel.findOne({ userId: metadata.customerId });
+            let wallet = await this.walletModel.findOne({
+              owner: metadata.userId,
+            });
             if (wallet) {
               wallet.balance += eightyPercent;
               await wallet.save();
             } else {
               wallet = await this.walletModel.create({
-                userId: metadata.customerId,
+                owner: metadata.userId,
                 balance: eightyPercent,
               });
             }
-            const adminbalance = await this.walletModel.findOne({ userId: '6476f4f5c8d8e5a6b7c8d9e0' });
-            if (adminbalance) {
-              adminbalance.balance += twentyPercent;
-              await adminbalance.save();
-}
-    
-            // Save the 20% amount separately (e.g., for a commission account or another use case)
-            // await this.commissionModel.create({
-            //   userId: metadata.customerId,
-            //   amount: twentyPercent,
-            //   referenceId: reference,
+  
+            // const adminBalance = await this.walletModel.findOne({
+            //   userId: '6476f4f5c8d8e5a6b7c8d9e0',
             // });
-     
-            reqPaystack.end();
+            // if (adminBalance) {
+            //   adminBalance.balance += twentyPercent;
+            //   await adminBalance.save();
+            // }
+            const product = await this.productModel.findById(metadata.productId).populate('userId');
+            if(!product) throw new NotFoundException('Product not found')
+              const user = await this.userModel.findById(metadata.userId);
+            if(!user) throw new NotFoundException('User not found')
+
+              const users = product.userId as any;
+
+
+            successfulPayment(responseData.data.customer.email, product.type, totalPrice, user.name);
+            newOrder(users.email, product.type, users.name)
+            return res.json({
+              status: true,
+              message: 'Payment verified successfully',
+              data: responseData,
+            });
+
+          }else {
+            // If payment verification failed, log the error and send an error response
+            console.log('Transaction verification failed:', responseData);
+            return res.status(400).json({
+              status: false, 
+              message: 'Transaction verification failed.',
+            });
           }
-        })
-        .on('error', (error) => {
-          console.error(error);
-        });
+        } catch (error) {
+          console.error('Error parsing response:', error);
+          return res.status(500).json({ status: false, message: 'Server error.' });
+        }
+      });
     });
-    
+  
+    reqPaystack.on('error', (error) => {
+      console.error('Error with Paystack request:', error);
+      res.status(500).json({ status: false, message: 'Server error.' });
+    });
+  
+    reqPaystack.end();
   }
-}
+  
+  
+  }

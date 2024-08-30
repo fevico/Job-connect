@@ -7,10 +7,7 @@ export class Payment extends Document {
     email: string;
 
     @Prop({type: String})
-    firstName: string;
-
-    @Prop({type: String})
-    lastName: string;
+    name: string;
 
     @Prop({type: String})
     transactionId: string;
@@ -21,7 +18,7 @@ export class Payment extends Document {
     @Prop({type: String})
     referenceId: string;
 
-    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'CvProfile', required: true })
+    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Product' })
     productId: MongooseSchema.Types.ObjectId;
 
     @Prop({type: Number})

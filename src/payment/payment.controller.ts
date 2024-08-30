@@ -6,17 +6,19 @@ import { AuthenitcationGuard } from 'src/guards/auth.guard';
 @Controller('payment')
 export class PaymentController {
     constructor(private paymentService: PaymentService ){}
-    @UseGuards(AuthenitcationGuard)
+    // @UseGuards(AuthenitcationGuard)
     @Post('create-payment')
     createPaymentIntent(@Body() body: any, @Req() req: Request, @Res() res: any){
-        const userId = req.user.id
-        return this.paymentService.createPaymentIntent(body, userId, res);
+        // const userId = req.user.id
+        return this.paymentService.createPaymentIntent(body, res);
     }
 
     @Get('verify-payment/:reference')
-    verifyPayment(@Param() reference: string, @Req() req: Request){
-        // console.log(req.query)
-        // const userId = req.user.id
-        return this.paymentService.verifyPayment(reference);
+    verifyPayment(
+      @Param('reference') reference: string, // Corrected Param usage
+      @Req() req: Request,
+      @Res() res: Response,
+    ) {
+      return this.paymentService.verifyPayment(reference, res);
     }
 }

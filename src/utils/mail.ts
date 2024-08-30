@@ -111,3 +111,56 @@ const recipients = [
     }
   })
 };
+
+export const successfulPayment = async (email: string, productType: string, totalPrice: number, name: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "bb645bf8-f528-4a99-ad76-12a115b3bc7d",
+    template_variables: {
+      "user_name": name,
+      "amount": totalPrice,
+      "service": productType,
+    }
+  })
+};
+
+export const newOrder = async (email: string, productType: string, name: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "74fcd258-c11b-41db-a54b-257f17479c7e",
+    template_variables: {
+      "user_name": name,
+      "service": productType,
+    }
+  })
+};

@@ -4,16 +4,15 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { EmployerModule } from './employer/employer.module';
 import { JobModule } from './job/job.module';
 import { CategoryModule } from './category/category.module';
-import { CvModule } from './cv/cv.module';
 import { PaymentModule } from './payment/payment.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ReferalModule } from './referal/referal.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { SchedulerModule } from './schduler/schduler.module';
 import { GoogleModule } from './google/google.module';
+import { ProductModule } from './product/product.module';
 
 
 @Module({
@@ -25,16 +24,15 @@ import { GoogleModule } from './google/google.module';
       }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     UserModule,
-    EmployerModule,
     JobModule,
     CategoryModule,
-    CvModule,
     PaymentModule,
     WalletModule,
     ReferalModule,
     SubscriptionModule,
     SchedulerModule,
-    GoogleModule
+    GoogleModule,
+    ProductModule
   ],
   controllers: [AppController],
   providers: [AppService],

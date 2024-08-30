@@ -90,24 +90,35 @@ export class UserService {
   }
   
 
-  async verifyEmail(id, token){
-    const user = await this.userModel.findById(id)
-    if(!user){
-      throw new NotFoundException('User not found')
+  async verifyEmail(id: string, token: string): Promise<{ message: string }> {
+    // Find the user by ID
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    const emailVerificationToken = await this.EmailVerificationTokenModel.findOne({userId: id})
-    if(!emailVerificationToken){
-      throw new NotFoundException('Email verification token not found')
+  
+    // Find the email verification token associated with the user
+    const emailVerificationToken = await this.EmailVerificationTokenModel.findOne({ userId: id });
+    if (!emailVerificationToken) {
+      throw new NotFoundException('Email verification token not found');
     }
-    const hashedToken = emailVerificationToken.token
-    const isMatch = await bcrypt.compare(token, hashedToken)
-    if(!isMatch){
-      throw new UnauthorizedException('Invalid token')
+  
+    // Compare the provided token with the stored hashed token
+    const isMatch = await bcrypt.compare(token, emailVerificationToken.token);
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid or expired token');
     }
-    user.isVerified = true
-    await user.save()
-    return { message: 'Email verified successfully' }
+  
+    // Mark the user as verified
+    user.isVerified = true;
+    await user.save();
+  
+    // Optionally, delete the used email verification token from the database
+    await this.EmailVerificationTokenModel.deleteOne({ userId: id });
+  
+    return { message: 'Email verified successfully' };
   }
+  
 
       async login(loginDto: SignInDto){
         const {email, password} = loginDto;

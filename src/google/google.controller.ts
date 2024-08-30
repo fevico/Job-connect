@@ -7,9 +7,11 @@ import { Response } from 'express';
 export class GoogleController {
   constructor(private readonly googleService: GoogleService) {}
 
-  @Get('')
+  @Get()
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {}
+  async googleAuth(@Req() req) {
+   
+  }
 
   @Get('auth/callback')
   @UseGuards(AuthGuard('google'))

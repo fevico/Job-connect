@@ -23,10 +23,7 @@ export class JobService {
         try {
             const user = await this.userModel.findById(userId);
         if (!user) throw new NotFoundException("User not found!");
-        if (user.role !== 'employer') throw new ForbiddenException("You are not authorized to create a job!");
         if (user.isVerified === false) throw new UnprocessableEntityException("Your account is not verified, please verify your account before you can create a job!");
-    
-    
         const createdJob = new this.jobModel({
             ...jobDto,
              userId: user._id,  // Assign the userId to the job
