@@ -35,7 +35,7 @@ export class JobService {
  
         } catch (error) {
             console.log(error)
-            throw new BadRequestException(error.message)
+            throw new BadRequestException(error.message) 
         }
            }
     
@@ -59,6 +59,7 @@ export class JobService {
 
         const jobs = await this.jobModel.find({userId: id})
         if(!jobs) throw new NotFoundException("Jobs not found!") 
+
 
             return jobs
     }
@@ -179,22 +180,6 @@ export class JobService {
         return employerApplications;
     
 }
-
-    // async getEmployerApplications(body: any, userId: string) {
-    //     const {id, status} = body
-    //     const user = await this.userModel.findById(userId);
-    //     if (!user) throw new NotFoundException("User not found!");
-    
-    //     const applications = await this.jobModel.findById({ id });
-    //     if(!applications) throw new NotFoundException("Job application not found!")
-
-    //     if(applications.referal !== 'yes') throw new ForbiddenException("You are not authorized to view this job application!")
-    //         const updateJobStatus = await this.appliedJobModel.findOne({id})
-    //         if(!updateJobStatus) throw new NotFoundException("Job application not found!")
-    //             await updateJobStatus.updateOne({status})
-                
-    //             return updateJobStatus
-    // }
     
 
     async updateJobApplication(body: any, userId: string, jobId: any){
@@ -219,5 +204,19 @@ export class JobService {
                 }
                 
                 return updateJobStatus
+    }
+
+    async getApplicationNumber(userId: string, jobId: any) {
+        const job = await this.jobModel.findById(jobId)
+        if(!job) throw new NotFoundException("Job not found!")
+
+            const usersJob = await this.jobModel.findOne({userId})
+            if(!usersJob) throw new UnauthorizedException("You don't have access to this job!")
+
+        const applications = await this.appliedJobModel.findOne({jobId}).countDocuments({ jobId: jobId });
+        if(!applications) throw new NotFoundException("Applications not found!")
+
+            return applications
+ 
     }
 }

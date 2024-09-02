@@ -87,4 +87,13 @@ export class JobController {
 
         return this.jobService.updateJobApplication(body, userId, jobId);
     }
+
+    @Roles(['admin', 'employer'])
+    @Get('application-number/:id')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    getApplicationNumber(@Param('id') jobId: any, @Req() req: Request){
+        const userId = req.userId;
+
+        return this.jobService.getApplicationNumber(userId, jobId);
+    }
 }
