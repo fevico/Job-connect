@@ -164,3 +164,29 @@ client
     }
   })
 };
+
+export const hireApplicantMail = async (email: string, name: string, jobTitle: string, companyName: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "52a51785-9206-46e0-9508-35dc7e25c048",
+    template_variables: {
+      "name": name,
+      "role": jobTitle,
+      "company": companyName,
+    }
+  })};

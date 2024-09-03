@@ -7,6 +7,7 @@ import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
 import { Document, Schema as MongooseSchema } from "mongoose";
+import { hireApplicantMail } from 'src/utils/mail';
 
 
 @Injectable()
@@ -64,47 +65,19 @@ export class JobService {
             return jobs
     }
 
-    // async applyJob(applyJobDto: any, userId: string){
-    //     try {
-    //         const {id, coverLetter, resume} = applyJobDto
-    //         const job = await this.jobModel.findById(id)
-    //         if(!job) throw new NotFoundException("Job not found!")          
-    
-    //         const user = await this.userModel.findById(userId)
-    //         if(!user) throw new NotFoundException("User not found!")
-    //             const profile = await this.profileModel.findOne({userId: userId})
-    //         if(!profile) throw new UnauthorizedException("Update your profile before you can appy for job!")
-    
-    //             const cv = resume || profile.CV;
-    
-    //             const appliedJob = new this.appliedJobModel({
-    //                 jobId: id,
-    //                 userId,
-    //                 userEmail: user.email,
-    //                 coverLetter,
-    //                 resume: cv
-    //             })
-    //             await appliedJob.save()
-    
-    //         return appliedJob            
-    //     } catch (error) {
-    //         console.log(error)
-    //         throw new NotFoundException("Error applying for job!", error)
-    //     }
-
-    // }
-
  async applyJob(applyJobDto: any, userId: string) {
   const { id, coverLetter, resume } = applyJobDto;
   const job = await this.jobModel.findById(id);
   if (!job) throw new NotFoundException("Job not found!");
+
+  if(job.status === "closed") throw new BadRequestException("Job has been closed!")
 
   const user = await this.userModel.findById(userId);
   if (!user) throw new NotFoundException("User not found!");
   
   const cv = resume || user.Cv;
 
-  const cvDetails = await user.Cv
+  const cvDetails = user.Cv
   if(!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
 
   if (!user.email) {
@@ -142,6 +115,8 @@ export class JobService {
 
     async getAppliedJobs(userId: string) {
         const appliedJobs = await this.appliedJobModel.find({ userId });
+        if(!appliedJobs) throw new NotFoundException("No record for applied job!")
+
         
         if (appliedJobs.length === 0) {
             throw new NotFoundException("No record for applied job!");
@@ -182,29 +157,38 @@ export class JobService {
 }
     
 
-    async updateJobApplication(body: any, userId: string, jobId: any){
-        const {id, status} = body
-        const jobExist = await this.jobModel.findById(jobId)
-        if(!jobExist) throw new NotFoundException("Job not found!")
-            const jobOwner = await this.jobModel.findOne({userId})
-            if(!jobOwner) throw new NotFoundException("Job owner not found!")
-            const updateJobStatus = await this.appliedJobModel.findOne({_id:id, jobId})
-            if(!updateJobStatus) throw new NotFoundException("Job application not found!")
-                 
-                await updateJobStatus.updateOne({status})
-                if(status === 'hired'){
-                    const updateUserStatus = await this.appliedJobModel.findByIdAndUpdate(id, {status: 'hired'})
-                    if(!updateUserStatus) throw new UnprocessableEntityException("Cannot update user status something went wrong!")
-                        jobExist.status = 'closed'
-                        await jobExist.save()
-                        return updateUserStatus
-                }else{
-                    jobExist.status = 'active'
-                    await jobExist.save()
-                }
-                
-                return updateJobStatus
+async hireApplicant(body: any, userId: string, jobId: string){
+    const { id, status, applicantId } = body;
+    
+    // Check if the job exists and is owned by the user
+    const jobExist = await this.jobModel.findOne({ _id: jobId, userId });
+    if (!jobExist) throw new NotFoundException("Job not found or you do not own this job!");
+
+    if(jobExist.status === "closed") throw new BadRequestException("Job has been closed!")
+    
+    // Check if the application exists for the given job and applicant
+    const application = await this.appliedJobModel.findOne({ _id: id, userId: applicantId, jobId });
+    if (!application) throw new NotFoundException("Application not found!");
+
+    const user = await this.userModel.findById(applicantId);
+    if (!user) throw new NotFoundException("User not found!");
+
+    // Update the application status
+    application.status = status;
+    await application.save();
+
+    // If the status is 'hired', close the job
+    if (status === 'hired') {
+        jobExist.status = 'closed';
     }
+    
+    await jobExist.save();
+
+    hireApplicantMail(user.email, user.name, jobExist.title, jobExist.companyName);
+    
+    return application;
+}
+
 
     async getApplicationNumber(userId: string, jobId: any) {
         const job = await this.jobModel.findById(jobId)

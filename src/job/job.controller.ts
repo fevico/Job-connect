@@ -70,22 +70,13 @@ export class JobController {
         return this.jobService.getEmployerApplication(userId);
     }
 
-    // @Roles(['admin', 'employer'])
-    // @Patch('update-job-status')
-    // @UseGuards(AuthenitcationGuard, AuthorizationGuard)
-    // getEmployerApplications(@Body('id') body: any, @Req() req: Request){
-    //     const userId = req.userId;
-
-    //     return this.jobService.getEmployerApplications(body, userId);
-    // }
-
     @Roles(['admin', 'employer'])
-    @Patch('hire-applicant/:id')
+    @Post('hire-applicant/:id')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
     hireApplicant(@Body() body: any, @Param('id') jobId: any, @Req() req: Request){
         const userId = req.userId;
 
-        return this.jobService.updateJobApplication(body, userId, jobId);
+        return this.jobService.hireApplicant(body, userId, jobId);
     }
 
     @Roles(['admin', 'employer'])
