@@ -6,7 +6,6 @@ import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
-import { Document, Schema as MongooseSchema } from "mongoose";
 import { hireApplicantMail } from 'src/utils/mail';
 
 
@@ -66,7 +65,7 @@ export class JobService {
     }
 
  async applyJob(applyJobDto: any, userId: string) {
-  const { id, coverLetter, resume } = applyJobDto;
+  const { id, resume } = applyJobDto;
   const job = await this.jobModel.findById(id);
   if (!job) throw new NotFoundException("Job not found!");
 
@@ -97,7 +96,6 @@ export class JobService {
     jobId: id,
     userId,
     userEmail: user.email,
-    coverLetter,
     resume: cv,
     jobTitle: job.title, // Populate the job title
     companyName: job.companyName, // Populate the company name 
@@ -158,7 +156,7 @@ export class JobService {
     
 
 async hireApplicant(body: any, userId: string, jobId: string){
-    const { id, status, applicantId } = body;
+    const { id, applicantId } = body;
     
     // Check if the job exists and is owned by the user
     const jobExist = await this.jobModel.findOne({ _id: jobId, userId });
@@ -174,11 +172,11 @@ async hireApplicant(body: any, userId: string, jobId: string){
     if (!user) throw new NotFoundException("User not found!");
 
     // Update the application status
-    application.status = status;
+    application.status = 'hired';
     await application.save();
 
     // If the status is 'hired', close the job
-    if (status === 'hired') {
+    if (application.status === 'hired') {
         jobExist.status = 'closed';
     }
     
