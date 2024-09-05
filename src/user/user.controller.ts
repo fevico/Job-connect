@@ -2,7 +2,7 @@ import {  BadRequestException, Body, Controller, Param, Patch, Post, Put, Req, U
 import { UserService } from './user.service';
 // import { RoleGuard } from 'src/guards/role.guard';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
-import { SignInDto, SignUpDto } from './dto/user.dto';
+import {  CvWriterSignUpDto, EmployerSignUpDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto } from './dto/user.dto';
 import { Request } from "express";
 import { EmployerDto, userDto } from './dto/profile.dto';
 
@@ -12,12 +12,37 @@ export class UserController {
     constructor(private userService: UserService){}
 
     @Post('register')
-    async register(@Body() registerDto: SignUpDto) {
-      if(!registerDto.role) return new BadRequestException('Role is required');
-      // if(registerDto.role === 'jobseeker') return this.userService.registerJobseeker(registerDto);
-      
+    async register(@Body() body: any) {
+      const { role } = body;
+  
+      if (!role) {
+        throw new BadRequestException('Role is required');
+      }
+  
+      let registerDto;
+  
+      switch (role) {
+        case 'jobseeker':
+          registerDto = new JobseekerSignUpDto();
+          break;
+        case 'employer':
+          registerDto = new EmployerSignUpDto();
+          break;
+        case 'linkedinOptimizer':
+          registerDto = new LinkedinOptimizerSignUpDto();
+          break;
+        case 'cvWriter':
+          registerDto = new CvWriterSignUpDto();
+          break;
+        default:
+          throw new BadRequestException('Invalid user role');
+      }
+  
+      Object.assign(registerDto, body);
+  
       return this.userService.register(registerDto);
     }
+  
 
     @Post('resend-verification-email')
     async resendVerificationEmail(@Body('email') email: string) {
@@ -50,9 +75,7 @@ export class UserController {
 
   @Post('verify-token/:id')
   async verifyToken(@Param('id') id: string, @Body('token') token: string){
-    // if(id !== token){
-    //   throw new BadRequestException('Invalid token');
-    // }
+   
     return this.userService.verifyToken(id, token);
   }
 
@@ -83,4 +106,3 @@ export class UserController {
     }
   }
 }
-

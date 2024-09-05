@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordResetToken } from './schema/passwordResetToken';
 import { generateToken } from '../utils/user.token';
-import { SignInDto, SignUpDto } from './dto/user.dto';
+import {  CvWriterSignUpDto, EmployerSignUpDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto } from './dto/user.dto';
 import { EmailVerificationToken } from './schema/emailVerificationToken';
 import { resetPasswordToken, sendVerificationToken } from 'src/utils/mail';
 import { EmployerDto, userDto } from './dto/profile.dto';
@@ -22,10 +22,62 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerDto: SignUpDto) {
-    const { email, password, role, name } = registerDto;
+  // async register(registerDto: SignUpDto) {
+  //   const { email, password, role, name } = registerDto;
 
-    // Check if user with email already exists
+  //   // Check if user with email already exists
+  //   const emailExist = await this.userModel.findOne({ email });
+  //   if (emailExist) {
+  //     throw new UnauthorizedException('Email already exists');
+  //   }
+
+
+  //   // Hash password
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+
+  //   const newUser = new this.userModel({
+  //     ...registerDto, // Spread registerDto first
+  //     password: hashedPassword, // Then overwrite the password with the hashed password
+  //   });
+
+    
+  //   if(role === 'jobseeker'){
+  //     newUser.isActive = true
+  //   }
+
+  //   // Save user to database
+  //   await newUser.save();
+
+  //   const token = generateToken()
+
+  //   const hashedToken = await bcrypt.hash(token, 10)
+
+  //   await this.EmailVerificationTokenModel.create({
+  //     userId: newUser._id,
+  //     token: hashedToken,
+  //   })
+  //   sendVerificationToken(email, token, name)
+
+  //   return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
+  // }
+
+  async register(registerDto: JobseekerSignUpDto | EmployerSignUpDto | LinkedinOptimizerSignUpDto | CvWriterSignUpDto) {
+    if (registerDto instanceof JobseekerSignUpDto) {
+      return this.registerJobseeker(registerDto);
+    } else if (registerDto instanceof EmployerSignUpDto) {
+      return this.registerEmployer(registerDto);
+    } else if (registerDto instanceof LinkedinOptimizerSignUpDto) {
+      return this.registerLinkedinOptimizer(registerDto);
+    } else if (registerDto instanceof CvWriterSignUpDto) {
+      return this.registerCvWriter(registerDto);
+    }
+    throw new BadRequestException('Invalid registration details');
+  }
+
+  async registerJobseeker(dto: JobseekerSignUpDto) {
+    // Logic for registering a jobseeker
+       const { email, password, role, name, qualification } = dto;
+      //  Check if user with email already exists
     const emailExist = await this.userModel.findOne({ email });
     if (emailExist) {
       throw new UnauthorizedException('Email already exists');
@@ -36,7 +88,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new this.userModel({
-      ...registerDto, // Spread registerDto first
+      ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
     });
 
@@ -59,7 +111,126 @@ export class UserService {
     sendVerificationToken(email, token, name)
 
     return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
+ 
   }
+
+  async registerEmployer(dto: EmployerSignUpDto) {
+    // Logic for registering an employer
+    const { email, password, role, name } = dto;
+    //  Check if user with email already exists
+  const emailExist = await this.userModel.findOne({ email });
+  if (emailExist) {
+    throw new UnauthorizedException('Email already exists');
+  }
+
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new this.userModel({
+    ...dto, // Spread registerDto first
+    password: hashedPassword, // Then overwrite the password with the hashed password
+  });
+
+  
+  if(role === 'jobseeker'){
+    newUser.isActive = true
+  }
+
+  // Save user to database
+  await newUser.save();
+
+  const token = generateToken()
+
+  const hashedToken = await bcrypt.hash(token, 10)
+
+  await this.EmailVerificationTokenModel.create({
+    userId: newUser._id,
+    token: hashedToken,
+  })
+  sendVerificationToken(email, token, name)
+
+  return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
+  }
+
+  async registerLinkedinOptimizer(dto: LinkedinOptimizerSignUpDto) {
+    const { email, password, role, name } = dto;
+    //  Check if user with email already exists
+  const emailExist = await this.userModel.findOne({ email });
+  if (emailExist) {
+    throw new UnauthorizedException('Email already exists');
+  }
+
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new this.userModel({
+    ...dto, // Spread registerDto first
+    password: hashedPassword, // Then overwrite the password with the hashed password
+  });
+
+  
+  if(role === 'jobseeker'){
+    newUser.isActive = true
+  }
+
+  // Save user to database
+  await newUser.save();
+
+  const token = generateToken()
+
+  const hashedToken = await bcrypt.hash(token, 10)
+
+  await this.EmailVerificationTokenModel.create({
+    userId: newUser._id,
+    token: hashedToken,
+  })
+  sendVerificationToken(email, token, name)
+
+  return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
+    // Logic for registering a LinkedIn optimizer
+  }
+
+  async registerCvWriter(dto: CvWriterSignUpDto) {
+    // Logic for registering a CV writer
+    const { email, password, role, name } = dto;
+    //  Check if user with email already exists
+  const emailExist = await this.userModel.findOne({ email });
+  if (emailExist) {
+    throw new UnauthorizedException('Email already exists');
+  }
+
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new this.userModel({
+    ...dto, // Spread registerDto first
+    password: hashedPassword, // Then overwrite the password with the hashed password
+  });
+
+  
+  if(role === 'jobseeker'){
+    newUser.isActive = true
+  }
+
+  // Save user to database
+  await newUser.save();
+
+  const token = generateToken()
+
+  const hashedToken = await bcrypt.hash(token, 10)
+
+  await this.EmailVerificationTokenModel.create({
+    userId: newUser._id,
+    token: hashedToken,
+  })
+  sendVerificationToken(email, token, name)
+
+  return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
+  }
+
 
   async resendVerificationEmail(email: string) {
     // Find the user by email

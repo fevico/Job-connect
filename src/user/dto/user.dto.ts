@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsIn, IsOptional, IsNumber } from 'class-validator';
 
-export class SignUpDto {
+export class JobseekerSignUpDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -9,51 +9,161 @@ export class SignUpDto {
   @MinLength(6)
   password: string;
 
-  @IsString()
-  @IsOptional()
-  companyName?: string;
-
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  @IsString()
-  @IsOptional()
-  companyAddress?: string;
 
   @IsNotEmpty()
   @IsString()
   phone: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  yearsOfExperience?: number;
-
-  @IsOptional()
-  @IsString()
-  Cv?: string;
-
-  @IsOptional()
-  @IsString()
-  location?: string;
-
-  @IsOptional()
-  @IsString()
-  qualification?: string;
-
-  @IsOptional()
-  @IsString()
-  nationality?: string;
-
-  @IsOptional()
-  @IsString()
-  gender?: string;
+  yearsOfExperience: number;
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['jobseeker', 'employer', 'cvwriter'])
+  Cv: string;
+
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  qualification: string;
+
+  @IsNotEmpty()
+  @IsString()
+  gender: string;
+
+  @IsNotEmpty()
+  @IsString()
   role: string;
 } 
+export class EmployerSignUpDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  companyName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  companyAddress: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  gender: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+} 
+
+
+export class LinkedinOptimizerSignUpDto{
+  @IsNotEmpty()
+  @IsString()
+  linkedinProfile: string;
+
+  @IsNotEmpty()
+  @IsString()
+  linkedinOptimization: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  avatar: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+}
+export class CvWriterSignUpDto {
+  @IsString()
+  @IsNotEmpty()
+  professionalInformation: string;
+
+  @IsString()
+  @IsNotEmpty()
+  workAvailability: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  avatar: string;
+
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+}
+
+export class RegisterDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  role: string; // This will be used to determine the role-specific DTO
+}
 
 export class SignInDto{
   @IsNotEmpty()

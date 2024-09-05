@@ -50,6 +50,72 @@ export class User {
   @Prop({type: Boolean, default: false})
   isActive: boolean
 
+  @Prop({type: String})
+  avatar: string
+
+  @Prop({
+    type: {
+      linkdinUrl: { type: String },
+      currentJob: { type: String },
+      keySkills: { type: String },
+      yearsOfExperience: { type: String },
+      industry: { type: String },
+    },
+  })
+  linkedinProfile: {
+    linkdinUrl: string;
+    currentJob: string;
+    keySkills: string;
+    yearsOfExperience: string;
+    industry: string;
+  };
+
+  @Prop({
+    type: {
+      optimizationGoal: { type: String },
+      targetAudience: { type: String },
+      profileSection: { type: String },
+    },
+  })
+  linkedinOptimization : {
+    optimizationGoal: string;
+    targetAudience: string;
+    profileSection: string;
+  };
+
+  @Prop({
+    type: {
+      resume: { type: String },
+      portfolio: { type: [String] },
+      yearsOfExperience: { type: String },
+      Specializations: { type: String },
+      Certifications: { type: String },
+      Education: { type: String },
+    },
+  })
+  professionalInformation : {
+    resume: string;
+    portfolio: string[];
+    yearsOfExperience: string;
+    Specializations: string;
+    Certifications: string;
+    Education: string;
+  };
+
+  @Prop({
+    type: {
+      availability: { type: String },
+      wokHours: { type: String },
+      responseTime: { type: String },
+    },
+  })
+  workAvailability : {
+    availability: string;
+    wokHours: string;
+    responseTime: string;
+  };
+
+
   @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
   role: string;
 
