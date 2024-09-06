@@ -421,9 +421,18 @@ async updateEmployerProfile(updateProfileDto: EmployerUpdateDto, userId: string)
     const { userId } = body;
     const user = await this.userModel.findById(userId)
     if(!user) throw new NotFoundException('User not found');
-    user.isVerified = false;
+    user.suspend = true;
     await user.save();
     return {message: 'User suspended successfully'}
+  }
+
+  async unSuspendUser(body: SuspendUserDto){
+    const {userId} = body;
+    const user = await this.userModel.findById(userId)
+    if(!user) throw new NotFoundException('User not found');
+    user.suspend = false;
+    await user.save();
+    return {message: 'User unsuspended successfully'}
   }
 }  
   

@@ -139,5 +139,10 @@ export class UserController {
   async suspendUser(@Body() body: SuspendUserDto) {
     return this.userService.suspendUser(body);
   }
+
+  @Post('un-suspend')
+  async unSuspendUser(@Body() body: SuspendUserDto) {
+    return this.userService.unSuspendUser(body);
+  }
 }
 

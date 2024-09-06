@@ -122,6 +122,9 @@ export class User {
   @Prop({ type: Number, default: 0 })
   referalBalance: number;
 
+  @Prop({ type: Boolean, default: false })
+  suspend: boolean;
+
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
