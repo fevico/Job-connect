@@ -35,46 +35,58 @@ export class UserService {
     }
     throw new BadRequestException('Invalid registration details');
   }
-
   async registerJobseeker(dto: JobseekerSignUpDto) {
-    // Logic for registering a jobseeker
-       const { email, password, role, name, qualification } = dto;
-      //  Check if user with email already exists
+    const { email, password, role, name, qualification } = dto;
+    console.log(dto)
+  
+    // Ensure the password is provided
+    if (!password) {
+      throw new BadRequestException('Password is required');
+    }
+  
+    // Check if the user with email already exists
     const emailExist = await this.userModel.findOne({ email });
     if (emailExist) {
       throw new UnauthorizedException('Email already exists');
     }
-
-
-    // Hash password
+  
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
+  
     const newUser = new this.userModel({
-      ...dto, // Spread registerDto first
-      password: hashedPassword, // Then overwrite the password with the hashed password
+      ...dto,
+      password: hashedPassword,
     });
-
-    
-    if(role === 'jobseeker'){
-      newUser.isActive = true
+  
+    if (role === 'jobseeker') {
+      newUser.isActive = true;
     }
-
-    // Save user to database
+  
+    // Save the user to the database
     await newUser.save();
-
-    const token = generateToken()
-
-    const hashedToken = await bcrypt.hash(token, 10)
-
+  
+    const token = generateToken();
+  
+    const hashedToken = await bcrypt.hash(token, 10);
+  
     await this.EmailVerificationTokenModel.create({
       userId: newUser._id,
       token: hashedToken,
-    })
-    sendVerificationToken(email, token, name)
-
-    return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
- 
+    });
+  
+    sendVerificationToken(email, token, name);
+  
+    return {
+      message: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+      },
+      token: token,
+    };
   }
+  
 
   async registerEmployer(dto: EmployerSignUpDto) {
     // Logic for registering an employer
