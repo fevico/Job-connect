@@ -1,10 +1,10 @@
-import {  BadRequestException, Body, Controller, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {  BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { RoleGuard } from 'src/guards/role.guard';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
-import {  CvWriterSignUpDto, EmployerSignUpDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto } from './dto/user.dto';
+import {  CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto, SignUpDto, SuspendUserDto } from './dto/user.dto';
 import { Request } from "express";
-import { EmployerDto, userDto } from './dto/profile.dto';
+import { CvWriterUpdateDto, EmployerDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto, userDto } from './dto/profile.dto';
 
 
 @Controller('user')
@@ -12,7 +12,7 @@ export class UserController {
     constructor(private userService: UserService){}
 
     @Post('register')
-    async register(@Body() body: any) {
+    async register(@Body() body: SignUpDto) {
       const { role } = body;
   
       if (!role) {
@@ -69,8 +69,8 @@ export class UserController {
   }
 
   @Post('forgot-password')
-  async requestPasswordReset(@Body('email') email: string) {
-    return this.userService.requestPasswordReset(email);
+  async requestPasswordReset(@Body() body: ForgetPasswordDto) {
+    return this.userService.requestPasswordReset(body);
   }
 
   @Post('verify-token/:id')
@@ -92,17 +92,52 @@ export class UserController {
   async updateProfile(@Body() body: any, @Req() req: Request) {
     const userRole = req.user.role;
     const userId = req.user.id;
-
-    if (userRole === 'jobseeker' || userRole === 'cvwriter' || userRole === 'linkdinOptimizer') {
-      const userProfileDto = new userDto();
-      Object.assign(userProfileDto, body);
-      return this.userService.updateUserProfile(userProfileDto, userId);
-    } else if (userRole === 'employer') {
-      const updateProfileDto = new EmployerDto();
-      Object.assign(updateProfileDto, body);
-      return this.userService.updateEmployerProfile(updateProfileDto, userId);
-    }else {
-      throw new BadRequestException('Invalid user role');
+  
+    switch (userRole) {
+      case 'jobseeker': {
+        const userProfileDto = new JobseekerUpdateDto();
+        Object.assign(userProfileDto, body);
+        return this.userService.updateUserProfile(userProfileDto, userId);
+      }
+  
+      case 'employer': {
+        const updateProfileDto = new EmployerUpdateDto();
+        Object.assign(updateProfileDto, body);
+        return this.userService.updateEmployerProfile(updateProfileDto, userId);
+      }
+  
+      case 'linkedinOptimizer': {
+        const linkedinProfileDto = new LinkedinOptimizerUpdateDto();
+        Object.assign(linkedinProfileDto, body);
+        return this.userService.updateLinkedinOptimizerProfile(linkedinProfileDto, userId);
+      }
+  
+      case 'cvwriter': {
+        const cvWriterDto = new CvWriterUpdateDto();
+        Object.assign(cvWriterDto, body);
+        return this.userService.updateCvWriterProfile(cvWriterDto, userId);
+      }
+  
+      default: {
+        throw new BadRequestException('Invalid user role');
+      }
     }
   }
+    
+
+  @Get('all-employers')
+  async getAllEmployers() {
+    return this.userService.getAllEmployers();
+  }
+
+  @Get('all-users')
+  async getAllUsers() {
+    return this.userService.getAllUsers();
+  }
+
+  @Post('suspend')
+  async suspendUser(@Body() body: SuspendUserDto) {
+    return this.userService.suspendUser(body);
+  }
 }
+

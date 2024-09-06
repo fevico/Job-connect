@@ -79,7 +79,6 @@ export class EmployerSignUpDto {
   role: string;
 } 
 
-
 export class LinkedinOptimizerSignUpDto{
   @IsNotEmpty()
   @IsString()
@@ -172,4 +171,22 @@ export class SignInDto{
 
   @IsNotEmpty()
   password: string;
+}
+
+export class SignUpDto{
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+}
+
+export class ForgetPasswordDto{
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class SuspendUserDto{
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
 }

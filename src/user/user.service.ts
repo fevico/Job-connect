@@ -6,10 +6,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordResetToken } from './schema/passwordResetToken';
 import { generateToken } from '../utils/user.token';
-import {  CvWriterSignUpDto, EmployerSignUpDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto } from './dto/user.dto';
+import {  CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto, SuspendUserDto } from './dto/user.dto';
 import { EmailVerificationToken } from './schema/emailVerificationToken';
 import { resetPasswordToken, sendVerificationToken } from 'src/utils/mail';
-import { EmployerDto, userDto } from './dto/profile.dto';
+import { CvWriterUpdateDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto } from './dto/profile.dto';
 
 
 @Injectable()
@@ -22,44 +22,6 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // async register(registerDto: SignUpDto) {
-  //   const { email, password, role, name } = registerDto;
-
-  //   // Check if user with email already exists
-  //   const emailExist = await this.userModel.findOne({ email });
-  //   if (emailExist) {
-  //     throw new UnauthorizedException('Email already exists');
-  //   }
-
-
-  //   // Hash password
-  //   const hashedPassword = await bcrypt.hash(password, 10);
-
-  //   const newUser = new this.userModel({
-  //     ...registerDto, // Spread registerDto first
-  //     password: hashedPassword, // Then overwrite the password with the hashed password
-  //   });
-
-    
-  //   if(role === 'jobseeker'){
-  //     newUser.isActive = true
-  //   }
-
-  //   // Save user to database
-  //   await newUser.save();
-
-  //   const token = generateToken()
-
-  //   const hashedToken = await bcrypt.hash(token, 10)
-
-  //   await this.EmailVerificationTokenModel.create({
-  //     userId: newUser._id,
-  //     token: hashedToken,
-  //   })
-  //   sendVerificationToken(email, token, name)
-
-  //   return { message: {id: newUser._id, email: newUser.email, name: newUser.name, role: newUser.role}, token: token };
-  // }
 
   async register(registerDto: JobseekerSignUpDto | EmployerSignUpDto | LinkedinOptimizerSignUpDto | CvWriterSignUpDto) {
     if (registerDto instanceof JobseekerSignUpDto) {
@@ -336,7 +298,8 @@ export class UserService {
       }
     }
 
-    async requestPasswordReset(email: string) {
+    async requestPasswordReset(body: ForgetPasswordDto) {
+      const { email } = body;
       const user = await this.userModel.findOne({ email });
       if (!user) {
         throw new NotFoundException({ message: 'User not found'})
@@ -399,7 +362,7 @@ export class UserService {
     return { message: 'Password reset successfully' };
   }
 
-  async updateUserProfile(userProfileDto: userDto, userId: string) {
+  private async updateUserProfileHelper(userProfileDto: any, userId: string) {
     try {
         const userProfile = await this.userModel.findByIdAndUpdate(userId, userProfileDto, { new: true });
         if (!userProfile) {
@@ -411,12 +374,56 @@ export class UserService {
     }
 }
 
+async updateUserProfile(userProfileDto: JobseekerUpdateDto, userId: string) {
+    return this.updateUserProfileHelper(userProfileDto, userId);
+}
 
-  async updateEmployerProfile(updateProfileDto: EmployerDto, userId: string) { 
-    // Logic to update employer profile
-   const updateEmployerProfile = await this.userModel.findByIdAndUpdate(userId, updateProfileDto, { new: true });
-    if(!updateEmployerProfile) throw new NotFoundException('User not found');
-    return updateEmployerProfile
+async updateLinkedinOptimizerProfile(userProfileDto: LinkedinOptimizerUpdateDto, userId: string) {
+    return this.updateUserProfileHelper(userProfileDto, userId);
+}
+
+async updateCvWriterProfile(userProfileDto: CvWriterUpdateDto, userId: string) {
+    return this.updateUserProfileHelper(userProfileDto, userId);
+}
+
+async updateEmployerProfile(updateProfileDto: EmployerUpdateDto, userId: string) {
+    return this.updateUserProfileHelper(updateProfileDto, userId);
+}
+
+
+  async getAllEmployers() {
+    // Find all users with the role 'employer', excluding the password field
+    const employers = await this.userModel.find({ role: 'employer' }).select('-password');
+  
+    // If no employers are found, throw a NotFoundException
+    if (!employers || employers.length === 0) {
+      throw new NotFoundException('No employers found');
+    }
+  
+    // Return the list of employers
+    return employers;
   }
 
+  async getAllUsers() {
+    // Find all users with the role 'employer', excluding the password field
+    const users = await this.userModel.find().select('-password');
+  
+    // If no employers are found, throw a NotFoundException
+    if (!users || users.length === 0) {
+      throw new NotFoundException('No user details found');
     }
+  
+    // Return the list of employers
+    return users;
+  }
+
+  async suspendUser(body: SuspendUserDto){
+    const { userId } = body;
+    const user = await this.userModel.findById(userId)
+    if(!user) throw new NotFoundException('User not found');
+    user.isVerified = false;
+    await user.save();
+    return {message: 'User suspended successfully'}
+  }
+}  
+  

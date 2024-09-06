@@ -7,10 +7,7 @@ export class Product extends Document {
     userId: MongooseSchema.Types.ObjectId;
 
     @Prop({ type: String, required: true })
-    linkdinUrl: string;
-
-    @Prop({ type: [String], required: true })
-    portfolio: string[];
+    timeFrame: string;
 
     @Prop({ type: Number, required: true })
     price: number;

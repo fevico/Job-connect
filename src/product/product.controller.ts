@@ -4,6 +4,7 @@ import { Roles } from 'src/decorator/role.decorator';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Request } from 'express';
+import { ProductDto, UpdateProductDto } from './dto/product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -12,7 +13,7 @@ export class ProductController {
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Post('create')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
-    async createProduct(@Body() body: any, @Req() req: Request) {
+    async createProduct(@Body() body: ProductDto, @Req() req: Request) {
         const userId = req.user.id;
         const role = req.user.role;
          return this.productService.createProduct(body, userId, role );
@@ -21,7 +22,7 @@ export class ProductController {
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Patch('update/:id')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
-    async updateProduct(@Body() body: any, @Req() req: Request, @Param('id') id: string) {
+    async updateProduct(@Body() body: UpdateProductDto, @Req() req: Request, @Param('id') id: string) {
         const userId = req.user.id;
         const role = req.user.role;
         return this.productService.updateProduct(body, userId, role, id);

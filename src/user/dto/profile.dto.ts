@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class userDto{
     @IsOptional()
@@ -75,3 +75,110 @@ export class EmployerDto{
     @IsString()
     location?: string;
 }
+
+export class JobseekerUpdateDto {
+  
+    @IsOptional()
+    @IsString()
+    name?: string;
+  
+    @IsOptional()
+    @IsString()
+    phone?: string;
+  
+    @IsOptional()
+    @IsNumber()
+    yearsOfExperience?: number;
+  
+    @IsOptional()
+    @IsString()
+    Cv?: string;
+  
+    @IsOptional()
+    @IsString()
+    location?: string;
+  
+    @IsOptional()
+    @IsString()
+    qualification?: string;
+  
+    @IsOptional()
+    @IsString()
+    gender?: string;
+  } 
+
+  export class EmployerUpdateDto {  
+  
+    @IsOptional()
+    @IsString()
+    companyName?: string;
+  
+    @IsOptional()
+    @IsString()
+    name?: string;
+  
+    @IsOptional()
+    @IsString()
+    companyAddress?: string;
+  
+    @IsOptional()
+    @IsString()
+    phone?: string;
+  
+    @IsOptional()
+    @IsString()
+    location?: string;
+  
+    @IsOptional()
+    @IsString()
+    gender?: string;
+  } 
+  
+  
+  export class LinkedinOptimizerUpdateDto{
+    @IsNotEmpty()
+    @IsString()
+    linkedinProfile: string;
+  
+    @IsNotEmpty()
+    @IsString()
+    linkedinOptimization: string;
+  
+    @IsOptional()
+    @IsString()
+    name?: string;
+  
+    @IsOptional()
+    @IsString()
+    phone?: string;
+  
+    @IsOptional()
+    @IsString()
+    avatar?: string;
+  }
+
+  export class CvWriterUpdateDto {
+    @IsOptional()
+    @IsString()
+    professionalInformation?: string;
+  
+    @IsOptional()
+    @IsString()
+    workAvailability?: string;
+  
+    @IsOptional()
+    @IsString()
+    name?: string;
+  
+    @IsOptional()
+    @IsString()
+    phone?: string;
+  
+    @IsOptional()
+    @IsString()
+    avatar?: string;
+  
+    @IsOptional()
+    @IsString()
+    location?: string;
+  }

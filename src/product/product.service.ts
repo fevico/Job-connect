@@ -1,31 +1,34 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schema/product.schema';
 import { Model } from 'mongoose';
+import { ProductDto, UpdateProductDto } from './dto/product.dto';
+import { User } from 'src/user/schema/user.schema';
 
 @Injectable()
 export class ProductService {
     constructor(
         @InjectModel(Product.name) private poductModel: Model<Product>, 
+        @InjectModel(User.name) private userModel: Model<User>, 
     ){}
 
-    async createProduct(body: any, userId, role: string){
-        const {title, description, portfolio, price, images, linkdinUrl} = body;
+    async createProduct(body: ProductDto, userId: string, role: string){
+        const {title, description, price, images} = body;
+        const user = await this.userModel.findById(userId)
+        if(!user) throw new NotFoundException('User not found!');
         const product = new this.poductModel({
             title,
             description,
-            portfolio,
             price,
             images,
-            linkdinUrl,
             userId,
         })
         product.type = role;
         return await product.save();
     }
 
-    async updateProduct(body, userId, role, id){
-        const {title, description, portfolio, price, images, linkdinUrl} = body;
+    async updateProduct(body: UpdateProductDto, userId: string, role: string, id: string){
+        const {title, description, timeFrame, price, images} = body;
         const findUser = await this.poductModel.findOne({userId, _id: id, type: role});
         if(!findUser) throw new UnauthorizedException('You cannot update this product!');
         const product = await this.poductModel.findByIdAndUpdate(id, {...body});
