@@ -12,7 +12,7 @@ export class UserController {
     constructor(private userService: UserService){}
 
     @Post('register')
-    async register(@Body() body: SignUpDto) {
+    async register(@Body() body: any) {
       const { role } = body;
   
       if (!role) {
