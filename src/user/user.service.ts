@@ -35,6 +35,7 @@ export class UserService {
     }
     throw new BadRequestException('Invalid registration details');
   }
+
   async registerJobseeker(dto: JobseekerSignUpDto) {
     const { email, password, role, name, qualification } = dto;
     console.log(dto)
@@ -429,22 +430,30 @@ async updateEmployerProfile(updateProfileDto: EmployerUpdateDto, userId: string)
     return users;
   }
 
-  async suspendUser(body: SuspendUserDto){
+  async suspendUser(body: SuspendUserDto) {
     const { userId } = body;
-    const user = await this.userModel.findById(userId)
-    if(!user) throw new NotFoundException('User not found');
-    user.suspend = true;
-    await user.save();
-    return {message: 'User suspended successfully'}
-  }
+    
+    // Find the user by ID
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    // Toggle the suspend status
+    if (user.suspend) {
+      // If user is already suspended, you might want to resume them or handle accordingly
+      user.suspend = false;
+      await user.save();
+      return { message: 'User has been resumed successfully' };
+    } else {
+      // Suspend the user
+      user.suspend = true;
+      await user.save();
+      return { message: 'User suspended successfully' };
+    }
 
-  async unSuspendUser(body: SuspendUserDto){
-    const {userId} = body;
-    const user = await this.userModel.findById(userId)
-    if(!user) throw new NotFoundException('User not found');
-    user.suspend = false;
-    await user.save();
-    return {message: 'User unsuspended successfully'}
   }
+  
+
 }  
   
