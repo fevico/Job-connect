@@ -97,9 +97,9 @@ export class User {
     resume: string;
     portfolio: string[];
     yearsOfExperience: string;
-    Specializations: string;
-    Certifications: string;
-    Education: string;
+    specializations: string;
+    bio: string;
+    education: string;
   };
 
   @Prop({
