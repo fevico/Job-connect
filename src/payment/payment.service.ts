@@ -109,6 +109,7 @@ export class PaymentService {
               totalPrice: totalPrice, // Save the full total price here
               userId: metadata.userId,
               productId: metadata.productId,
+              vendorId: metadata.vendorId,
             };
   
             // Save the payment details
@@ -116,7 +117,7 @@ export class PaymentService {
   
             // Create or update the wallet balance with the 80% amount
             let wallet = await this.walletModel.findOne({
-              owner: metadata.userId,
+              owner: metadata.vendorId,
             });
             if (wallet) {
               wallet.balance += eightyPercent;
