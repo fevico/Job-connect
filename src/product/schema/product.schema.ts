@@ -5,9 +5,8 @@ import { Schema as MongooseSchema, Types, Document } from "mongoose";
 export class Product extends Document {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", required: true })
     userId: MongooseSchema.Types.ObjectId;
-
-    @Prop({ type: String, required: true })
-    timeFrame: string;
+    // @Prop({ type: String })
+    // timeFrame?: string;
 
     @Prop({ type: Number, required: true })
     price: number;

@@ -29,7 +29,7 @@ export class ProductService {
     }
 
     async updateProduct(body: UpdateProductDto, userId: string, role: string, id: string){
-        const {title, description, timeFrame, price, images} = body;
+        const {title, description, price, images} = body;
         const findUser = await this.productModel.findOne({userId, _id: id, type: role});
         if(!findUser) throw new UnauthorizedException('You cannot update this product!');
         const product = await this.productModel.findByIdAndUpdate(id, {...body});

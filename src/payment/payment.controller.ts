@@ -12,6 +12,7 @@ export class PaymentController {
         // const userId = req.user.id
         return this.paymentService.createPaymentIntent(body, res);
     }
+    
 
     @Get('verify-payment/:reference')
     verifyPayment(
