@@ -25,9 +25,8 @@ export class PaymentController {
       return this.paymentService.verifyPayment(reference, res);
     }
 
-    @Roles(['cvwriter', 'linkdinOptimizer'])
     @Get('get-successful-orders:/productId')
-    @UseGuards(AuthenitcationGuard, AuthenitcationGuard)
+    @UseGuards(AuthenitcationGuard)
     getSuccessfulOrders(@Param('productId') productId: string, @Req() req: Request, @Res() res: Response){
       const userId = req.user.id
         return this.paymentService.getSuccessfulOrders(userId, productId);

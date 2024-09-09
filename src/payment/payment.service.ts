@@ -173,38 +173,26 @@ export class PaymentService {
   
     reqPaystack.end();
   }
-
   async getSuccessfulOrders(userId: string, productId: string) {
-    // Find all products associated with the user
-    const products = await this.productModel.find({ userId });
-    if (!products || products.length === 0) {
-        throw new NotFoundException('No products found for this user!');
-    }
-
-    // Extract product IDs from the found products
-    const product = await this.productModel.findById(productId);
+    // Find the specific product by productId and userId
+    const product = await this.productModel.findOne({ _id: productId, userId });
     if (!product) {
-      throw new NotFoundException('Product not found!');
+        throw new NotFoundException('Product not found or does not belong to the user!');
     }
 
+    // Find successful orders for this specific product
     const successfulOrders = await this.paymentModel.find({
-      productId: product._id,
-      status: 'successful', // Assuming 'successful' is the status for a completed order
-    })
-    // const productIds = products.map(product => product._id);
+        productId: product._id,
+        status: 'successful', // Assuming 'successful' is the status for a completed order
+    });
 
-    // // Find successful orders for these products
-    // const successfulOrders = await this.paymentModel.find({
-    //     productId: { $in: productIds },
-    //     status: 'successful', // Assuming 'successful' is the status for a completed order
-    // });
-
-    // if (!successfulOrders || successfulOrders.length === 0) {
-    //     throw new NotFoundException('No successful orders found for this user!');
-    // }
+    if (!successfulOrders || successfulOrders.length === 0) {
+        throw new NotFoundException('No successful orders found for this product!');
+    }
 
     return successfulOrders;
 }
+
 
 
 async getUserOrders(userId: string) {
