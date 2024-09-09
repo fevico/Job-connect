@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, IsArray, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, IsArray, IsOptional, IsEmail } from "class-validator";
 
 export class ProductDto {
     @IsNotEmpty()
@@ -43,4 +43,14 @@ export class UpdateProductDto{
     @IsArray()  // Ensure that the field is an array
     @IsString({ each: true })  // Ensure that each item in the array is a string
     images?: string[];
+}
+
+export class UploadCvDetails{
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty()
+    @IsString()
+    cv: string;
 }

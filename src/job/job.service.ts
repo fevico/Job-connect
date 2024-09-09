@@ -156,15 +156,15 @@ export class JobService {
 
 
     async hireApplicant(body: any, userId: string, jobId: string) {
-        const { id, applicantId } = body;
-        
-
+        const { id, applicantId, referredEmail } = body;
+    
 
         // Check if the job exists and is owned by the user
         const jobExist = await this.jobModel.findOne({ _id: jobId, userId });
         if (!jobExist) throw new NotFoundException("Job not found or you do not own this job!");
 
         if (jobExist.status === "closed") throw new BadRequestException("Job has been closed!")
+
 
         // Check if the application exists for the given job and applicant
         const application = await this.appliedJobModel.findOne({ _id: id, userId: applicantId, jobId });
@@ -184,6 +184,16 @@ export class JobService {
         }
 
         await jobExist.save();
+
+        const referral = await this.referalModel.findOne({referredEmail });
+
+        if(referral){
+            const giveReferral = await this.userModel.findById(referral.userId)
+            if(giveReferral){
+                giveReferral.referalBalance += jobExist.referalAmount;
+                await giveReferral.save()
+            }
+        }
 
         hireApplicantMail(user.email, user.name, jobExist.title, jobExist.companyName);
 

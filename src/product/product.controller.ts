@@ -4,7 +4,7 @@ import { Roles } from 'src/decorator/role.decorator';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Request } from 'express';
-import { ProductDto, UpdateProductDto } from './dto/product.dto';
+import { ProductDto, UpdateProductDto, UploadCvDetails } from './dto/product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -54,5 +54,12 @@ export class ProductController {
         const userId = req.user.id;
         const role = req.user.role;
         return this.productService.geUserProduct(userId, role,);
+    }
+
+    @Roles(['cvwriter'])
+    @Post('upload-cv')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    async uploadCV(@Body() body: UploadCvDetails, @Req() req: Request) {
+         return this.productService.uploadCV(body);
     }
 }
