@@ -4,6 +4,7 @@ import { Product } from './schema/product.schema';
 import { Model } from 'mongoose';
 import { ProductDto, UpdateProductDto, UploadCvDetails } from './dto/product.dto';
 import { User } from 'src/user/schema/user.schema';
+import { sendCvDetails } from 'src/utils/mail';
 
 @Injectable()
 export class ProductService {
@@ -63,5 +64,10 @@ export class ProductService {
     }
 
     async uploadCV(body: UploadCvDetails){
+        const {email, cv} = body 
+        const user = await this.userModel.findOne({email});
+        if(!user) throw new NotFoundException('User not found!');
+        sendCvDetails(email, user.name, cv);
+        return {message: "CV details uploaded successfully!"}
     }
 }
