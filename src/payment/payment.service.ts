@@ -24,7 +24,7 @@ export class PaymentService {
       email,
       amount,
       metadata,
-      callback_url: 'https://ekomas-react-new.vercel.app/',
+      callback_url: 'http://localhost:5173/',
       // metadata,
     });
 

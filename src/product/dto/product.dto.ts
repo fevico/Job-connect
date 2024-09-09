@@ -13,9 +13,9 @@ export class ProductDto {
     @IsString()
     description: string;
 
-    @IsNotEmpty()
-    @IsString()
-    timeFrame: string;
+    // @IsNotEmpty()
+    // @IsString()
+    // timeFrame: string;
 
     @IsNotEmpty()
     @IsArray()  // Ensure that the field is an array
@@ -35,9 +35,9 @@ export class UpdateProductDto{
     @IsString()
     description?: string;
 
-    @IsOptional()
-    @IsString()
-    timeFrame?: string;
+    // @IsOptional()
+    // @IsString()
+    // timeFrame?: string;
 
     @IsOptional()
     @IsArray()  // Ensure that the field is an array
