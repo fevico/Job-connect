@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { Response, Request } from 'express';
+import { AuthenitcationGuard } from 'src/guards/auth.guard';
 
 
 @Controller('wallet')
@@ -34,6 +35,18 @@ export class WalletController {
         res.json(transferStatus);
       } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error transferring funds" });
+      }
+    }
+
+    @Get('get-balance')
+    @UseGuards(AuthenitcationGuard)
+    async getBalance(@Res() res: Response, @Req() req: Request) {
+      const userId = req.user.id; // Assuming the user ID is stored in the request object
+      try {
+        const balance = await this.walletService.getBalance(userId);
+        res.json(balance);
+      } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error fetching balance" });
       }
     }
 }

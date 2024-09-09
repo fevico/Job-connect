@@ -1,9 +1,16 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import { HttpStatus } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Wallet } from './shema/wallet.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class WalletService {
+  constructor(
+    @InjectModel(Wallet.name) private walletModel: Model<Wallet>,
+
+  ){}
     
     async getBankList() {
         const options = {
@@ -76,5 +83,13 @@ export class WalletService {
           console.error('Error fetching bank list:', error);
           throw new HttpException('Error fetching bank list', HttpStatus.INTERNAL_SERVER_ERROR); 
         }
+      }
+
+      async getBalance(userId: string) {
+        const walletBalance = await this.walletModel.findOne({ owner: userId });
+        if (!walletBalance) {
+          throw new UnauthorizedException("No wallet found for the user");
+        }
+        return walletBalance.balance;
       }
 }
