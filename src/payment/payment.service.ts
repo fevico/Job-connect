@@ -172,6 +172,52 @@ export class PaymentService {
   
     reqPaystack.end();
   }
+
+  async getSuccessfulOrders(userId: string) {
+    // Find all products associated with the user
+    const products = await this.productModel.find({ userId });
+    if (!products || products.length === 0) {
+        throw new NotFoundException('No products found for this user!');
+    }
+
+    // Extract product IDs from the found products
+    const productIds = products.map(product => product._id);
+
+    // Find successful orders for these products
+    const successfulOrders = await this.paymentModel.find({
+        productId: { $in: productIds },
+        status: 'successful', // Assuming 'successful' is the status for a completed order
+    });
+
+    if (!successfulOrders || successfulOrders.length === 0) {
+        throw new NotFoundException('No successful orders found for this user!');
+    }
+
+    return successfulOrders;
+}
+
+
+async getUserOrders(userId: string) {
+  const user = await this.userModel.findById(userId);
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  const orders = await this.paymentModel.find({ userId }).populate('productId');
+  if (!orders || orders.length === 0) {
+    throw new NotFoundException('No orders found for this user');
+  }
+
+  return orders;
+}
   
+async getAllOrders(){
+  const orders = await this.paymentModel.find().populate('productId');
+  if (!orders || orders.length === 0) {
+    throw new NotFoundException('No orders found');
+  }
+
+  return orders;
+}
   
   }

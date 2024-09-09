@@ -57,7 +57,7 @@ export class ProductService {
         return true
     }
 
-    async geUserProduct(userId, role){
+    async geUserProduct(userId: string, role: string){
         const products = await this.productModel.find({userId, type: role});
         if(!products) throw new UnauthorizedException('No product found!');
         return products;

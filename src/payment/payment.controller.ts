@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs
 import { PaymentService } from './payment.service';
 import { Request } from 'express';
 import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/decorator/role.decorator';
+import { AuthorizationGuard } from 'src/guards/authorization.guard';
 
 @Controller('payment')
 export class PaymentController {
@@ -20,5 +22,27 @@ export class PaymentController {
       @Res() res: Response,
     ) {
       return this.paymentService.verifyPayment(reference, res);
+    }
+
+    @Roles(['cvwriter', 'linkdinOptimizer'])
+    @Get('get-successful-orders')
+    @UseGuards(AuthenitcationGuard, AuthenitcationGuard)
+    getSuccessfulOrders(@Req() req: Request, @Res() res: Response){
+      const userId = req.user.id
+        return this.paymentService.getSuccessfulOrders(userId);
+    }
+
+    @Get('user-orders')
+    @UseGuards(AuthenitcationGuard)
+    getUserOrders(@Req() req: Request, @Res() res: Response){
+        const userId = req.user.id
+        return this.paymentService.getUserOrders(userId);
+    }
+
+    @Roles(['admin'])
+    @Get('all-orders')
+    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    getAllOrders(@Res() res: Response){
+        return this.paymentService.getAllOrders();
     }
 }
