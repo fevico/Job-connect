@@ -87,7 +87,8 @@ export class PaymentService {
           // Log the entire response from Paystack for debugging
   
           if (
-            responseData.status === true
+            responseData.status === true && responseData.data.status === "success"
+
             // responseData.data.status === 'success'
           ) {
             const { customer, id, reference, status, currency, metadata } =
@@ -173,7 +174,7 @@ export class PaymentService {
     reqPaystack.end();
   }
 
-  async getSuccessfulOrders(userId: string) {
+  async getSuccessfulOrders(userId: string, productId: string) {
     // Find all products associated with the user
     const products = await this.productModel.find({ userId });
     if (!products || products.length === 0) {
@@ -181,17 +182,26 @@ export class PaymentService {
     }
 
     // Extract product IDs from the found products
-    const productIds = products.map(product => product._id);
-
-    // Find successful orders for these products
-    const successfulOrders = await this.paymentModel.find({
-        productId: { $in: productIds },
-        status: 'successful', // Assuming 'successful' is the status for a completed order
-    });
-
-    if (!successfulOrders || successfulOrders.length === 0) {
-        throw new NotFoundException('No successful orders found for this user!');
+    const product = await this.productModel.findById(productId);
+    if (!product) {
+      throw new NotFoundException('Product not found!');
     }
+
+    const successfulOrders = await this.paymentModel.find({
+      productId: product._id,
+      status: 'successful', // Assuming 'successful' is the status for a completed order
+    })
+    // const productIds = products.map(product => product._id);
+
+    // // Find successful orders for these products
+    // const successfulOrders = await this.paymentModel.find({
+    //     productId: { $in: productIds },
+    //     status: 'successful', // Assuming 'successful' is the status for a completed order
+    // });
+
+    // if (!successfulOrders || successfulOrders.length === 0) {
+    //     throw new NotFoundException('No successful orders found for this user!');
+    // }
 
     return successfulOrders;
 }
