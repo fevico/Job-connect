@@ -179,11 +179,12 @@ export class PaymentService {
     if (!product) {
         throw new NotFoundException('Product not found or does not belong to the user!');
     }
+    console.log(product)
 
     // Find successful orders for this specific product
     const successfulOrders = await this.paymentModel.find({
         productId: product._id,
-        status: 'successful', // Assuming 'successful' is the status for a completed order
+        // status: 'successful', // Assuming 'successful' is the status for a completed order
     });
 
     if (!successfulOrders || successfulOrders.length === 0) {
