@@ -24,7 +24,7 @@ export class PaymentService {
       email,
       amount,
       metadata,
-      callback_url: 'http://localhost:5173/',
+      callback_url: 'https://jobkonnecta.com/',
       // metadata,
     });
 
