@@ -3,31 +3,34 @@ import { Schema as MongooseSchema, Types, Document } from "mongoose";
 
 @Schema()
 export class Payment extends Document {
-    @Prop({type: String})
+    @Prop({ type: String })
     email: string;
 
-    @Prop({type: String})
+    @Prop({ type: String })
     name: string;
 
-    @Prop({type: String})
+    @Prop({ type: String })
     transactionId: string;
 
-    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
     userId: MongooseSchema.Types.ObjectId;
 
-    @Prop({type: String})
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+    vendorId: MongooseSchema.Types.ObjectId;
+
+    @Prop({ type: String })
     referenceId: string;
 
-    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Product' })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Product' })
     productId: MongooseSchema.Types.ObjectId;
 
-    @Prop({type: Number})
+    @Prop({ type: Number })
     totalAmount: number;
 
-    @Prop({type: String})
+    @Prop({ type: String })
     status: string;
 
-    @Prop({type: String})
+    @Prop({ type: String })
     currency: string;
 }
 
