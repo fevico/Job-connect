@@ -124,7 +124,7 @@ export class PaymentService {
               await wallet.save();
             } else {
               wallet = await this.walletModel.create({
-                owner: metadata.userId,
+                owner: metadata.vendorId,
                 balance: eightyPercent,
               });
             }
@@ -136,16 +136,16 @@ export class PaymentService {
             //   adminBalance.balance += twentyPercent;
             //   await adminBalance.save();
             // }
-            const product = await this.productModel.findById(metadata.productId).populate('userId');
-            if(!product) throw new NotFoundException('Product not found')
+            const vendor = await this.userModel.findById(metadata.vendorId).populate('userId');
+            if(!vendor) throw new NotFoundException('Product not found')
               const user = await this.userModel.findById(metadata.userId);
             if(!user) throw new NotFoundException('User not found')
 
-              const users = product.userId as any;
+              const users = vendor._id as any;
 
 
-            successfulPayment(responseData.data.customer.email, product.type, totalPrice, user.name);
-            newOrder(users.email, product.type, users.name)
+            successfulPayment(responseData.data.customer.email, vendor.role, totalPrice, user.name);
+            newOrder(users.email, vendor.role, users.name)
             return res.json({
               status: true,
               message: 'Payment verified successfully',
@@ -174,6 +174,7 @@ export class PaymentService {
   
     reqPaystack.end();
   }
+
   async getSuccessfulOrders(userId: string, productId: string) {
     // Find the specific product by productId and userId
     const product = await this.productModel.findOne({ _id: productId, userId });

@@ -5,8 +5,6 @@ import { Schema as MongooseSchema, Types, Document } from "mongoose";
 export class Product extends Document {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: "User", required: true })
     userId: MongooseSchema.Types.ObjectId;
-    // @Prop({ type: String })
-    // timeFrame?: string;
 
     @Prop({ type: Number, required: true })
     price: number;
@@ -18,10 +16,23 @@ export class Product extends Document {
     description: string;
 
     @Prop({ type: String })
-    type?: string; // Indicate that this field is optional in TypeScript
+    type?: string; // Optional type field
 
     @Prop({ type: [String], required: true })
     images: string[]; // Expecting multiple image URLs
+
+    // New field to store individual ratings
+    
+    @Prop([{ 
+        userId: { type: MongooseSchema.Types.ObjectId, ref: "User" }, 
+        rating: { type: Number, min: 1, max: 5 } 
+    }])
+    ratings: { userId: Types.ObjectId, rating: number }[];
+    
+
+    // Field to store average rating
+    @Prop({ type: Number, default: 0 })
+    averageRating: number;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
