@@ -1,4 +1,4 @@
-import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import axios from 'axios';
 import { HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
