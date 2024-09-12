@@ -24,7 +24,7 @@ export class PaymentService {
       email,
       amount,
       metadata,
-      callback_url: 'http://localhost:5173/',
+      callback_url: 'https://jobkonnecta.com/',
       // metadata,
     });
 
@@ -147,8 +147,8 @@ export class PaymentService {
             const users = product.userId as any;
 
 
-            successfulPayment(responseData.data.customer.email, product.type, totalPrice, user.name);
-            newOrder(users.email, product.type, users.name)
+            successfulPayment(responseData.data.customer.email, vendor.role, totalPrice, user.name);
+            newOrder(users.email, vendor.role, users.name)
             return res.json({
               status: true,
               message: 'Payment verified successfully',
@@ -177,6 +177,7 @@ export class PaymentService {
 
     reqPaystack.end();
   }
+
   async getSuccessfulOrders(userId: string, productId: string) {
     // Find the specific product by productId and userId
     const product = await this.productModel.findOne({ _id: productId, userId });

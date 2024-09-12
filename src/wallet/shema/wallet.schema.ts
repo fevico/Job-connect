@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Schema as MongooseSchema, Types, Document } from "mongoose";
 
-@Schema()
+@Schema({ timestamps: true })
 export class Wallet extends Document {
     @Prop({
-        type: Number, 
-        default: 0, 
+        type: Number,
+        default: 0,
         validate: {
             validator: (value: number) => !isNaN(value), // Ensure the value is not NaN
             message: 'Balance must be a valid number'
