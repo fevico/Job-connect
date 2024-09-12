@@ -17,6 +17,7 @@ export class WalletController {
         res.status(error.status || 500).json({ message: error.message || "Error fetching bank list" });
       }
     }
+    
 
     @Get('get-account-name')
     async getAccountName(@Res() res: Response, @Req() req: Request) {
