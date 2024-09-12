@@ -87,7 +87,7 @@ export class PaymentService {
           // Log the entire response from Paystack for debugging
   
           if (
-            responseData.status === true && responseData.data.status === "success"
+            responseData.status === true
 
             // responseData.data.status === 'success'
           ) {
@@ -109,7 +109,6 @@ export class PaymentService {
               totalPrice: totalPrice, // Save the full total price here
               userId: metadata.userId,
               productId: metadata.productId,
-              vendorId: metadata.vendorId,
             };
   
             // Save the payment details
@@ -136,16 +135,17 @@ export class PaymentService {
             //   adminBalance.balance += twentyPercent;
             //   await adminBalance.save();
             // }
-            const vendor = await this.userModel.findById(metadata.vendorId).populate('userId');
-            if(!vendor) throw new NotFoundException('Product not found')
+            const product = await this.productModel.findById(metadata.productId).populate('userId');
+            if(!product) throw new NotFoundException('Product not found')
+
               const user = await this.userModel.findById(metadata.userId);
             if(!user) throw new NotFoundException('User not found')
 
-              const users = vendor._id as any;
+              const users = product.userId as any;
 
 
-            successfulPayment(responseData.data.customer.email, vendor.role, totalPrice, user.name);
-            newOrder(users.email, vendor.role, users.name)
+            successfulPayment(responseData.data.customer.email, product.type, totalPrice, user.name);
+            newOrder(users.email, product.type, users.name)
             return res.json({
               status: true,
               message: 'Payment verified successfully',
