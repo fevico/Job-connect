@@ -109,6 +109,14 @@ export class PaymentService {
               totalPrice: totalPrice, // Save the full total price here
               userId: metadata.userId,
               productId: metadata.productId,
+              workExperience: metadata.workExperience,
+              professionalSummary: metadata.professionalSummary,
+              education: metadata.education,
+              skills: metadata.skills,
+              packageTitle: metadata.packageTitle,
+              packageDescription: metadata.packageDescription,
+              packagePrice: metadata.packagePrice,
+              vendorId: metadata.vendorId,
             };
   
             // Save the payment details
