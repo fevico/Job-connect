@@ -38,4 +38,17 @@ export class SubscriptionService {
       subscription.status = 'inactive';
       return subscription.save();
     }
+
+    // async purchaseSubscription(body: string, userId: string){
+    //   const {subcriptionId} = body
+    //   const subscription = await this.subscriptionModel.findById(subcriptionId)
+    //   if(subscription){
+    //     const subscription = await this.subscriptionModel.findOne({userId: userId})
+    //     if(subscription){
+    //       await this.renewSubscription(subscription)
+    //     }else{
+    //       await this.createSubscription({userId: userId, subcriptionId: subcriptionId})
+    //     }
+    //   }
+    // }
 }

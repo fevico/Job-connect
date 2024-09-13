@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Schema as MongooseSchema, Types, Document } from "mongoose";
 
-@Schema()
+
+@Schema({timestamps: true})
 export class User {
   @Prop({type: String, required: true})
   name: string;
@@ -21,7 +23,7 @@ export class User {
   gender: string;
 
   @Prop({type: String})
-  nationlity: string;
+  nationality: string;
 
   @Prop({type: String})
   location: string;
@@ -49,6 +51,10 @@ export class User {
 
   @Prop({type: Boolean, default: false})
   isActive: boolean
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Subscription", required: false })
+  subscriptionId?: string; // This is applicable only to 'employer'
+
 
   @Prop({type: String})
   avatar: string

@@ -24,7 +24,7 @@ export class Subscription {
   status: string;
 
   @Prop({ type: Date, default: Date.now })
-  createddAt: Date;
+  createdAt: Date;
 
   @Prop({ required: true, default: false })
   autoRenew: boolean;
