@@ -18,20 +18,36 @@ export class Payment extends Document {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
     vendorId: MongooseSchema.Types.ObjectId;
 
-    @Prop({ type: String })
+    @Prop({ type: String, required: true})
     referenceId: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Product' })
     productId: MongooseSchema.Types.ObjectId;
 
-    @Prop({ type: Number })
-    totalAmount: number;
+    @Prop({ type: Number, required: true })
+    packagePrice: number;
 
-    @Prop({ type: String })
+    @Prop({ type: String, required: true })
     status: string;
+
+    @Prop({ type: String, required: true })
+    workExperience: string;
+
+    @Prop({ type: String, required: true})
+    professionalSummary: string;
+
+    @Prop({ type: String, required: true })
+    education: string;
+
+    @Prop({ type: String, required: true })
+    skills: string;
+
+    @Prop({ type: String, required: true })
+    packageTitle: string;
 
     @Prop({ type: String })
     currency: string;
 }
+
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);
