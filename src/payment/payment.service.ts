@@ -93,6 +93,7 @@ export class PaymentService {
           ) {
             const { customer, id, reference, status, currency, metadata, paidAt } =
               responseData.data;
+              // console.log(responseData)
             const totalPrice = parseFloat(metadata.packagePrice);
             const eightyPercent = totalPrice * 0.8;
             const twentyPercent = totalPrice * 0.2;
@@ -103,7 +104,7 @@ export class PaymentService {
               email: customer.email,
               status,
               currency,
-              name: metadata.customerName,
+              name: metadata.fullName,
               transactionId: id,
               phone: metadata.phone,
               userId: metadata.userId,
@@ -192,24 +193,25 @@ export class PaymentService {
     if (!product) {
       throw new NotFoundException('Product not found or does not belong to the user!');
     }
-  
+
     // Find successful orders for this specific product
     const successfulOrders = await this.paymentModel.find({
       productId: product._id,
       status: 'success', // Assuming 'success' is the status for a completed order
     });
-  
+
     if (!successfulOrders || successfulOrders.length === 0) {
       throw new NotFoundException('No successful orders found for this product!');
     }
-  
+
     // Log successful orders (already working)
-    console.log(successfulOrders);
+    // console.log(successfulOrders);
   
+
     // Return the successful orders
     return successfulOrders;
   }
-  
+
 
 
 

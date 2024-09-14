@@ -90,7 +90,6 @@ export class ProductService {
             // Add a new rating
             product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
         }
-
         // Recalculate the average rating
         const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
         product.averageRating = totalRatings / product.ratings.length;
