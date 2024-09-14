@@ -91,7 +91,7 @@ export class PaymentService {
 
             // responseData.data.status === 'success'
           ) {
-            const { customer, id, reference, status, currency, metadata } =
+            const { customer, id, reference, status, currency, metadata, paidAt } =
               responseData.data;
             const totalPrice = parseFloat(metadata.packagePrice);
             const eightyPercent = totalPrice * 0.8;
@@ -112,10 +112,12 @@ export class PaymentService {
               professionalSummary: metadata.professionalSummary,
               education: metadata.education,
               skills: metadata.skills,
-              packageTitle: metadata.packageTitle,
+              packageTitle: metadata.packageTitle, 
               packagePrice: metadata.packagePrice,
-              vendorId: metadata.vendorId,
+              vendorId: metadata.vendorId, 
+              paidAt,
             };
+            console.log(paymentData)
 
             // Save the payment details
             await this.paymentModel.create(paymentData);

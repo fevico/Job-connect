@@ -15,7 +15,7 @@ export class Payment extends Document {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
     userId: MongooseSchema.Types.ObjectId;
 
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
     vendorId: MongooseSchema.Types.ObjectId;
 
     @Prop({ type: String, required: true})
@@ -39,11 +39,17 @@ export class Payment extends Document {
     @Prop({ type: String, required: true })
     education: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: true }) 
     skills: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, required: true})
     packageTitle: string;
+
+    @Prop({ type: String, enum:['pending', 'completed'], default: 'pending'})
+    serviceStatus: string;
+
+    @Prop({ type: Date })
+    paidAt: Date;
 
     @Prop({ type: String })
     currency: string;
