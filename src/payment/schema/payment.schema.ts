@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Schema as MongooseSchema, Types, Document } from "mongoose";
 
-@Schema()
+@Schema({timestamps: true})
 export class Payment extends Document {
     @Prop({ type: String })
     email: string;

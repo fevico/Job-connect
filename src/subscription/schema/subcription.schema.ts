@@ -5,20 +5,11 @@ export type SubscriptionDocument = Subscription & Document;
 
 @Schema()
 export class Subscription {
-  @Prop({ required: true })
-  userId: string;
-
-  @Prop({ required: true })
-  startDate: Date;
-
-  @Prop({ required: true })
-  endDate: Date;
+  @Prop({type: String, enum:['monthly', 'yearly'], default: "monthly", required: true })
+  plan: string;
 
   @Prop({ type: Number })
   planPrice: number;
-
-  @Prop({ type: Number, default: 0 })
-  planDuration: number;
 
   @Prop({ required: true, enum: ['active', 'inactive', 'cancelled'], default: 'inactive' })
   status: string;

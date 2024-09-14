@@ -52,9 +52,11 @@ export class User {
   @Prop({type: Boolean, default: false})
   isActive: boolean
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Subscription", required: false })
-  subscriptionId?: string; // This is applicable only to 'employer'
+  @Prop({ type: Boolean, default: false })
+  isSubscribed: boolean;
 
+  @Prop({ type: Date })
+  subscriptionEndDate: Date;
 
   @Prop({type: String})
   avatar: string

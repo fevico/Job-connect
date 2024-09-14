@@ -214,4 +214,17 @@ export class JobService {
         return applications
 
     }
+
+    async canPerformTask(userId: string): Promise<boolean> {
+        const user = await this.userModel.findById(userId);
+        if (!user) throw new NotFoundException('User not found');
+    
+        const currentDate = new Date();
+        if (!user.isSubscribed || currentDate > user.subscriptionEndDate) {
+            throw new UnauthorizedException('Subscription has expired');
+        }
+    
+        return true; // The user can perform the task
+    }
+    
 }
