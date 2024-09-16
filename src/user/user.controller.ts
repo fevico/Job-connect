@@ -140,7 +140,7 @@ export class UserController {
     return this.userService.suspendUser(body);
   }
 
-  @Post('plan')
+  @Get('plan')
   @UseGuards(AuthenitcationGuard)
   async subscribedPlan(@Req() req: Request) {
     const userId = req.user.id;

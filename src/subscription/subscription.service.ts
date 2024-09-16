@@ -43,8 +43,8 @@ export class SubscriptionService {
       email,
       amount,
       metadata,
-      callback_url: 'https://jobkonnecta.com/',
-      // callback_url: 'http://localhost:5173/',
+      // callback_url: 'https://jobkonnecta.com/subscription',
+      callback_url: 'http://localhost:5173/subscription',
     });
 
     const options = {
@@ -108,7 +108,7 @@ export class SubscriptionService {
           if (responseData.status === true && responseData.data.status === 'success') {
             const { customer, id: transactionId, reference, status, currency, amount,metadata,} = responseData.data;
   
-            const { planName, email, userId } = metadata;
+            const { planName, userId } = metadata;
   
             // Determine subscription duration based on plan type
             let subscriptionEndDate = new Date();
@@ -156,7 +156,7 @@ if (subscriptionExist) {
     paymentStatus: status,
     currency,
     planName,
-    email,
+    email: customer.email,
     paymentDate: new Date(),
     amountPaid: amount,
     companyName: company,
