@@ -139,5 +139,12 @@ export class UserController {
   async suspendUser(@Body() body: SuspendUserDto) {
     return this.userService.suspendUser(body);
   }
+
+  @Post('plan')
+  @UseGuards(AuthenitcationGuard)
+  async subscribedPlan(@Req() req: Request) {
+    const userId = req.user.id;
+    return this.userService.subscribedPlan(userId);
+  }
 }
 

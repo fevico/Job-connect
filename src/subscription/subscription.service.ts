@@ -108,7 +108,7 @@ export class SubscriptionService {
           if (responseData.status === true && responseData.data.status === 'success') {
             const { customer, id: transactionId, reference, status, currency, amount,metadata,} = responseData.data;
   
-            const { subscription, planName, email, userId } = metadata;
+            const { planName, email, userId } = metadata;
   
             // Determine subscription duration based on plan type
             let subscriptionEndDate = new Date();
@@ -156,7 +156,6 @@ if (subscriptionExist) {
     paymentStatus: status,
     currency,
     planName,
-    subscription,
     email,
     paymentDate: new Date(),
     amountPaid: amount,

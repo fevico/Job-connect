@@ -6,6 +6,7 @@ import { User, userSchema } from './schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PasswordResetToken, PasswordResetTokenSchema } from './schema/passwordResetToken';
 import { EmailVerificationToken, EmailVerificationTokenSchema } from './schema/emailVerificationToken';
+import { SubscriptionPayment, SubscriptionPaymentSchema } from 'src/subscription/schema/subscriptionPayment';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { EmailVerificationToken, EmailVerificationTokenSchema } from './schema/e
       { name: User.name, schema: userSchema },
       { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
       { name: EmailVerificationToken.name, schema: EmailVerificationTokenSchema },
+      { name: SubscriptionPayment.name, schema: SubscriptionPaymentSchema },
     ])
   ],
   providers: [UserService],

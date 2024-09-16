@@ -11,9 +11,6 @@ export class SubscriptionPayment {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user: Types.ObjectId; // Reference to the user
 
-  @Prop({ type: Types.ObjectId, ref: 'Subscription', required: true })
-  subscription: Subscription; // Reference to the Plan model
-
   @Prop({ required: true })
   planName: string; // Basic, Standard, Premium
 

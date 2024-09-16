@@ -10,6 +10,7 @@ import { CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignU
 import { EmailVerificationToken } from './schema/emailVerificationToken';
 import { resetPasswordToken, sendVerificationToken } from 'src/utils/mail';
 import { CvWriterUpdateDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto } from './dto/profile.dto';
+import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment';
 
 
 @Injectable()
@@ -18,6 +19,7 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(PasswordResetToken.name) private passwordResetModel: Model<PasswordResetToken>,
     @InjectModel(EmailVerificationToken.name) private EmailVerificationTokenModel: Model<EmailVerificationToken>,
+    @InjectModel(SubscriptionPayment.name) private SubscriptionPaymentModel: Model<SubscriptionPayment>,
 
     private readonly jwtService: JwtService,
   ) { }
@@ -450,6 +452,19 @@ export class UserService {
     return {
       message: user.suspend ? 'User suspended successfully' : 'User has been resumed successfully'
     };
+  }
+
+  async subscribedPlan(userId: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+  }
+
+  if(user.role === 'employer'){
+    const subscription = await this.SubscriptionPaymentModel.findOne({userId});
+    if(!subscription) throw new NotFoundException('No subscription found for this user');
+    return subscription;
+  }
   }
 
 
