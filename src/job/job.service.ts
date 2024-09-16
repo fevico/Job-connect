@@ -6,7 +6,7 @@ import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
-import { hireApplicantMail, shortlistMail } from 'src/utils/mail';
+import { hireApplicantMail, rejectedMail, shortlistMail } from 'src/utils/mail';
 import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment';
 
 
@@ -282,7 +282,7 @@ export class JobService {
         await application.save();
 
         // Send email to the applicant
-        shortlistMail(user.email, user.name, job.title, job.companyName);
+        rejectedMail(user.email, user.name, job.title, job.companyName);
 
         return { message: "Application shortlisted successfully!" };
     }

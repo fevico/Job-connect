@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import  moment from 'moment';
 import { Model } from 'mongoose';
@@ -34,18 +34,6 @@ export class SubscriptionService {
     async findAllActive(): Promise<Subscription[]> {
       return this.subscriptionModel.find({ status: 'active' }).exec();
     }
-  
-    // async renewSubscription(subscription: SubscriptionDocument) {
-    //   subscription.startDate = new Date();
-    //   subscription.endDate = moment(subscription.startDate).add(1, 'month').toDate();
-    //   subscription.status = 'active';
-    //   return subscription.save();
-    // }
-  
-    // async expireSubscription(subscription: SubscriptionDocument) {
-    //   subscription.status = 'inactive';
-    //   return subscription.save();
-    // }
 
     
   async purchaseSubscription(body: any, res: any) {
@@ -120,11 +108,17 @@ export class SubscriptionService {
           if (responseData.status === true && responseData.data.status === 'success') {
             const { customer, id: transactionId, reference, status, currency, amount,metadata,} = responseData.data;
   
-            const { subscription, planName, email, userId, companyName } = metadata;
+            const { subscription, planName, email, userId } = metadata;
   
             // Determine subscription duration based on plan type
             let subscriptionEndDate = new Date();
             const currentDate = new Date();
+
+            const user = await this.userModel.findById(userId);
+            if (!user) {
+              throw new NotFoundException('User not found');
+            }
+            const company = user.companyName;
   
             // Define durations based on the plan type
             switch(planName.toLowerCase()) {
@@ -140,24 +134,40 @@ export class SubscriptionService {
               default:
                 throw new Error('Invalid plan type');
             }
-  
-            const paymentData = new this.subscriptionPaymentModel({
-              user: userId, // Assuming you have the actual user ID
-              transactionId,
-              referenceId: reference,
-              paymentStatus: status,
-              currency,
-              planName, 
-              subscription,
-              email,
-              paymentDate: new Date(),
-              amountPaid: amount / 100, // Assuming Paystack amount is in kobo, so divide by 100
-              companyName,
-              startDate: currentDate, // Start date of the subscription
-              endDate: subscriptionEndDate, // End date based on the plan type
-            });
-  
-            await paymentData.save();
+
+            const subscriptionExist = await this.subscriptionPaymentModel.findOne({ user: userId });
+if (subscriptionExist) {
+  // If subscription is still active, extend the current endDate
+  const now = new Date();
+  if (subscriptionExist.endDate > now) {
+    subscriptionEndDate = new Date(subscriptionExist.endDate.getTime() + (subscriptionEndDate.getTime() - now.getTime()));
+  }
+
+  await this.subscriptionModel.findOneAndUpdate(
+    { user: userId }, 
+    { $set: { status: 'active', endDate: subscriptionEndDate } }
+  );
+} else {
+  // If no existing subscription, create a new one
+  const paymentData = new this.subscriptionPaymentModel({
+    user: userId,
+    transactionId,
+    referenceId: reference,
+    paymentStatus: status,
+    currency,
+    planName,
+    subscription,
+    email,
+    paymentDate: new Date(),
+    amountPaid: amount,
+    companyName: company,
+    startDate: currentDate,
+    endDate: subscriptionEndDate,
+  });
+
+  await paymentData.save();
+}
+
   
             // Send success response to the user
             return res.status(200).json({
