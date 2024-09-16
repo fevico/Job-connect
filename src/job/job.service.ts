@@ -261,7 +261,7 @@ export class JobService {
         await application.save();
 
         // Send email to the applicant
-        shortlistMail(user.email, user.name, job.title, job.companyName);
+        rejectedMail(user.email, user.name, job.title, job.companyName);
 
         return { message: "Application shortlisted successfully!" };
     }
