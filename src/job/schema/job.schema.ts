@@ -37,6 +37,9 @@ export class Job extends Document {
   @Prop({type: String, required: true})
   companyName: string;
 
+  @Prop({type: Boolean, default: false})
+  isFeatured: boolean;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   userId: MongooseSchema.Types.ObjectId;
 
