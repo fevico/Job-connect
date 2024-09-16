@@ -117,7 +117,6 @@ export class PaymentService {
               vendorId: metadata.vendorId, 
               paidAt,
             };
-            console.log(paymentData)
 
             // Save the payment details
             await this.paymentModel.create(paymentData);

@@ -52,12 +52,6 @@ export class User {
   @Prop({type: Boolean, default: false})
   isActive: boolean
 
-  @Prop({ type: Boolean, default: false })
-  isSubscribed: boolean;
-
-  @Prop({ type: Date })
-  subscriptionEndDate: Date;
-
   @Prop({type: String})
   avatar: string
 
@@ -124,7 +118,7 @@ export class User {
   };
 
 
-  @Prop({ required: true, enum: ['admin', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
+  @Prop({ required: true, enum: ['admin', 'jobPoster', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
   role: string;
 
   @Prop({ type: Number, default: 0 })

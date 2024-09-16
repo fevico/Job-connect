@@ -6,7 +6,8 @@ import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
-import { hireApplicantMail } from 'src/utils/mail';
+import { hireApplicantMail, shortlistMail } from 'src/utils/mail';
+import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment';
 
 
 @Injectable()
@@ -15,29 +16,61 @@ export class JobService {
         @InjectModel(Job.name) private jobModel: Model<Job>,
         @InjectModel(User.name) private userModel: Model<User>,
         @InjectModel(AppliedJob.name) private appliedJobModel: Model<AppliedJob>,
-        // @InjectModel(Profile.name) private profileModel: Model<Profile>,  
         @InjectModel(Referal.name) private referalModel: Model<Referal>,
+        @InjectModel(SubscriptionPayment.name) private SubscriptionPaymentModel: Model<SubscriptionPayment>,
     ) { }
+
     async createJob(jobDto: JobDto, userId: string): Promise<Job> {
-
         try {
-            const user = await this.userModel.findById(userId);
-            if (!user) throw new NotFoundException("User not found!");
-            if (user.isVerified === false) throw new UnprocessableEntityException("Your account is not verified, please verify your account before you can create a job!");
-            const createdJob = new this.jobModel({
-                ...jobDto,
-                userId: user._id,  // Assign the userId to the job
-                companyName: user.companyName,
+          const user = await this.userModel.findById(userId);
+          
+          // Check if user exists
+          if (!user) throw new NotFoundException("User not found!");
+      
+          // Check if user is verified
+          if (!user.isVerified) {
+            throw new UnprocessableEntityException("Your account is not verified. Please verify your account before you can create a job!");
+          }
+      
+          // Check if user is neither 'admin' nor 'jobPoster' (requires subscription)
+          if (user.role !== 'admin' && user.role !== 'jobPoster') {
+            const subscription = await this.SubscriptionPaymentModel.findOne({
+              user: userId,
+              status: 'active',
+              endDate: { $gte: new Date() } // Ensure subscription is still active
             });
-            await createdJob.save()
-
-            return createdJob;
-
+      
+            // Check if there is an active subscription
+            if (!subscription) {
+              throw new UnprocessableEntityException('Subscription is not active or has expired.');
+            }
+      
+            // Check if there are any remaining job posts in the subscription
+            if (subscription.remainingJobs <= 0) {
+              throw new UnprocessableEntityException('No remaining job posts in your subscription.');
+            }
+      
+            // Deduct one from remaining jobs
+            subscription.remainingJobs -= 1;
+            await subscription.save();
+          }
+      
+          // Proceed with job creation
+          const createdJob = new this.jobModel({
+            ...jobDto,
+            userId: user._id,  // Assign the userId to the job
+            companyName: user.companyName,
+          });
+      
+          await createdJob.save();
+          return createdJob;
+      
         } catch (error) {
-            console.log(error)
-            throw new BadRequestException(error.message)
+          console.log(error);
+          throw new BadRequestException(error.message || 'Failed to create job');
         }
-    }
+      }
+      
 
 
 
@@ -107,9 +140,6 @@ export class JobService {
 
         return appliedJob;
     }
-
-
-
 
     async getAppliedJobs(userId: string) {
         const appliedJobs = await this.appliedJobModel.find({ userId });
@@ -215,16 +245,111 @@ export class JobService {
 
     }
 
-    async canPerformTask(userId: string): Promise<boolean> {
+    async shortlistJob(applicationId: string, body: any) {
+        const { userId, jobId } = body;
+
+        const job = await this.jobModel.findById(jobId);
+        if (!job) throw new NotFoundException("Job not found!");
+
+        const application = await this.appliedJobModel.findById(applicationId);
+        if (!application) throw new NotFoundException("Application not found for this user!");
+
         const user = await this.userModel.findById(userId);
-        if (!user) throw new NotFoundException('User not found');
-    
-        const currentDate = new Date();
-        if (!user.isSubscribed || currentDate > user.subscriptionEndDate) {
-            throw new UnauthorizedException('Subscription has expired');
-        }
-    
-        return true; // The user can perform the task
+        if (!user) throw new NotFoundException("User not found!");
+
+        application.status = 'shortlisted';
+        await application.save();
+
+        // Send email to the applicant
+        shortlistMail(user.email, user.name, job.title, job.companyName);
+
+        return { message: "Application shortlisted successfully!" };
+    }
+
+    async rejectApplication(applicationId: string, body: any) {
+        const { userId, jobId } = body;
+
+        const job = await this.jobModel.findById(jobId);
+        if (!job) throw new NotFoundException("Job not found!");
+
+        const application = await this.appliedJobModel.findById(applicationId);
+        if (!application) throw new NotFoundException("Application not found for this user!");
+
+        const user = await this.userModel.findById(userId);
+        if (!user) throw new NotFoundException("User not found!");
+
+        application.status = 'rejected';
+        await application.save();
+
+        // Send email to the applicant
+        shortlistMail(user.email, user.name, job.title, job.companyName);
+
+        return { message: "Application shortlisted successfully!" };
     }
     
 }
+
+
+
+// @Injectable()
+// export class JobService {
+//   constructor(
+//     @InjectModel(Job.name) private jobModel: Model<JobDocument>,
+//     @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
+//   ) {}
+
+//   async postJob(userId: string, jobData: any) {
+//     const userSubscription = await this.subscriptionModel.findOne({ user: userId });
+
+//     if (!userSubscription || new Date() > userSubscription.endDate) {
+//       throw new Error('You do not have an active subscription.');
+//     }
+
+//     if (userSubscription.remainingJobs <= 0) {
+//       throw new Error('You have reached your job posting limit for this plan.');
+//     }
+
+//     // Calculate job expiration
+//     const postedAt = new Date();
+//     const expiresAt = new Date();
+//     expiresAt.setDate(postedAt.getDate() + userSubscription.jobVisibilityDays);
+
+//     // Create the job
+//     const newJob = new this.jobModel({
+//       ...jobData,
+//       user: userId,
+//       jobVisibilityDays: userSubscription.jobVisibilityDays,
+//       postedAt,
+//       expiresAt,
+//     });
+
+//     await newJob.save();
+
+//     // Update remaining job count
+//     userSubscription.remainingJobs -= 1;
+//     await userSubscription.save();
+
+//     return newJob;
+//   }
+// }
+
+
+// const subscription = await this.subscriptionPaymentModel.findOne({
+//     user: userId,
+//     status: 'active',
+//     endDate: { $gte: new Date() } // Ensure subscription is still active
+//   });
+  
+//   if (!subscription) {
+//     throw new Error('Subscription is not active or expired.');
+//   }
+  
+//   if (subscription.remainingJobs <= 0) {
+//     throw new Error('No remaining job posts in this subscription.');
+//   }
+  
+//   // Proceed with posting the job
+//   subscription.remainingJobs -= 1;
+//   await subscription.save();
+  
+

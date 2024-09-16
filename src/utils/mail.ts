@@ -186,10 +186,12 @@ client
     template_uuid: "52a51785-9206-46e0-9508-35dc7e25c048",
     template_variables: {
       "name": name,
-      "role": jobTitle,
+      "application": jobTitle,
       "company": companyName,
     }
-  })};
+  })
+};
+
 
 export const sendCvDetails = async (email: string, name: string, cv: string) => {
 
@@ -213,8 +215,60 @@ client
     template_variables: {
       "user_name": name,
       "next_step_link": cv,
-      // "get_started_link": "Test_Get_started_link",
-      // "onboarding_video_link": "Test_Onboarding_video_link"
     }
   }
 )};
+
+export const shortlistMail = async (email: string, name: string, jobTitle: string, companyName: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "8fea5ce2-dbea-4076-ac5f-df9cdf487811",
+    template_variables: {
+      "user_name": name,
+      "application": jobTitle,
+      "company": companyName,
+    }
+  });
+};
+
+export const rejectedMail = async (email: string, name: string, jobTitle: string, companyName: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "87994730-723a-47a7-8e36-a0deb1a10227",
+    template_variables: {
+      "user_name": name,
+      "application": jobTitle,
+      "company": companyName
+    }
+  })
+};

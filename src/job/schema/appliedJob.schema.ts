@@ -21,7 +21,7 @@ export class AppliedJob extends Document {
   @Prop({ type: Date, default: Date.now })
   appliedAt: Date;
 
-  @Prop({ type: String, enum: ['applied', 'reviewed', 'interview', 'hired', 'rejected'], default: 'applied' })
+  @Prop({ type: String, enum: ['applied', 'shortlisted', 'hired', 'rejected'], default: 'applied' })
   status: string; 
 
   @Prop({ type: String })

@@ -42,10 +42,10 @@ export class SubscriptionService {
     //   return subscription.save();
     // }
   
-    async expireSubscription(subscription: SubscriptionDocument) {
-      subscription.status = 'inactive';
-      return subscription.save();
-    }
+    // async expireSubscription(subscription: SubscriptionDocument) {
+    //   subscription.status = 'inactive';
+    //   return subscription.save();
+    // }
 
     
   async purchaseSubscription(body: any, res: any) {
@@ -92,6 +92,8 @@ export class SubscriptionService {
     reqPaystack.write(params);
     reqPaystack.end();
   }
+
+
   async verifySubscriptionPayment(reference: string, res: any) {
     const options = {
       hostname: 'api.paystack.co',
@@ -103,76 +105,67 @@ export class SubscriptionService {
         'Content-Type': 'application/json',
       },
     };
-
+  
     const reqPaystack = https.request(options, (respaystack) => {
       let data = '';
-
+  
       respaystack.on('data', (chunk) => {
         data += chunk;
       });
-
+  
       respaystack.on('end', async () => {
         try {
           const responseData = JSON.parse(data);
-
+  
           if (responseData.status === true && responseData.data.status === 'success') {
-            const {
-              customer,
-              id: transactionId,
-              reference,
-              status,
-              currency,
-              amount,
-              metadata,
-            } = responseData.data;
-
-            const { plan, userId, companyName } = metadata;
-
+            const { customer, id: transactionId, reference, status, currency, amount,metadata,} = responseData.data;
+  
+            const { subscription, planName, email, userId, companyName } = metadata;
+  
             // Determine subscription duration based on plan type
             let subscriptionEndDate = new Date();
             const currentDate = new Date();
-
-            if (plan === 'monthly') {
-              subscriptionEndDate.setMonth(currentDate.getMonth() + 1); // Add 1 month
-            } else if (plan === 'yearly') {
-              subscriptionEndDate.setFullYear(currentDate.getFullYear() + 1); // Add 1 year
-            } else {
-              return res.status(400).json({ status: false, message: 'Invalid subscription plan.' });
+  
+            // Define durations based on the plan type
+            switch(planName.toLowerCase()) {
+              case 'basic':
+                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 14)); // 14 days for Basic plan
+                break;
+              case 'standard':
+                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 30)); // 30 days for Standard plan
+                break;
+              case 'premium':
+                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 45)); // 45 days for Premium plan
+                break;
+              default:
+                throw new Error('Invalid plan type');
             }
-
-            // Update the user's subscription status
-            await this.userModel.updateOne(
-              { email: customer.email },
-              {
-                isSubscribed: true,
-                subscriptionEndDate,
-                currentPlan: plan,
-              }
-            );
-
-            // Save the payment details in the Subscription schema
+  
             const paymentData = new this.subscriptionPaymentModel({
-              userId, // Assuming email is used as user ID here; use actual user ID if available
+              user: userId, // Assuming you have the actual user ID
               transactionId,
               referenceId: reference,
-              status,
+              paymentStatus: status,
               currency,
-              plan, // Monthly or yearly
+              planName, 
+              subscription,
+              email,
               paymentDate: new Date(),
-              amount: amount / 100, // Assuming Paystack amount is in kobo (100 kobo = 1 NGN)
+              amountPaid: amount / 100, // Assuming Paystack amount is in kobo, so divide by 100
               companyName,
-              email: customer.email,
+              startDate: currentDate, // Start date of the subscription
+              endDate: subscriptionEndDate, // End date based on the plan type
             });
-
+  
             await paymentData.save();
-
+  
             // Send success response to the user
             return res.status(200).json({
               status: true,
-              message: `Subscription for ${plan} plan successfully activated.`,
+              message: `Subscription for ${planName} plan successfully activated.`,
               data: {
                 subscriptionEndDate,
-                plan,
+                planName,
               },
             });
           } else {
@@ -188,13 +181,14 @@ export class SubscriptionService {
         }
       });
     });
-
+  
     reqPaystack.on('error', (error) => {
       console.error('Error with Paystack request:', error);
       res.status(500).json({ status: false, message: 'Server error.' });
     });
-
+  
     reqPaystack.end();
   }
+  
 
 }

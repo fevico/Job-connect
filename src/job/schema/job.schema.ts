@@ -41,6 +41,16 @@ export class Job extends Document {
   userId: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: String, enum: ['active', 'closed', 'expired'], default: 'active' })
+
+  @Prop({ required: true })
+  jobVisibilityDays: number; // Number of days the job will be visible based on the user's plan
+
+  @Prop({ default: Date.now })
+  postedAt: Date; // When the job was posted
+
+  @Prop({ required: true })
+  expiresAt: Date; // When the job will expire (based on visibility days)
+
   status: string;
 
   @Prop({ type: String, enum: ['yes', 'no'], default: 'no' })
@@ -51,9 +61,6 @@ export class Job extends Document {
 
   @Prop({ type: String })
   slug: string;
-
-  @Prop({ type: Date, default: Date.now() })
-  postedAt: Date;
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

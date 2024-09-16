@@ -11,7 +11,7 @@ import { Request } from "express";
 export class JobController {
     constructor(private jobService: JobService){}
 
-    @Roles(['admin', 'employer'])
+    @Roles(['admin', 'employer', 'superAdmin'])
     @Post('create')
     @UseGuards(AuthenitcationGuard, AuthorizationGuard)
     async createJob(@Body() jobDto: JobDto, @Req() req: Request) {
@@ -86,5 +86,15 @@ export class JobController {
         const userId = req.userId;
 
         return this.jobService.getApplicationNumber(userId, jobId);
+    }
+
+    @Post('shortlist-application/:id')
+    shortlistJob(@Param('id') id: string, @Body() body: any){
+        return this.jobService.shortlistJob(id, body)
+    }
+
+    @Post('reject-application/:id')
+    rejectApplication(@Param('id') id: string, @Body() body: any){
+        return this.jobService.rejectApplication(id, body)
     }
 }

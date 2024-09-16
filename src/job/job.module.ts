@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User, userSchema } from 'src/user/schema/user.schema';
 import { AppliedJob, AppliedJobSchema } from './schema/appliedJob.schema';
 import { Referal, ReferalSchema } from 'src/referal/schema/referal.schema';
+import { SubscriptionPayment, SubscriptionPaymentSchema } from 'src/subscription/schema/subscriptionPayment';
 
 @Module({
   imports:[
@@ -19,6 +20,7 @@ import { Referal, ReferalSchema } from 'src/referal/schema/referal.schema';
       { name: User.name, schema: userSchema },
       { name: AppliedJob.name, schema: AppliedJobSchema },
       { name: Referal.name, schema: ReferalSchema },
+      { name: SubscriptionPayment.name, schema: SubscriptionPaymentSchema },
     ])
   ],
   controllers: [JobController],
