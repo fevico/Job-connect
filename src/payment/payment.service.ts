@@ -24,8 +24,8 @@ export class PaymentService {
       email,
       amount,
       metadata,
-      // callback_url: 'https://jobkonnecta.com/',
-      callback_url: 'http://localhost:5173/',
+      callback_url: 'https://jobkonnecta.com/',
+      // callback_url: 'http://localhost:5173/',
     });
 
     const options = {
@@ -93,8 +93,8 @@ export class PaymentService {
           ) {
             const { customer, id, reference, status, currency, metadata, paidAt } =
               responseData.data;
-              // console.log(responseData)
-            const totalPrice = parseFloat(metadata.packagePrice);
+            // console.log(responseData)
+            const totalPrice = parseFloat(metadata.packagePrice) * 0.01;
             const eightyPercent = totalPrice * 0.8;
             const twentyPercent = totalPrice * 0.2;
             console.log(totalPrice, eightyPercent, twentyPercent)
@@ -113,51 +113,59 @@ export class PaymentService {
               professionalSummary: metadata.professionalSummary,
               education: metadata.education,
               skills: metadata.skills,
-              packageTitle: metadata.packageTitle, 
+              packageTitle: metadata.packageTitle,
               packagePrice: metadata.packagePrice,
-              vendorId: metadata.vendorId, 
+              vendorId: metadata.vendorId,
               paidAt,
             };
 
             // Save the payment details
             await this.paymentModel.create(paymentData);
 
-           // Create or update the wallet balance with the 80% amount
-let wallet = await this.walletModel.findOne({
-  owner: metadata.vendorId,
-});
-if (wallet) {
-  wallet.balance += eightyPercent;
-  await wallet.save();
-} else {
-  wallet = await this.walletModel.create({
-    owner: metadata.vendorId,
-    balance: eightyPercent,
-  });
-}
 
-// Admin wallet handling
-const findAdmin = await this.userModel.findOne({ role: 'admin' });
-if (!findAdmin) throw new NotFoundException('Admin not found');
-const walletBalance = await this.walletModel.findOne({ owner: findAdmin._id });
+            let wallet = await this.walletModel.findOne({
+              owner: metadata.vendorId,
+            });
 
+            if (wallet) {
+              // If the vendor already has a wallet, update the balance
+              wallet.balance += eightyPercent;
+              await wallet.save();
+            } else {
+              // If the vendor does not have a wallet, create it
+              wallet = await this.walletModel.create({
+                owner: metadata.vendorId,
+                balance: eightyPercent,
+              });
+            }
 
-// Check if the admin wallet already exists
-let adminWallet = await this.walletModel.findOne({ owner: findAdmin._id });
+            // Find all admin accounts
+            const adminAccounts = await this.userModel.find({ role: 'admin' });
 
-if (!adminWallet) {
-  // If admin wallet doesn't exist, create it
-  adminWallet = await this.walletModel.create({
-    owner: findAdmin._id,
-    balance: twentyPercent, // Set initial balance with the 20%
-    totalSales: totalPrice,  // Set initial total sales
-  });
-} else {
-  // If admin wallet exists, update the balance and total sales
-  adminWallet.balance += twentyPercent;
-  adminWallet.totalSales += totalPrice;
-  await adminWallet.save(); // Save the updated wallet
-}
+            if (!adminAccounts || adminAccounts.length === 0) {
+              throw new NotFoundException('No admin accounts found');
+            }
+
+            // For each admin, update the wallet
+            for (const admin of adminAccounts) {
+              let adminWallet = await this.walletModel.findOne({
+                owner: admin._id,
+              });
+
+              if (adminWallet) {
+                // If the admin already has a wallet, update the balance and totalSales
+                adminWallet.balance += twentyPercent;
+                adminWallet.totalSales += totalPrice;
+                await adminWallet.save();
+              } else {
+                // If the admin does not have a wallet, create it
+                adminWallet = await this.walletModel.create({
+                  owner: admin._id,
+                  balance: twentyPercent,
+                  totalSales: totalPrice,
+                });
+              }
+            }
 
             const user = await this.userModel.findById(metadata.userId);
             if (!user) throw new NotFoundException('User not found')
@@ -244,18 +252,18 @@ if (!adminWallet) {
     return orders;
   }
 
-  async getTotalSales(userId: string){
-const user = await this.userModel.findById(userId);
-if (!user) {
-  throw new NotFoundException('User not found');
-}
+  async getTotalSales(userId: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-const wallet = await this.walletModel.findOne({ owner: userId });
-if (!wallet) {
-  throw new NotFoundException('Wallet not found');
-}
+    const wallet = await this.walletModel.findOne({ owner: userId });
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found');
+    }
 
-  return wallet;
+    return wallet;
   }
 
 }
