@@ -21,6 +21,12 @@ export class Wallet extends Document {
 
     @Prop({type: Number, default: 0})
     totalSales: number;
+
+    @Prop({type: Number, default: 0})
+    currentBalance: number;
+
+    @Prop({type: Number, default: 0})
+    rollOut: number;
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet);

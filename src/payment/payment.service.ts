@@ -139,6 +139,8 @@ if (wallet) {
 // Admin wallet handling
 const findAdmin = await this.userModel.findOne({ role: 'admin' });
 if (!findAdmin) throw new NotFoundException('Admin not found');
+const walletBalance = await this.walletModel.findOne({ owner: findAdmin._id });
+
 
 // Check if the admin wallet already exists
 let adminWallet = await this.walletModel.findOne({ owner: findAdmin._id });
