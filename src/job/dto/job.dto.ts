@@ -24,6 +24,9 @@ export class JobDto{
     @IsNotEmpty()
     skills: string
 
+    @IsNotEmpty()
+    aboutCompany: string
+
     @IsString()
     @IsNotEmpty()
     categoryId: string
@@ -65,4 +68,7 @@ export class UpdateJobDto {
     @IsNotEmpty()
     @IsString()
     categoryId?: string;
+    
+    @IsString()
+    aboutCompany?: string
   }
