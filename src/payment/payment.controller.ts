@@ -50,4 +50,12 @@ export class PaymentController {
   getAllOrders(@Res() res: Response) {
     return this.paymentService.getAllOrders();
   }
+
+  @Roles(['admin'])
+  @Get('total-sales')
+  @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+  getTotalSales(@Req() req: Request) {
+    const userId = req.user.id
+    return this.paymentService.getTotalSales(userId);
+  }
 }

@@ -221,8 +221,6 @@ if (!adminWallet) {
   }
 
 
-
-
   async getUserOrders(userId: string) {
     const user = await this.userModel.findById(userId);
     if (!user) {
@@ -244,6 +242,20 @@ if (!adminWallet) {
     }
 
     return orders;
+  }
+
+  async getTotalSales(userId: string){
+const user = await this.userModel.findById(userId);
+if (!user) {
+  throw new NotFoundException('User not found');
+}
+
+const wallet = await this.walletModel.findOne({ userId });
+if (!wallet) {
+  throw new NotFoundException('Wallet not found');
+}
+
+  return wallet;
   }
 
 }
