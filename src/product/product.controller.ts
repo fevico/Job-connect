@@ -63,15 +63,4 @@ export class ProductController {
          return this.productService.uploadCV(body);
     }
 
-    @Post('add-rating')
-    @UseGuards(AuthenitcationGuard)
-    async rateProduct(
-        @Param('id') productId: string,
-        @Body('rating') ratingValue: number,
-        @Req() req: Request
-    ) {
-        const userId = req.user.id;
-        return this.productService.addRating(productId, userId, ratingValue);
-    }
-
 }

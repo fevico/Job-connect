@@ -15,6 +15,12 @@ export class Wallet extends Document {
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
     owner: MongooseSchema.Types.ObjectId;
+
+    @Prop({type: Number, default: 0})
+    adminBalance: number;
+
+    @Prop({type: Number, default: 0})
+    totalSales: number;
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet);

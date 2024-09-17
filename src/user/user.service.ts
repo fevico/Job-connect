@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordResetToken } from './schema/passwordResetToken';
@@ -466,6 +466,35 @@ export class UserService {
     return subscription;
   }
   }
+
+  
+  async addRating(owner: string, userId: string, ratingValue: number) {
+    const product = await this.userModel.findById(owner);
+    
+    if (!product) {
+        throw new Error('Product not found');
+    }
+
+    // Check if the user has already rated
+    const existingRatingIndex = product.ratings.findIndex(
+        (rating) => rating.userId.toString() === userId
+    );
+
+    if (existingRatingIndex > -1) {
+        // Update the existing rating
+        product.ratings[existingRatingIndex].rating = ratingValue;
+    } else {
+        // Add a new rating
+        product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
+    }
+    // Recalculate the average rating
+    const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
+    product.averageRating = totalRatings / product.ratings.length;
+
+    // Save the updated product
+    await product.save();
+    return product;
+}
 
 
 }

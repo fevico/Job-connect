@@ -54,7 +54,11 @@ export class Job extends Document {
   @Prop({ required: true })
   expiresAt: Date; // When the job will expire (based on visibility days)
 
+  @Prop({ type: String, enum: ['active', 'closed'], default: 'active' })
   status: string;
+
+  @Prop({type: String, required: true})
+  aboutCompany: string;
 
   @Prop({ type: String, enum: ['yes', 'no'], default: 'no' })
   referal: string;

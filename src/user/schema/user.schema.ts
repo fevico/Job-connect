@@ -55,6 +55,16 @@ export class User {
   @Prop({type: String})
   avatar: string
 
+@Prop([{ 
+    owner: { type: MongooseSchema.Types.ObjectId, ref: "User" }, 
+    rating: { type: Number, min: 1, max: 5 } 
+}])
+ratings: { userId: Types.ObjectId, rating: number }[];
+
+// Field to store average rating
+@Prop({ type: Number, default: 0 })
+averageRating: number;
+
   @Prop({
     type: {
       linkdinUrl: { type: String },
@@ -116,7 +126,6 @@ export class User {
     wokHours: string;
     responseTime: string;
   };
-
 
   @Prop({ required: true, enum: ['admin', 'jobPoster', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
   role: string;

@@ -146,5 +146,17 @@ export class UserController {
     const userId = req.user.id;
     return this.userService.subscribedPlan(userId);
   }
+
+  
+  @Post('add-rating')
+  @UseGuards(AuthenitcationGuard)
+  async rateProduct(
+      @Param('owner') owner: string,
+      @Body('rating') ratingValue: number,
+      @Req() req: Request
+  ) {
+      const userId = req.user.id;
+      return this.userService.addRating(owner, userId, ratingValue);
+  }
 }
 

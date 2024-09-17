@@ -56,10 +56,17 @@ export class JobService {
           }
       
           // Proceed with job creation
+          const subscriptionExpiresAt = await this.SubscriptionPaymentModel.findOne({
+            user: userId,
+            status: 'active',
+            endDate: { $gte: new Date() } // Ensure subscription is still active
+          });
+
           const createdJob = new this.jobModel({
             ...jobDto,
             userId: user._id,  // Assign the userId to the job
             companyName: user.companyName,
+            expiresAt: subscriptionExpiresAt.endDate
           });
       
           await createdJob.save();
@@ -288,68 +295,3 @@ export class JobService {
     }
     
 }
-
-
-
-// @Injectable()
-// export class JobService {
-//   constructor(
-//     @InjectModel(Job.name) private jobModel: Model<JobDocument>,
-//     @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
-//   ) {}
-
-//   async postJob(userId: string, jobData: any) {
-//     const userSubscription = await this.subscriptionModel.findOne({ user: userId });
-
-//     if (!userSubscription || new Date() > userSubscription.endDate) {
-//       throw new Error('You do not have an active subscription.');
-//     }
-
-//     if (userSubscription.remainingJobs <= 0) {
-//       throw new Error('You have reached your job posting limit for this plan.');
-//     }
-
-//     // Calculate job expiration
-//     const postedAt = new Date();
-//     const expiresAt = new Date();
-//     expiresAt.setDate(postedAt.getDate() + userSubscription.jobVisibilityDays);
-
-//     // Create the job
-//     const newJob = new this.jobModel({
-//       ...jobData,
-//       user: userId,
-//       jobVisibilityDays: userSubscription.jobVisibilityDays,
-//       postedAt,
-//       expiresAt,
-//     });
-
-//     await newJob.save();
-
-//     // Update remaining job count
-//     userSubscription.remainingJobs -= 1;
-//     await userSubscription.save();
-
-//     return newJob;
-//   }
-// }
-
-
-// const subscription = await this.subscriptionPaymentModel.findOne({
-//     user: userId,
-//     status: 'active',
-//     endDate: { $gte: new Date() } // Ensure subscription is still active
-//   });
-  
-//   if (!subscription) {
-//     throw new Error('Subscription is not active or expired.');
-//   }
-  
-//   if (subscription.remainingJobs <= 0) {
-//     throw new Error('No remaining job posts in this subscription.');
-//   }
-  
-//   // Proceed with posting the job
-//   subscription.remainingJobs -= 1;
-//   await subscription.save();
-  
-

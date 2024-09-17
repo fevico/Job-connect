@@ -11,11 +11,11 @@ import { SubscriptionPayment } from './schema/subscriptionPayment';
 
 @Injectable()
 export class SubscriptionService {
-
+ 
     constructor(
       @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
       @InjectModel(SubscriptionPayment.name) private subscriptionPaymentModel: Model<SubscriptionPayment>,
-      @InjectModel(User.name) private userModel: Model<User>
+      @InjectModel(User.name) private userModel: Model<User>,
     ) {}
 
     async createSubscription(createSubscriptionDto: CreateSubscriptionDto): Promise<Subscription> {
@@ -158,7 +158,7 @@ if (subscriptionExist) {
     planName,
     email,
     paymentDate: new Date(),
-    amountPaid: amount,
+    amountPaid: amount / 100,
     companyName: company,
     startDate: currentDate,
     endDate: subscriptionEndDate,

@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Subscription, SubscriptionSchema } from './schema/subcription.schema';
 import { SubscriptionPayment, SubscriptionPaymentSchema } from './schema/subscriptionPayment';
 import { User, userSchema } from 'src/user/schema/user.schema';
+import { Job, JobSchema } from 'src/job/schema/job.schema';
 
 @Module({
   imports: [

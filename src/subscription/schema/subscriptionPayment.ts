@@ -26,7 +26,7 @@ export class SubscriptionPayment {
   @Prop({ type: Date, required: true })
   paymentDate: Date;
 
-  @Prop({ type: String, enum:['active', 'inactive' ,'expired'], default: 'inactive', required: true })
+  @Prop({ type: String, enum:['active', 'inactive' ,'expired'], default: 'active', required: true })
   status: string; // E.g., "success", "failed", etc.
 
   @Prop({ type: String, required: true })

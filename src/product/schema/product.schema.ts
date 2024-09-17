@@ -23,16 +23,6 @@ export class Product extends Document {
 
     // New field to store individual ratings
     
-    @Prop([{ 
-        userId: { type: MongooseSchema.Types.ObjectId, ref: "User" }, 
-        rating: { type: Number, min: 1, max: 5 } 
-    }])
-    ratings: { userId: Types.ObjectId, rating: number }[];
-    
-
-    // Field to store average rating
-    @Prop({ type: Number, default: 0 })
-    averageRating: number;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

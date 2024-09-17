@@ -71,31 +71,4 @@ export class ProductService {
         return {message: "CV details uploaded successfully!"}
     }
 
-    async addRating(productId: string, userId: string, ratingValue: number) {
-        const product = await this.productModel.findById(productId);
-        
-        if (!product) {
-            throw new Error('Product not found');
-        }
-
-        // Check if the user has already rated
-        const existingRatingIndex = product.ratings.findIndex(
-            (rating) => rating.userId.toString() === userId
-        );
-
-        if (existingRatingIndex > -1) {
-            // Update the existing rating
-            product.ratings[existingRatingIndex].rating = ratingValue;
-        } else {
-            // Add a new rating
-            product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
-        }
-        // Recalculate the average rating
-        const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
-        product.averageRating = totalRatings / product.ratings.length;
-
-        // Save the updated product
-        await product.save();
-        return product;
-    }
 }
