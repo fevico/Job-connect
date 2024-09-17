@@ -130,12 +130,22 @@ export class PaymentService {
             if (wallet) {
               // If the vendor already has a wallet, update the balance
               wallet.balance += eightyPercent;
+              wallet.transactions.push({
+                amount: eightyPercent,
+                totalAmount: 0,
+
+                date: new Date(),
+              });
               await wallet.save();
             } else {
               // If the vendor does not have a wallet, create it
               wallet = await this.walletModel.create({
                 owner: metadata.vendorId,
                 balance: eightyPercent,
+                transactions: [{
+                  amount: eightyPercent, totalAmount: 0,
+                  date: new Date()
+                }],
               });
             }
 
@@ -156,6 +166,11 @@ export class PaymentService {
                 // If the admin already has a wallet, update the balance and totalSales
                 adminWallet.balance += twentyPercent;
                 adminWallet.totalSales += totalPrice;
+                adminWallet.transactions.push({
+                  amount: twentyPercent,
+                  totalAmount: totalPrice,
+                  date: new Date(),
+                });
                 await adminWallet.save();
               } else {
                 // If the admin does not have a wallet, create it
@@ -163,6 +178,7 @@ export class PaymentService {
                   owner: admin._id,
                   balance: twentyPercent,
                   totalSales: totalPrice,
+                  transactions: [{ amount: twentyPercent, totalAmount: totalPrice, date: new Date() }],
                 });
               }
             }
