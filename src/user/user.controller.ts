@@ -148,7 +148,7 @@ export class UserController {
   }
 
   
-  @Post('add-rating')
+  @Post('add-rating/:owner')
   @UseGuards(AuthenitcationGuard)
   async rateProduct(
       @Param('owner') owner: string,
