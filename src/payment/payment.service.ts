@@ -250,7 +250,7 @@ if (!user) {
   throw new NotFoundException('User not found');
 }
 
-const wallet = await this.walletModel.findOne({ userId });
+const wallet = await this.walletModel.findOne({ owner: userId });
 if (!wallet) {
   throw new NotFoundException('Wallet not found');
 }

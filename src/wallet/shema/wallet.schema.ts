@@ -17,13 +17,7 @@ export class Wallet extends Document {
     owner: MongooseSchema.Types.ObjectId;
 
     @Prop({type: Number, default: 0})
-    adminBalance: number;
-
-    @Prop({type: Number, default: 0})
     totalSales: number;
-
-    @Prop({type: Number, default: 0})
-    currentBalance: number;
 
     @Prop({type: Number, default: 0})
     rollOut: number;
