@@ -81,7 +81,6 @@ export class SubscriptionService {
     reqPaystack.end();
   }
 
-
   async verifySubscriptionPayment(reference: string, res: any) {
     const options = {
       hostname: 'api.paystack.co',
@@ -106,67 +105,80 @@ export class SubscriptionService {
           const responseData = JSON.parse(data);
   
           if (responseData.status === true && responseData.data.status === 'success') {
-            const { customer, id: transactionId, reference, status, currency, amount,metadata,} = responseData.data;
-  
+            const { customer, id: transactionId, reference, status, currency, amount, metadata } = responseData.data;
             const { planName, userId } = metadata;
   
-            // Determine subscription duration based on plan type
-            let subscriptionEndDate = new Date();
-            const currentDate = new Date();
-
             const user = await this.userModel.findById(userId);
             if (!user) {
               throw new NotFoundException('User not found');
             }
             const company = user.companyName;
   
-            // Define durations based on the plan type
-            switch(planName.toLowerCase()) {
+            // Calculate subscription end date (one month from current date)
+            const currentDate = new Date();
+            let subscriptionEndDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
+  
+            // Determine job posting limits based on plan type
+            let freeJobLimit = 1;  // 1 free job per month for all plans
+            let paidJobLimit;      // Additional jobs limit based on plan
+  
+            switch (planName.toLowerCase()) {
               case 'basic':
-                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 14)); // 14 days for Basic plan
+                paidJobLimit = 3;  // Basic plan allows 3 additional jobs per month
                 break;
               case 'standard':
-                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 30)); // 30 days for Standard plan
+                paidJobLimit = 5;  // Standard plan allows 5 additional jobs per month
                 break;
               case 'premium':
-                subscriptionEndDate = new Date(currentDate.setDate(currentDate.getDate() + 45)); // 45 days for Premium plan
+                paidJobLimit = 10;  // Premium plan allows 10 additional jobs per month
                 break;
               default:
                 throw new Error('Invalid plan type');
             }
-
+  
+            // Check if the user already has an active subscription
             const subscriptionExist = await this.subscriptionPaymentModel.findOne({ user: userId });
-if (subscriptionExist) {
-  // If subscription is still active, extend the current endDate
-  const now = new Date();
-  if (subscriptionExist.endDate > now) {
-    subscriptionEndDate = new Date(subscriptionExist.endDate.getTime() + (subscriptionEndDate.getTime() - now.getTime()));
-  }
-
-  await this.subscriptionModel.findOneAndUpdate(
-    { user: userId }, 
-    { $set: { status: 'active', endDate: subscriptionEndDate } }
-  );
-} else {
-  // If no existing subscription, create a new one
-  const paymentData = new this.subscriptionPaymentModel({
-    user: userId,
-    transactionId,
-    referenceId: reference,
-    paymentStatus: status,
-    currency,
-    planName,
-    email: customer.email,
-    paymentDate: new Date(),
-    amountPaid: amount / 100,
-    companyName: company,
-    startDate: currentDate,
-    endDate: subscriptionEndDate,
-  });
-
-  await paymentData.save();
-}
-
+            if (subscriptionExist) {
+              // If subscription is still active, extend the current endDate
+              const now = new Date();
+              if (subscriptionExist.endDate > now) {
+                subscriptionEndDate = new Date(subscriptionExist.endDate.getTime() + (subscriptionEndDate.getTime() - now.getTime()));
+              }
+  
+              await this.subscriptionModel.findOneAndUpdate(
+                { user: userId },
+                { 
+                  $set: { 
+                    status: 'active', 
+                    endDate: subscriptionEndDate, 
+                    paidJobLimit, 
+                    freeJobLimit,
+                    freeJobCount: 0 // Reset free job count at the start of the month
+                  } 
+                }
+              );
+            } else {
+              // If no existing subscription, create a new one
+              const paymentData = new this.subscriptionPaymentModel({
+                user: userId,
+                transactionId,
+                referenceId: reference,
+                paymentStatus: status,
+                currency,
+                planName,
+                email: customer.email,
+                paymentDate: new Date(),
+                amountPaid: amount / 100,
+                companyName: company,
+                startDate: currentDate,
+                endDate: subscriptionEndDate,
+                paidJobLimit,  // Assign job posting limit
+                freeJobLimit,  // Assign free job limit
+                freeJobCount: 0 // Initialize free job count
+              });
+  
+              await paymentData.save();
+            }
   
             // Send success response to the user
             return res.status(200).json({
@@ -175,6 +187,8 @@ if (subscriptionExist) {
               data: {
                 subscriptionEndDate,
                 planName,
+                paidJobLimit,
+                freeJobLimit,
               },
             });
           } else {
@@ -198,6 +212,7 @@ if (subscriptionExist) {
   
     reqPaystack.end();
   }
+  
   
 
 }

@@ -10,9 +10,9 @@ import { PaymentModule } from './payment/payment.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ReferalModule } from './referal/referal.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { SchedulerModule } from './schduler/schduler.module';
 import { GoogleModule } from './google/google.module';
 import { ProductModule } from './product/product.module';
+import { ContactModule } from './contact/contact.module';
 
 
 @Module({
@@ -30,9 +30,9 @@ import { ProductModule } from './product/product.module';
     WalletModule,
     ReferalModule,
     SubscriptionModule,
-    SchedulerModule,
     GoogleModule,
-    ProductModule
+    ProductModule,
+    ContactModule
   ],
   controllers: [AppController],
   providers: [AppService],

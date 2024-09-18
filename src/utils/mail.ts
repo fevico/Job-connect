@@ -272,3 +272,35 @@ client
     }
   })
 };
+export const contactUs = async (email: string, name: string, phone: string, message: string, senderMail: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "4427b8e7-bd27-4ab3-abd8-75f28e851951",
+    template_variables: {
+      "name": name,
+      "email": senderMail,
+      "phoneNumber": phone,
+      "message": message,
+      "user_name": "Test_User_name",
+      "next_step_link": "Test_Next_step_link",
+      "get_started_link": "Test_Get_started_link",
+      "onboarding_video_link": "Test_Onboarding_video_link"
+    }
+  })
+
+};

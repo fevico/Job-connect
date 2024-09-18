@@ -18,11 +18,10 @@ export class PaymentService {
   ) { }
 
   async createPaymentIntent(body: any, res: any) {
-    const { amount, email, metadata } = body;
+    const { email, metadata } = body;
 
     const params = JSON.stringify({
       email,
-      amount,
       metadata,
       callback_url: 'https://jobkonnecta.com/',
       // callback_url: 'http://localhost:5173/',

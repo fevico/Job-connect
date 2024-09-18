@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { CreateSubscriptionDto } from './dto/subcription.dto';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { Request } from 'express';
 
 @Controller('subscription')
@@ -14,7 +14,7 @@ export class SubscriptionController {
     }
 
     @Post('purchase')
-    @UseGuards(AuthenitcationGuard)
+    @UseGuards(AuthenticationGuard)
     async purchaseSubscription(@Body() body: string, @Req() req: Request, @Res() res: Response) {
       // const userId = req.user.id;
       return this.subscriptionService.purchaseSubscription(body, res);

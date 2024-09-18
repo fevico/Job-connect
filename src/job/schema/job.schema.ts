@@ -51,7 +51,7 @@ export class Job extends Document {
   @Prop({ default: Date.now })
   postedAt: Date; // When the job was posted
 
-  @Prop({ required: true })
+  @Prop({type: Date })
   expiresAt: Date; // When the job will expire (based on visibility days)
 
   @Prop({ type: String, enum: ['active', 'closed'], default: 'active' })

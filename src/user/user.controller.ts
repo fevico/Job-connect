@@ -1,7 +1,7 @@
 import {  BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { RoleGuard } from 'src/guards/role.guard';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 import {  CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto, SignUpDto, SuspendUserDto } from './dto/user.dto';
 import { Request } from "express";
 import { CvWriterUpdateDto, EmployerDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto, userDto } from './dto/profile.dto';
@@ -59,7 +59,7 @@ export class UserController {
     return this.userService.login(loginDto);
   }
 
-  @UseGuards(AuthenitcationGuard) // Apply your authentication guard
+  @UseGuards(AuthenticationGuard) // Apply your authentication guard
   @Put('/change-password/:userId') // Use dynamic route parameter for userId
   async changePassword(
     @Param('userId') userId: string,
@@ -88,7 +88,7 @@ export class UserController {
   }
 
   @Patch('update-profile')
-  @UseGuards(AuthenitcationGuard)
+  @UseGuards(AuthenticationGuard)
   async updateProfile(@Body() body: any, @Req() req: Request) {
     const userRole = req.user.role;
     const userId = req.user.id;
@@ -141,7 +141,7 @@ export class UserController {
   }
 
   @Get('plan')
-  @UseGuards(AuthenitcationGuard)
+  @UseGuards(AuthenticationGuard)
   async subscribedPlan(@Req() req: Request) {
     const userId = req.user.id;
     return this.userService.subscribedPlan(userId);
@@ -149,7 +149,7 @@ export class UserController {
 
   
   @Post('add-rating/:owner')
-  @UseGuards(AuthenitcationGuard)
+  @UseGuards(AuthenticationGuard)
   async rateProduct(
       @Param('owner') owner: string,
       @Body('rating') ratingValue: number,

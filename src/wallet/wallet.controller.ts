@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { Response, Request } from 'express';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 
 
 @Controller('wallet')
@@ -9,6 +9,7 @@ export class WalletController {
     constructor(private walletService: WalletService){}
 
     @Get('get-bank-list')
+    @UseGuards(AuthenticationGuard)
     async getBankList(@Res() res: Response) {
       try {
         const bankList = await this.walletService.getBankList();
@@ -20,6 +21,7 @@ export class WalletController {
     
 
     @Get('get-account-name')
+    @UseGuards(AuthenticationGuard)
     async getAccountName(@Res() res: Response, @Req() req: Request) {
       try {
         const accountName = await this.walletService.getAccountName(req);
@@ -30,6 +32,7 @@ export class WalletController {
     }
 
     @Post('bank-transfer')
+    @UseGuards(AuthenticationGuard)
     async bankTransfer(@Res() res: Response, @Req() req: Request) {
       try {
         const transferStatus = await this.walletService.bankTransfer(req);
@@ -40,7 +43,7 @@ export class WalletController {
     }
 
     @Get('get-balance')
-    @UseGuards(AuthenitcationGuard)
+    @UseGuards(AuthenticationGuard)
     async getBalance(@Res() res: Response, @Req() req: Request) {
       const userId = req.user.id; // Assuming the user ID is stored in the request object
       try {

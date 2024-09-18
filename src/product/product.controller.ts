@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Roles } from 'src/decorator/role.decorator';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Request } from 'express';
 import { ProductDto, UpdateProductDto, UploadCvDetails } from './dto/product.dto';
@@ -12,7 +12,7 @@ export class ProductController {
 
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Post('create')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async createProduct(@Body() body: ProductDto, @Req() req: Request) {
         const userId = req.user.id;
         const role = req.user.role;
@@ -21,7 +21,7 @@ export class ProductController {
 
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Patch('update/:id')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async updateProduct(@Body() body: UpdateProductDto, @Req() req: Request, @Param('id') id: string) {
         const userId = req.user.id;
         const role = req.user.role;
@@ -40,7 +40,7 @@ export class ProductController {
 
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Delete(':id')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async deleteProduct(@Req() req: Request, @Param('id') id: string) {
         const userId = req.user.id;
         const role = req.user.role;
@@ -49,7 +49,7 @@ export class ProductController {
 
     @Roles(['cvwriter', 'linkdinOptimizer'])
     @Get('user/product')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async geUserProduct(@Req() req: Request) {
         const userId = req.user.id;
         const role = req.user.role;
@@ -58,7 +58,7 @@ export class ProductController {
 
     @Roles(['cvwriter'])
     @Post('upload-cv')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async uploadCV(@Body() body: UploadCvDetails, @Req() req: Request) {
          return this.productService.uploadCV(body);
     }

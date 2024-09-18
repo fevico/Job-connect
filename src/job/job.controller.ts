@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Roles } from 'src/decorator/role.decorator';
 import { JobDto, UpdateJobDto } from './dto/job.dto';
@@ -11,9 +11,9 @@ import { Request } from "express";
 export class JobController {
     constructor(private jobService: JobService){}
 
-    @Roles(['admin', 'employer', 'superAdmin'])
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Post('create')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async createJob(@Body() jobDto: JobDto, @Req() req: Request) {
         const userId = req.userId;
 
@@ -31,9 +31,9 @@ export class JobController {
         return this.jobService.getJobById(id);
     }
 
-    @Roles(['admin', 'employer'])
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Get('get-jobs-by-employer/:id')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     getJobsByEmployer(@Param('id') id: string, @Req() req: Request){
         const userId = req.userId;
 
@@ -41,7 +41,7 @@ export class JobController {
     }
 
     @Post('apply-job')
-    @UseGuards(AuthenitcationGuard)
+    @UseGuards(AuthenticationGuard)
     async applyJob(@Body() applyJobDto: any, @Req() req: Request){
         const userId = req.userId;
 
@@ -49,7 +49,7 @@ export class JobController {
     }
 
     @Get('get-applied-jobs')
-    @UseGuards(AuthenitcationGuard)
+    @UseGuards(AuthenticationGuard)
     getAppliedJobs( @Req() req: Request){
         const userId = req.userId;
         
@@ -61,33 +61,34 @@ export class JobController {
         return this.jobService.getApplicationsByJob(id);
     }
 
-    @Roles(['admin', 'employer'])
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Get('get-employer-application')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     getEmployerApplication(@Req() req: Request){
         const userId = req.userId;
 
         return this.jobService.getEmployerApplication(userId);
     }
 
-    @Roles(['admin', 'employer'])
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Post('hire-applicant/:id')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     hireApplicant(@Body() body: any, @Param('id') jobId: any, @Req() req: Request){
         const userId = req.userId;
 
         return this.jobService.hireApplicant(body, userId, jobId);
     }
 
-    @Roles(['admin', 'employer'])
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Get('application-number/:id')
-    @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     getApplicationNumber(@Param('id') jobId: any, @Req() req: Request){
         const userId = req.userId;
 
         return this.jobService.getApplicationNumber(userId, jobId);
     }
 
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Post('shortlist-application/:id')
     shortlistJob(@Param('id') id: string, @Body() body: any){
         return this.jobService.shortlistJob(id, body)

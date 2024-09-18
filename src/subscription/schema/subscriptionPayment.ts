@@ -26,23 +26,23 @@ export class SubscriptionPayment {
   @Prop({ type: Date, required: true })
   paymentDate: Date;
 
+  @Prop({type: Number, default: 0})
+  freeJobCount: number;
+
+  @Prop({type: Number, default: 0})
+  freeJobLimit: number;
+
   @Prop({ type: String, enum:['active', 'inactive' ,'expired'], default: 'active', required: true })
   status: string; // E.g., "success", "failed", etc.
 
   @Prop({ type: String, required: true })
   paymentStatus: string; // E.g., "success", "failed", etc.
 
-  @Prop({type: Number,})
-  maxJobs: number; // Number of jobs allowed for the subscribed plan
-
-  @Prop({type: Number })
-  remainingJobs: number; // Remaining jobs the user can post
+  @Prop({type: Number, default: 0})
+  paidJobLimit: number; // Number of jobs allowed for the subscribed plan
 
   @Prop({type: Number, required: true })
   amountPaid: number; // Amount paid for the subscription
-
-  @Prop({ type: Number })
-  jobVisibilityDays: number; // Number of days the job will be visible
 
   @Prop({ type: Date })
   startDate: Date; // Date when the plan was activated

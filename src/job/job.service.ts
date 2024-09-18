@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Job } from './schema/job.schema';
 import { Model } from 'mongoose';
@@ -17,13 +17,13 @@ export class JobService {
         @InjectModel(User.name) private userModel: Model<User>,
         @InjectModel(AppliedJob.name) private appliedJobModel: Model<AppliedJob>,
         @InjectModel(Referal.name) private referalModel: Model<Referal>,
-        @InjectModel(SubscriptionPayment.name) private SubscriptionPaymentModel: Model<SubscriptionPayment>,
+        @InjectModel(SubscriptionPayment.name) private subscriptionPaymentModel: Model<SubscriptionPayment>,
     ) { }
 
     async createJob(jobDto: JobDto, userId: string): Promise<Job> {
         try {
           const user = await this.userModel.findById(userId);
-          
+      
           // Check if user exists
           if (!user) throw new NotFoundException("User not found!");
       
@@ -32,41 +32,48 @@ export class JobService {
             throw new UnprocessableEntityException("Your account is not verified. Please verify your account before you can create a job!");
           }
       
-          // Check if user is neither 'admin' nor 'jobPoster' (requires subscription)
+          let subscription = null;
+      
+          // Check if user is neither 'admin' nor 'jobPoster'
           if (user.role !== 'admin' && user.role !== 'jobPoster') {
-            const subscription = await this.SubscriptionPaymentModel.findOne({
+            subscription = await this.subscriptionPaymentModel.findOne({
               user: userId,
               status: 'active',
-              endDate: { $gte: new Date() } // Ensure subscription is still active
+              endDate: { $gte: new Date() }, // Ensure subscription is still active
             });
       
-            // Check if there is an active subscription
-            if (!subscription) {
+            // Free Job Posting Logic
+            if (subscription) {
+              const currentDate = new Date();
+              const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      
+              // Check if user has already posted the free job for the current month
+              if (subscription.freeJobCount < 1) {
+                // Free job available, allow posting the free job
+                subscription.freeJobCount += 1; // Increment free job count for the month
+              } else {
+                // No free jobs left, check for remaining paid job posts
+                if (subscription.paidJobLimit <= 0) {
+                  throw new UnprocessableEntityException('No remaining job posts in your subscription.');
+                }
+      
+                // Deduct one from the remaining paid jobs
+                subscription.paidJobLimit -= 1;
+              }
+            } else {
               throw new UnprocessableEntityException('Subscription is not active or has expired.');
             }
       
-            // Check if there are any remaining job posts in the subscription
-            if (subscription.remainingJobs <= 0) {
-              throw new UnprocessableEntityException('No remaining job posts in your subscription.');
-            }
-      
-            // Deduct one from remaining jobs
-            subscription.remainingJobs -= 1;
+            // Save subscription changes (updated freeJobCount or paidJobLimit)
             await subscription.save();
           }
       
           // Proceed with job creation
-          const subscriptionExpiresAt = await this.SubscriptionPaymentModel.findOne({
-            user: userId,
-            status: 'active',
-            endDate: { $gte: new Date() } // Ensure subscription is still active
-          });
-
           const createdJob = new this.jobModel({
             ...jobDto,
-            userId: user._id,  // Assign the userId to the job
+            userId: user._id, // Assign the userId to the job
             companyName: user.companyName,
-            expiresAt: subscriptionExpiresAt.endDate
+            expiresAt: subscription ? subscription.endDate : null, // Set expiration if applicable
           });
       
           await createdJob.save();
@@ -77,6 +84,8 @@ export class JobService {
           throw new BadRequestException(error.message || 'Failed to create job');
         }
       }
+      
+      
       
 
 

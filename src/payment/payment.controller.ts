@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Request } from 'express';
-import { AuthenitcationGuard } from 'src/guards/auth.guard';
+import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { Roles } from 'src/decorator/role.decorator';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
 
 @Controller('payment')
 export class PaymentController {
   constructor(private paymentService: PaymentService) { }
-  // @UseGuards(AuthenitcationGuard)
+   @UseGuards(AuthenticationGuard)
   @Post('create-payment')
   createPaymentIntent(@Body() body: any, @Req() req: Request, @Res() res: any) {
     // const userId = req.user.id
@@ -27,7 +27,7 @@ export class PaymentController {
 
   @Roles(['cvwriter', 'linkdinOptimizer'])
   @Get('get-successful-orders/:productId')
-  @UseGuards(AuthenitcationGuard, AuthenitcationGuard)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async getSuccessfulOrders(@Param('productId') productId: string, @Req() req: Request) {
     const userId = req.user.id;
     console.log(userId, productId);
@@ -38,7 +38,7 @@ export class PaymentController {
 
 
   @Get('user-orders')
-  @UseGuards(AuthenitcationGuard)
+  @UseGuards(AuthenticationGuard)
   getUserOrders(@Req() req: Request) {
     const userId = req.user.id
     return this.paymentService.getUserOrders(userId);
@@ -46,14 +46,14 @@ export class PaymentController {
 
   @Roles(['admin'])
   @Get('all-orders')
-  @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   getAllOrders(@Res() res: Response) {
     return this.paymentService.getAllOrders();
   }
 
   @Roles(['admin'])
   @Get('total-sales')
-  @UseGuards(AuthenitcationGuard, AuthorizationGuard)
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   getTotalSales(@Req() req: Request) {
     const userId = req.user.id
     return this.paymentService.getTotalSales(userId);
