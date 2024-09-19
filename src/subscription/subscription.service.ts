@@ -43,8 +43,8 @@ export class SubscriptionService {
       email,
       amount,
       metadata,
-      // callback_url: 'https://jobkonnecta.com/subscription',
-      callback_url: 'http://localhost:5173/subscription',
+      callback_url: 'https://jobkonnecta.com/subscription',
+      // callback_url: 'http://localhost:5173/subscription',
     });
 
     const options = {
