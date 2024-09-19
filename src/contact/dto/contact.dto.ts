@@ -21,3 +21,9 @@ export class ContactDto {
     @IsString()
     readonly message: string;
 }
+
+export class updateMessageDto {
+    @IsNotEmpty()
+    @IsString()
+    readonly  status: string;
+}
