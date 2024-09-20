@@ -87,9 +87,7 @@ export class PaymentService {
           // Log the entire response from Paystack for debugging
 
           if (
-            responseData.status === true
-
-            // responseData.data.status === 'success'
+            responseData.status === true && responseData.data.status === 'success'
           ) {
             const { customer, id, reference, status, currency, metadata, paidAt } =
               responseData.data;
@@ -97,7 +95,6 @@ export class PaymentService {
             const totalPrice = parseFloat(metadata.packagePrice) * 0.01;
             const eightyPercent = totalPrice * 0.8;
             const twentyPercent = totalPrice * 0.2;
-            console.log(totalPrice, eightyPercent, twentyPercent)
 
             const paymentData = {
               referenceId: reference,
@@ -114,7 +111,7 @@ export class PaymentService {
               education: metadata.education,
               skills: metadata.skills,
               packageTitle: metadata.packageTitle,
-              packagePrice: metadata.packagePrice,
+              packagePrice: totalPrice,
               vendorId: metadata.vendorId,
               paidAt,
             };
