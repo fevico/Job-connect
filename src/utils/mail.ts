@@ -272,6 +272,7 @@ client
     }
   })
 };
+
 export const contactUs = async (email: string, name: string, phone: string, message: string, senderMail: string) => {
 
   const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
@@ -303,4 +304,30 @@ client
     }
   })
 
+};
+
+export const successfulResolution = async (email: string, name: string, message: string) => {
+
+  const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
+
+const sender = {
+  email: VERIFICATION_EMAIL,
+  name: "Jobkonnecta",
+};
+const recipients = [
+  {
+    email,
+  }
+];
+
+client
+  .send({
+    from: sender,
+    to: recipients,
+    template_uuid: "8df75f2f-d5fc-4aaa-955f-bcd47a6568cc",
+    template_variables: {
+      "user_name": name,
+      "message": message,
+    }
+  })
 };

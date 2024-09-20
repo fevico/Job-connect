@@ -5,7 +5,7 @@ import { Contact } from './schema/contact';
 import { Model } from 'mongoose';
 import { User } from 'src/user/schema/user.schema';
 import { ContactDto, updateMessageDto } from './dto/contact.dto';
-import { contactUs } from 'src/utils/mail';
+import { contactUs, successfulResolution } from 'src/utils/mail';
 
 
 @Injectable()
@@ -86,8 +86,8 @@ export class ContactService {
             throw new NotFoundException('Message not found');
         }
 
-        if(status === 'processing'){
-            await contactUs(message.email, `${message.firstName} ${message.lastName}`, message.phone, message.message, message.email);
+        if(status === 'success'){
+            await successfulResolution(message.email, message.firstName, message.message);
         }
 
         return message
