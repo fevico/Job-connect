@@ -28,10 +28,10 @@ export class UserController {
         case 'employer':
           registerDto = new EmployerSignUpDto();
           break;
-        case 'linkedinOptimizer':
+        case 'linkedinoptimizer':
           registerDto = new LinkedinOptimizerSignUpDto();
           break;
-        case 'cvWriter':
+        case 'cvwriter':
           registerDto = new CvWriterSignUpDto();
           break;
         default:
