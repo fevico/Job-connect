@@ -12,7 +12,7 @@ import { SubscriptionPayment, SubscriptionPaymentSchema } from 'src/subscription
   imports: [
     JwtModule.register({
       global: true,
-      signOptions: { expiresIn: '1h' }
+      signOptions: { expiresIn: '5d' }
     }),
     MongooseModule.forFeature([
       { name: User.name, schema: userSchema },

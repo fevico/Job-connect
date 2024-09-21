@@ -127,7 +127,7 @@ averageRating: number;
     responseTime: string;
   };
 
-  @Prop({ required: true, enum: ['admin', 'jobPoster', 'jobseeker', 'employer', 'cvwriter', 'linkdinOptimizer'], default: 'jobseeker' })
+  @Prop({ required: true, enum: ['admin', 'jobPoster', 'jobseeker', 'employer', 'cvWriter', 'linkedinOptimizer'], default: 'jobseeker' })
   role: string;
 
   @Prop({ type: Number, default: 0 })

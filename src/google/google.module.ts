@@ -10,7 +10,7 @@ import { User, userSchema } from 'src/user/schema/user.schema';
   imports: [
     JwtModule.register({
       global: true,
-      signOptions: { expiresIn: '1h' }
+      signOptions: { expiresIn: '5d' }
     }),
     MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
   ],
