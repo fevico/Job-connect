@@ -31,6 +31,10 @@ export class JobDto{
     @IsNotEmpty()
     categoryId: string
 
+    @IsString()
+    @IsNotEmpty()
+    companyName: string
+
 }
 export class UpdateJobDto {
 
