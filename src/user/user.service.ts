@@ -454,35 +454,19 @@ export class UserService {
   }
   }
 
-  
-//   async addRating(owner: string, userId: string, ratingValue: number) {
-//     const product = await this.userModel.findById(owner);
-    
-//     if (!product) {
-//         throw new Error('Product not found');
-//     }
 
-//     // Check if the user has already rated
-//     const existingRatingIndex = product.ratings.findIndex(
-//         (rating) => rating.userId.toString() === userId
-//     );
+async approveUser(body: any) {
+  const { userId } = body;
+  const user = await this.userModel.findById(userId);
 
-//     if (existingRatingIndex > -1) {
-//         // Update the existing rating
-//         product.ratings[existingRatingIndex].rating = ratingValue;
-//     } else {
-//         // Add a new rating
-//         product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
-//     }
-//     // Recalculate the average rating
-//     const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
-//     product.averageRating = totalRatings / product.ratings.length;
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
 
-//     // Save the updated product
-//     await product.save();
-//     return product;
-// }
-
+  (user as any).isApproved = true; // Temporarily cast to `any`
+  await user.save();
+  return { message: 'User approved successfully' };
+}
 
 }
 
