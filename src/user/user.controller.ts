@@ -1,48 +1,37 @@
-import {  BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {  BadRequestException, Body, Controller, Get, Param, Patch, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { RoleGuard } from 'src/guards/role.guard';
 import { AuthenticationGuard } from 'src/guards/auth.guard';
 import {  CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto, SignUpDto, SuspendUserDto } from './dto/user.dto';
 import { Request } from "express";
 import { CvWriterUpdateDto, EmployerDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto, userDto } from './dto/profile.dto';
+import { validate } from 'class-validator';
 
 
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService){}
 
-    @Post('register')
-    async register(@Body() body: any) {
-      const { role } = body;
-  
-      if (!role) {
-        throw new BadRequestException('Role is required');
-      }
-  
-      let registerDto;
-  
-      switch (role) {
-        case 'jobseeker':
-          registerDto = new JobseekerSignUpDto();
-          break;
-        case 'employer':
-          registerDto = new EmployerSignUpDto();
-          break;
-        case 'linkedinoptimizer':
-          registerDto = new LinkedinOptimizerSignUpDto();
-          break;
-        case 'cvwriter':
-          registerDto = new CvWriterSignUpDto();
-          break;
-        default:
-          throw new BadRequestException('Invalid user role');
-      }
-  
-      Object.assign(registerDto, body);
-  
-      return this.userService.register(registerDto);
-    }
-  
+
+@Post('register')
+
+async registerUser(@Body() body: any) {
+  const { role, ...userData } = body;
+
+  switch (role) {
+    case 'jobSeeker':
+      return this.userService.registerJobseeker(userData);
+    case 'employer':
+      return this.userService.registerEmployer(userData);
+    case 'cvWriter':
+      return this.userService.registerLinkedinOptimizer(userData);
+    case 'linkedinOptimizer':
+      return this.userService.registerCvWriter(userData);
+    default:
+      throw new BadRequestException('Invalid role provided');
+  }
+
+}
 
     @Post('resend-verification-email')
     async resendVerificationEmail(@Body('email') email: string) {
@@ -148,15 +137,15 @@ export class UserController {
   }
 
   
-  @Post('add-rating/:owner')
-  @UseGuards(AuthenticationGuard)
-  async rateProduct(
-      @Param('owner') owner: string,
-      @Body('rating') ratingValue: number,
-      @Req() req: Request
-  ) {
-      const userId = req.user.id;
-      return this.userService.addRating(owner, userId, ratingValue);
-  }
+  // @Post('add-rating/:owner')
+  // @UseGuards(AuthenticationGuard)
+  // async rateProduct(
+  //     @Param('owner') owner: string,
+  //     @Body('rating') ratingValue: number,
+  //     @Req() req: Request
+  // ) {
+  //     const userId = req.user.id;
+  //     return this.userService.addRating(owner, userId, ratingValue);
+  // }
 }
 

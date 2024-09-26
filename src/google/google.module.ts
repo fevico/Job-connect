@@ -4,7 +4,7 @@ import { GoogleService } from './google.service';
 import { GoogleStrategy } from './google-strategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
-import { User, userSchema } from 'src/user/schema/user.schema'; 
+import { User, UserSchema } from 'src/user/schema/user.schema'; 
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { User, userSchema } from 'src/user/schema/user.schema';
       global: true,
       signOptions: { expiresIn: '5d' }
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [GoogleController],
   providers: [GoogleService, GoogleStrategy],

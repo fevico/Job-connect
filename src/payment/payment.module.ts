@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Payment, PaymentSchema } from './schema/payment.schema';
 import { Wallet, WalletSchema } from 'src/wallet/shema/wallet.schema';
 import { Product, ProductSchema } from 'src/product/schema/product.schema';
-import { User, userSchema } from 'src/user/schema/user.schema';
+import { User, UserSchema } from 'src/user/schema/user.schema';
 
 @Module({
   imports:[
@@ -13,7 +13,7 @@ import { User, userSchema } from 'src/user/schema/user.schema';
       { name: Payment.name, schema: PaymentSchema },
       { name: Wallet.name, schema: WalletSchema },
       { name: Product.name, schema: ProductSchema },
-      { name: User.name, schema: userSchema },
+      { name: User.name, schema: UserSchema },
     ])
   ],
   providers: [PaymentService],

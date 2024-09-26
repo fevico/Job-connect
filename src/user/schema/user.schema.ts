@@ -1,141 +1,155 @@
+
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Schema as MongooseSchema, Types, Document } from "mongoose";
+import { Schema as MongooseSchema, Document } from "mongoose";
 
+// Base User Schema (common fields)
+// User Schema and its discriminators
 
-@Schema({timestamps: true})
+// Base User Schema (common fields)
+@Schema({ timestamps: true })
 export class User {
-  @Prop({type: String, required: true})
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({type: String, required: true, unique: true})
+  @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({type: String})
-  companyName: string;
-
-  @Prop({type: String})
-  companyAddress: string;
-
-  @Prop({type: String})
-  companyDescription: string;
-
-  @Prop({type: String})
-  gender: string;
-
-  @Prop({type: String})
-  nationality: string;
-
-  @Prop({type: String})
-  location: string;
-
-  @Prop({type: String, required: true})
-  phone: string;
-
-  @Prop({type: String})
-  qualification: string;
-
-  @Prop({type: Number})
-  yearsOfExperience: number;
-
-  @Prop({type: String})
-  Cv: string;
-
-  @Prop({type: Boolean, default: false})
-  isVerified: boolean;
-
-  @Prop({type: [String]})
-  skills: string[];
-
-  @Prop({type: String, required: true})
+  @Prop({ type: String, required: true })
   password: string;
 
-  @Prop({type: Boolean, default: false})
-  isActive: boolean
+  @Prop({ type: String })
+  phone: string;
 
-  @Prop({type: String})
-  avatar: string
+  @Prop({ type: String })
+  avatar: string;
 
-@Prop([{ 
-    owner: { type: MongooseSchema.Types.ObjectId, ref: "User" }, 
-    rating: { type: Number, min: 1, max: 5 } 
-}])
-ratings: { userId: Types.ObjectId, rating: number }[];
+  @Prop({ type: String })
+  country: string;
 
-// Field to store average rating
-@Prop({ type: Number, default: 0 })
-averageRating: number;
-
-  @Prop({
-    type: {
-      linkdinUrl: { type: String },
-      currentJob: { type: String },
-      keySkills: { type: String },
-      yearsOfExperience: { type: String },
-      industry: { type: String },
-    },
-  })
-  linkedinProfile: {
-    linkdinUrl: string;
-    currentJob: string;
-    keySkills: string;
-    yearsOfExperience: string;
-    industry: string;
-  };
-
-  @Prop({
-    type: {
-      optimizationGoal: { type: String },
-      targetAudience: { type: String },
-      profileSection: { type: String },
-    },
-  })
-  linkedinOptimization : {
-    optimizationGoal: string;
-    targetAudience: string;
-    profileSection: string;
-  };
-
-  @Prop({
-    type: {
-      resume: { type: String },
-      portfolio: { type: [String] },
-      yearsOfExperience: { type: String },
-      Specializations: { type: String },
-      Certifications: { type: String },
-      Education: { type: String },
-    },
-  })
-  professionalInformation : {
-    resume: string;
-    portfolio: string[];
-    yearsOfExperience: string;
-    specializations: string;
-    bio: string;
-    education: string;
-  };
-
-  @Prop({
-    type: {
-      availability: { type: String },
-      wokHours: { type: String },
-      responseTime: { type: String },
-    },
-  })
-  workAvailability : {
-    availability: string;
-    wokHours: string;
-    responseTime: string;
-  };
-
-  @Prop({ required: true, enum: ['admin', 'jobPoster', 'jobseeker', 'employer', 'cvwriter', 'linkedinoptimizer'], default: 'jobseeker' })
-  role: string;
-
-  @Prop({ type: Number, default: 0 })
-  referalBalance: number;
+  @Prop({ type: String })
+  state: string;
 
   @Prop({ type: Boolean, default: false })
-  suspend: boolean;
+  isVerified: boolean;
 
+  @Prop({ type: Boolean, default: false })
+  suspended: boolean;
+
+  // Role field
+  @Prop({
+    required: true,
+    enum: ['jobSeeker', 'employer', 'admin', 'cvWriter', 'linkedinOptimizer', 'jobPoster'],
+  })
+  role: string;
 }
 
-export const userSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);
+
+// Discriminator for JobSeeker
+export const JobSeekerSchema = UserSchema.discriminator(
+  'JobSeeker',
+  new MongooseSchema({
+    skills: { type: [String] },
+    yearsOfExperience: { type: Number },
+    qualification: { type: String },
+    cv: { type: String },
+  })
+);
+
+// Discriminator for Employer
+export const EmployerSchema = UserSchema.discriminator(
+  'Employer',
+  new MongooseSchema({
+    companyName: { type: String },
+    companyAddress: { type: String },
+    companyDescription: { type: String },
+    industry: { type: String },
+    numberOfEmployees: { type: Number },
+    companyLogo: { type: String },
+    employerType: { type: String },
+    website: { type: String },
+    registrationNumber: { type: String },
+    registrationImage: { type: String },
+    isApproved: { type: Boolean, default: false },
+  })
+);
+
+// Discriminator for CvWriter
+export const CvWriterSchema = UserSchema.discriminator(
+  'CvWriter',
+  new MongooseSchema({
+    portfolio: { type: String },
+    yearsOfExperience: { type: Number },
+    specialization: { type: String },
+    bio: { type: String },
+    education: { type: String },
+    workHours: { type: String },
+    responseTime: { type: String },
+    isApproved: { type: Boolean, default: false },
+  })
+);
+
+// Discriminator for LinkedinOptimizer
+export const LinkedinOptimizerSchema = UserSchema.discriminator(
+  'LinkedinOptimizer',
+  new MongooseSchema({
+    linkedinProfile: { type: String },
+    currentJob: { type: String },
+    industry: { type: String },
+    yearsOfExperience: { type: Number },
+    skills: { type: String },
+    optimizationGoal: { type: String },
+    targetAudience: { type: String },
+    optimizeSections: { type: String },
+    workHours: { type: String },
+    responseTime: { type: String },
+    isApproved: { type: Boolean, default: false },
+  })
+);
+
+// INTERFACES
+export interface JobSeeker extends User {
+  skills: string[];
+  yearsOfExperience: number;
+  qualification: string;
+  cv: string;
+}
+
+export interface Employer extends User {
+  companyName: string;
+  companyAddress: string;
+  companyDescription: string;
+  industry: string;
+  numberOfEmployees: number;
+  companyLogo: string;
+  employerType: string;
+  website: string;
+  registrationNumber: string;
+  registrationImage: string;
+  isApproved: boolean;
+}
+
+export interface CvWriter extends User {
+  portfolio: string;
+  yearsOfExperience: number;
+  specialization: string;
+  bio: string;
+  education: string;
+  workHours: string;
+  responseTime: string;
+  isApproved: boolean;
+}
+
+export interface LinkedinOptimizer extends User {
+  linkedinProfile: string;
+  currentJob: string;
+  industry: string;
+  yearsOfExperience: number;
+  skills: string;
+  optimizationGoal: string;
+  targetAudience: string;
+  optimizeSections: string;
+  workHours: string;
+  responseTime: string;
+  isApproved: boolean;
+}

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schema/user.schema';
+import { CvWriter, Employer, JobSeeker, LinkedinOptimizer, User } from './schema/user.schema';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -17,6 +17,10 @@ import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel('JobSeeker') private readonly jobSeekerModel: Model<JobSeeker>,
+    @InjectModel('Employer') private readonly employerModel: Model<Employer>,
+    @InjectModel('CvWriter') private readonly cvWriterModel: Model<CvWriter>,
+    @InjectModel('LinkedinOptimizer') private readonly linkedinOptimizerModel: Model<LinkedinOptimizer>,
     @InjectModel(PasswordResetToken.name) private passwordResetModel: Model<PasswordResetToken>,
     @InjectModel(EmailVerificationToken.name) private EmailVerificationTokenModel: Model<EmailVerificationToken>,
     @InjectModel(SubscriptionPayment.name) private SubscriptionPaymentModel: Model<SubscriptionPayment>,
@@ -39,46 +43,43 @@ export class UserService {
   }
 
   async registerJobseeker(dto: JobseekerSignUpDto) {
-    const { email, password, role, name, qualification } = dto;
-    console.log(dto)
-
+    const { email, password, name, qualification } = dto;
+    
     // Ensure the password is provided
     if (!password) {
       throw new BadRequestException('Password is required');
     }
-
+  
     // Check if the user with email already exists
     const emailExist = await this.userModel.findOne({ email });
     if (emailExist) {
       throw new UnauthorizedException('Email already exists');
     }
-
+  
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new this.userModel({
+  
+    // Explicitly set the role as 'jobSeeker'
+    const newUser = new this.jobSeekerModel({
       ...dto,
       password: hashedPassword,
+      role: 'jobSeeker',  // Make sure to set the role
     });
-
-    if (role === 'jobseeker') {
-      newUser.isActive = true;
-    }
-
+  
     // Save the user to the database
     await newUser.save();
-
+  
     const token = generateToken();
-
+  
     const hashedToken = await bcrypt.hash(token, 10);
-
+  
     await this.EmailVerificationTokenModel.create({
       userId: newUser._id,
       token: hashedToken,
     });
-
+  
     sendVerificationToken(email, token, name);
-
+  
     return {
       message: {
         id: newUser._id,
@@ -88,8 +89,7 @@ export class UserService {
       },
       token: token,
     };
-  }
-
+  }  
 
   async registerEmployer(dto: EmployerSignUpDto) {
     // Logic for registering an employer
@@ -100,19 +100,15 @@ export class UserService {
       throw new UnauthorizedException('Email already exists');
     }
 
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
+    const newUser = new this.employerModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
+      role: 'employer'
     });
 
-
-    if (role === 'jobseeker') {
-      newUser.isActive = true
-    }
 
     // Save user to database
     await newUser.save();
@@ -144,13 +140,9 @@ export class UserService {
 
     const newUser = new this.userModel({
       ...dto, // Spread registerDto first
-      password: hashedPassword, // Then overwrite the password with the hashed password
+      password: hashedPassword, 
+      role: 'linkedinOptimizer'
     });
-
-
-    if (role === 'jobseeker') {
-      newUser.isActive = true
-    }
 
     // Save user to database
     await newUser.save();
@@ -178,19 +170,14 @@ export class UserService {
       throw new UnauthorizedException('Email already exists');
     }
 
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new this.userModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
+      role: 'cvWriter'
     });
-
-
-    if (role === 'jobseeker') {
-      newUser.isActive = true
-    }
 
     // Save user to database
     await newUser.save();
@@ -444,13 +431,13 @@ export class UserService {
     }
 
     // Toggle the suspend status (true to false, false to true)
-    user.suspend = !user.suspend;
+    user.suspended = !user.suspended;
 
     await user.save();
 
     // Return message based on the new suspend status
     return {
-      message: user.suspend ? 'User suspended successfully' : 'User has been resumed successfully'
+      message: user.suspended ? 'User suspended successfully' : 'User has been resumed successfully'
     };
   }
 
@@ -468,33 +455,33 @@ export class UserService {
   }
 
   
-  async addRating(owner: string, userId: string, ratingValue: number) {
-    const product = await this.userModel.findById(owner);
+//   async addRating(owner: string, userId: string, ratingValue: number) {
+//     const product = await this.userModel.findById(owner);
     
-    if (!product) {
-        throw new Error('Product not found');
-    }
+//     if (!product) {
+//         throw new Error('Product not found');
+//     }
 
-    // Check if the user has already rated
-    const existingRatingIndex = product.ratings.findIndex(
-        (rating) => rating.userId.toString() === userId
-    );
+//     // Check if the user has already rated
+//     const existingRatingIndex = product.ratings.findIndex(
+//         (rating) => rating.userId.toString() === userId
+//     );
 
-    if (existingRatingIndex > -1) {
-        // Update the existing rating
-        product.ratings[existingRatingIndex].rating = ratingValue;
-    } else {
-        // Add a new rating
-        product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
-    }
-    // Recalculate the average rating
-    const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
-    product.averageRating = totalRatings / product.ratings.length;
+//     if (existingRatingIndex > -1) {
+//         // Update the existing rating
+//         product.ratings[existingRatingIndex].rating = ratingValue;
+//     } else {
+//         // Add a new rating
+//         product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
+//     }
+//     // Recalculate the average rating
+//     const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
+//     product.averageRating = totalRatings / product.ratings.length;
 
-    // Save the updated product
-    await product.save();
-    return product;
-}
+//     // Save the updated product
+//     await product.save();
+//     return product;
+// }
 
 
 }

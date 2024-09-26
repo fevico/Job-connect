@@ -43,10 +43,10 @@ export class ReferalController {
         return this.referalService.getMyReferralEarnings(userId);
     }
 
-    @Patch('update-referral-status')
-    @UseGuards(AuthenticationGuard)
-    updateReferralStatus(@Body() body: any, @Req() req: Request){
-        const userId = new Types.ObjectId(req.user.id);
-        return this.referalService.updateReferralStatus(body, userId.toHexString());
-    }
+    // @Patch('update-referral-status')
+    // @UseGuards(AuthenticationGuard)
+    // updateReferralStatus(@Body() body: any, @Req() req: Request){
+    //     const userId = new Types.ObjectId(req.user.id);
+    //     return this.referalService.updateReferralStatus(body, userId.toHexString());
+    // }
 }

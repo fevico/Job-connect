@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsIn, IsOptional, IsNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsNumber } from 'class-validator';
 
 export class JobseekerSignUpDto {
   @IsNotEmpty()
@@ -23,11 +23,15 @@ export class JobseekerSignUpDto {
 
   @IsNotEmpty()
   @IsString()
-  Cv: string;
+  cv: string;
 
   @IsNotEmpty()
   @IsString()
-  location: string;
+  country: string;
+
+  @IsNotEmpty()
+  @IsString()
+  state: string;
 
   @IsNotEmpty()
   @IsString()
@@ -68,11 +72,35 @@ export class EmployerSignUpDto {
 
   @IsNotEmpty()
   @IsString()
-  location: string;
+  country: string;
+
+  @IsNotEmpty()
+  @IsString()
+  state: string;
 
   @IsNotEmpty()
   @IsString()
   gender: string;
+
+  @IsNotEmpty()
+  @IsString()
+  numberOfEmployees: number;
+
+  @IsNotEmpty()
+  @IsString()
+  industry: string; 
+
+  @IsNotEmpty()
+  @IsString()
+  employerType: string; 
+
+  @IsNotEmpty()
+  @IsString()
+  registrationNumber: string; 
+
+  @IsNotEmpty()
+  @IsString()
+  registrationImage: string; 
 
   @IsNotEmpty()
   @IsString()

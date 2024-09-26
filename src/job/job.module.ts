@@ -4,7 +4,7 @@ import { JobService } from './job.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Job, JobSchema } from './schema/job.schema';
 import { JwtModule } from '@nestjs/jwt';
-import { User, userSchema } from 'src/user/schema/user.schema';
+import { User, UserSchema } from 'src/user/schema/user.schema';
 import { AppliedJob, AppliedJobSchema } from './schema/appliedJob.schema';
 import { Referal, ReferalSchema } from 'src/referal/schema/referal.schema';
 import { SubscriptionPayment, SubscriptionPaymentSchema } from 'src/subscription/schema/subscriptionPayment';
@@ -17,7 +17,7 @@ import { SubscriptionPayment, SubscriptionPaymentSchema } from 'src/subscription
     }),
     MongooseModule.forFeature([
       { name: Job.name, schema: JobSchema },
-      { name: User.name, schema: userSchema },
+      { name: User.name, schema: UserSchema },
       { name: AppliedJob.name, schema: AppliedJobSchema },
       { name: Referal.name, schema: ReferalSchema },
       { name: SubscriptionPayment.name, schema: SubscriptionPaymentSchema },

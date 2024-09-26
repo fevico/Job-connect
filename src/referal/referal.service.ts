@@ -58,38 +58,38 @@ constructor(
         return this.referalModel.find({userId}).populate('jobId', '-password')
     }
 
-    async updateReferralStatus(body: any, userId: string) {
-        const { referalId, referal, jobId, status } = body;
+    // async updateReferralStatus(body: any, userId: string) {
+    //     const { referalId, referal, jobId, status } = body;
       
-        const job = await this.jobModel.findById(jobId).exec();
-        if (!job) throw new NotFoundException('Job does not exist');
-        if (job.userId.toString() !== userId) throw new NotFoundException('You are not authorized to update this job');
+    //     const job = await this.jobModel.findById(jobId).exec();
+    //     if (!job) throw new NotFoundException('Job does not exist');
+    //     if (job.userId.toString() !== userId) throw new NotFoundException('You are not authorized to update this job');
 
-        const user = await this.userModel.findById(userId).exec();
-        if (!user) throw new NotFoundException('User does not exist');
+    //     const user = await this.userModel.findById(userId).exec();
+    //     if (!user) throw new NotFoundException('User does not exist');
       
-        const referralExists = await this.referalModel.findOne({ userId: referal }).exec();
-        if (!referralExists) throw new NotFoundException('Referral does not exist');
+    //     const referralExists = await this.referalModel.findOne({ userId: referal }).exec();
+    //     if (!referralExists) throw new NotFoundException('Referral does not exist');
       
-        const updatedReferral = await this.referalModel.findByIdAndUpdate(
-          referalId,
-          { status },
-          { new: true } // This option returns the updated document
-        ).exec();
+    //     const updatedReferral = await this.referalModel.findByIdAndUpdate(
+    //       referalId,
+    //       { status },
+    //       { new: true } // This option returns the updated document
+    //     ).exec();
 
-        if(status === 'approved'){
-            user.referalBalance = user.referalBalance + job.referalAmount
-            await referralExists.save()
+    //     if(status === 'approved'){
+    //         user.referalBalance = user.referalBalance + job.referalAmount
+    //         await referralExists.save()
 
-        }else{
-            user.referalBalance = 0
-            await referralExists.save()
-            // job.referalCount = job.referalCount + 1
-            // await job.save()
-        }
+    //     }else{
+    //         user.referalBalance = 0
+    //         await referralExists.save()
+    //         // job.referalCount = job.referalCount + 1
+    //         // await job.save()
+    //     }
       
-        if (!updatedReferral) throw new NotFoundException('Failed to update referral');
+    //     if (!updatedReferral) throw new NotFoundException('Failed to update referral');
       
-        return updatedReferral;
-      }      
+    //     return updatedReferral;
+    //   }      
 }

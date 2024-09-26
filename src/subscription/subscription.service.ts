@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import  moment from 'moment';
 import { Model } from 'mongoose';
 import { Subscription, SubscriptionDocument } from './schema/subcription.schema';
 import { CreateSubscriptionDto } from './dto/subcription.dto';
 import * as https from 'https';
-import { User } from 'src/user/schema/user.schema';
+import { Employer, User } from 'src/user/schema/user.schema';
 import { SubscriptionPayment } from './schema/subscriptionPayment';
 
 
@@ -112,8 +112,31 @@ export class SubscriptionService {
             if (!user) {
               throw new NotFoundException('User not found');
             }
-            const company = user.companyName;
+
+            function isEmployer(user: User): user is Employer {
+              return (user as Employer).companyName !== undefined; // Checks if companyName exists
+            }
+            
+            // Usage in your code
+            if (isEmployer(user)) {
+              const employerUser: Employer = user; // Now TypeScript knows that user is an Employer
+              // You can now safely access employer-specific properties
+              const companyName = employerUser.companyName; // Safe access
+            } else {
+              // Handle the case where the user is not an Employer
+              throw new BadRequestException('User is not an employer');
+
+            }
+            
+            // if (user.role === 'employer') {
+            //   const employerUser = user as Employer; // Type assertion
+            //   const companyName = employerUser.companyName; // Safe access
+            //   // Do something with companyName
+            // } else {
+            //   throw new BadRequestException('User is not an employer');
+            // }
   
+              
             // Calculate subscription end date (one month from current date)
             const currentDate = new Date();
             let subscriptionEndDate = new Date(currentDate.setMonth(currentDate.getMonth() + 1));
@@ -169,7 +192,7 @@ export class SubscriptionService {
                 email: customer.email,
                 paymentDate: new Date(),
                 amountPaid: amount / 100,
-                companyName: company,
+                // companyName: company,
                 startDate: currentDate,
                 endDate: subscriptionEndDate,
                 paidJobLimit,  // Assign job posting limit

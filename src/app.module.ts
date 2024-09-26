@@ -32,7 +32,7 @@ import { ContactModule } from './contact/contact.module';
     SubscriptionModule,
     GoogleModule,
     ProductModule,
-    ContactModule
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],

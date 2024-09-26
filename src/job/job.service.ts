@@ -72,7 +72,7 @@ export class JobService {
           const createdJob = new this.jobModel({
             ...jobDto,
             userId: user._id, // Assign the userId to the job
-            companyName: user.companyName,
+            // companyName: user.companyName,
             expiresAt: subscription ? subscription.endDate : null, // Set expiration if applicable
           });
       
@@ -123,10 +123,10 @@ export class JobService {
         const user = await this.userModel.findById(userId);
         if (!user) throw new NotFoundException("User not found!");
 
-        const cv = resume || user.Cv;
+        // const cv = resume || user.cv;
 
-        const cvDetails = user.Cv
-        if (!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
+        // const cvDetails = user.cv
+        // if (!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
 
         if (!user.email) {
             throw new BadRequestException("User email is required to apply for a job");
@@ -145,7 +145,7 @@ export class JobService {
             jobId: id,
             userId,
             userEmail: user.email,
-            resume: cv,
+            // resume: cv,
             jobTitle: job.title, // Populate the job title
             companyName: job.companyName, // Populate the company name 
             name: user.name, // Populate the user's name
@@ -233,13 +233,13 @@ export class JobService {
 
         const referral = await this.referalModel.findOne({referredEmail });
 
-        if(referral){
-            const giveReferral = await this.userModel.findById(referral.userId)
-            if(giveReferral){
-                giveReferral.referalBalance += jobExist.referalAmount;
-                await giveReferral.save()
-            }
-        }
+        // if(referral){
+        //     const giveReferral = await this.userModel.findById(referral.userId)
+        //     if(giveReferral){
+        //         giveReferral.referalBalance += jobExist.referalAmount;
+        //         await giveReferral.save()
+        //     }
+        // }
 
         hireApplicantMail(user.email, user.name, jobExist.title, jobExist.companyName);
 
