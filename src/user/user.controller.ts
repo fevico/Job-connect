@@ -148,4 +148,3 @@ async registerUser(@Body() body: any) {
   //     return this.userService.addRating(owner, userId, ratingValue);
   // }
 }
-

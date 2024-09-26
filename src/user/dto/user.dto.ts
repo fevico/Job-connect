@@ -4,7 +4,7 @@ export class JobseekerSignUpDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  
+
   @IsNotEmpty()
   @MinLength(6)
   password: string;
@@ -44,12 +44,12 @@ export class JobseekerSignUpDto {
   @IsNotEmpty()
   @IsString()
   role: string;
-} 
+}
 export class EmployerSignUpDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  
+
   @IsNotEmpty()
   @MinLength(6)
   password: string;
@@ -88,38 +88,79 @@ export class EmployerSignUpDto {
 
   @IsNotEmpty()
   @IsString()
-  industry: string; 
+  industry: string;
 
   @IsNotEmpty()
   @IsString()
-  employerType: string; 
+  employerType: string;
 
   @IsNotEmpty()
   @IsString()
-  registrationNumber: string; 
+  registrationNumber: string;
 
   @IsNotEmpty()
   @IsString()
-  registrationImage: string; 
+  registrationImage: string;
 
   @IsNotEmpty()
   @IsString()
   role: string;
-} 
+}
 
-export class LinkedinOptimizerSignUpDto{
+export class LinkedinOptimizerSignUpDto {
   @IsNotEmpty()
   @IsString()
   linkedinProfile: string;
 
   @IsNotEmpty()
   @IsString()
-  linkedinOptimization: string;
+  workHours: string;
+
+  @IsNotEmpty()
+  @IsString()
+  currentJob: string;
+
+  @IsNotEmpty()
+  @IsString()
+  industry: string;
+
+  @IsNotEmpty()
+  @IsString()
+  yearsOfExperience: number;
+
+
+  @IsNotEmpty()
+  @IsString()
+  skills: string;
+
+  @IsNotEmpty()
+  @IsString()
+  targetAudience: string;
+
+  @IsNotEmpty()
+  @IsString()
+  optimizeSections: string;
+
+  @IsNotEmpty()
+  @IsString()
+  optimizationGoal: string;
+
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
+  @IsNotEmpty()
+  @IsString()
+  state: string;
+
+  @IsNotEmpty()
+  @IsString()
+  responseTime: string;
 
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  
+
   @IsNotEmpty()
   @MinLength(6)
   password: string;
@@ -143,16 +184,37 @@ export class LinkedinOptimizerSignUpDto{
 export class CvWriterSignUpDto {
   @IsString()
   @IsNotEmpty()
-  professionalInformation: string;
+  portfolio: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  yearsOfExperience: number;
 
   @IsString()
   @IsNotEmpty()
-  workAvailability: string;
+  specialization: string;
+
+  @IsString()
+  @IsNotEmpty()
+  bio: string;
+
+  @IsString()
+  @IsNotEmpty()
+  education: string;
+
+  @IsString()
+  @IsNotEmpty()
+  workHours: string;
+
+  @IsString()
+  @IsNotEmpty()
+  responseTime: string;
+
 
   @IsNotEmpty()
   @IsEmail()
   email: string;
-  
+
   @IsNotEmpty()
   @MinLength(6)
   password: string;
@@ -171,7 +233,11 @@ export class CvWriterSignUpDto {
 
   @IsNotEmpty()
   @IsString()
-  location: string;
+  country: string;
+
+  @IsNotEmpty()
+  @IsString()
+  state: string;
 
   @IsNotEmpty()
   @IsString()
@@ -192,7 +258,7 @@ export class RegisterDto {
   role: string; // This will be used to determine the role-specific DTO
 }
 
-export class SignInDto{
+export class SignInDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -201,19 +267,19 @@ export class SignInDto{
   password: string;
 }
 
-export class SignUpDto{
+export class SignUpDto {
   @IsNotEmpty()
   @IsString()
   role: string;
 }
 
-export class ForgetPasswordDto{
+export class ForgetPasswordDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
 }
 
-export class SuspendUserDto{
+export class SuspendUserDto {
   @IsNotEmpty()
   @IsString()
   userId: string;
