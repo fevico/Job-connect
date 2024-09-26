@@ -141,5 +141,15 @@ async registerUser(@Body() body: any) {
     return this.userService.approveUser(body);
   }
 
+  @Get('all-approved-users')
+  async getAllApprovedUsers() {
+    return this.userService.getAllApprovedUsers();
+  }
+
+  @Get("all-unapproved-users")
+  async getAllUnapprovedUsers() {
+    return this.userService.getAllUnapprovedUsers();
+  }
+
 }
 

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Job } from './schema/job.schema';
 import { Model } from 'mongoose';
 import { JobDto, UpdateJobDto } from './dto/job.dto';
-import { User } from 'src/user/schema/user.schema';
+import { JobSeeker, User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
 import { hireApplicantMail, rejectedMail, shortlistMail } from 'src/utils/mail';
@@ -120,13 +120,14 @@ export class JobService {
 
         if (job.status === "closed") throw new BadRequestException("Job has been closed!")
 
-        const user = await this.userModel.findById(userId);
+        const user = await this.userModel.findById(userId) as JobSeeker;
+        
         if (!user) throw new NotFoundException("User not found!");
 
-        // const cv = resume || user.cv;
+         const cv = resume || user.cv;
 
-        // const cvDetails = user.cv
-        // if (!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
+         const cvDetails = user.cv
+        if (!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!")
 
         if (!user.email) {
             throw new BadRequestException("User email is required to apply for a job");
@@ -145,12 +146,11 @@ export class JobService {
             jobId: id,
             userId,
             userEmail: user.email,
-            // resume: cv,
+             resume: cv,
             jobTitle: job.title, // Populate the job title
             companyName: job.companyName, // Populate the company name 
             name: user.name, // Populate the user's name
         });
-        console.log(appliedJob)
 
         await appliedJob.save();
 

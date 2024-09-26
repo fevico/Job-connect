@@ -49,7 +49,6 @@ export class UserService {
     if (!password) {
       throw new BadRequestException('Password is required');
     }
-  
     // Check if the user with email already exists
     const emailExist = await this.userModel.findOne({ email });
     if (emailExist) {
@@ -138,7 +137,7 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
+    const newUser = new this.linkedinOptimizerModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, 
       role: 'linkedinOptimizer'
@@ -173,7 +172,7 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
+    const newUser = new this.cvWriterModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
       role: 'cvWriter'
@@ -305,12 +304,8 @@ export class UserService {
     const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new NotFoundException({ message: 'User not found' })
-    }
-
-    // Generate reset token and expiry time
-    // const token = crypto.randomBytes(20).toString('hex'); // Generate a random token  
+    } 
     const token = generateToken()
-
 
     const hashedToken = await bcrypt.hash(token, 10)
     // Save token and expiry time to user document
@@ -466,6 +461,22 @@ async approveUser(body: any) {
   (user as any).isApproved = true; // Temporarily cast to `any`
   await user.save();
   return { message: 'User approved successfully' };
+}
+
+async getAllApprovedUsers(){
+  const users = await this.userModel.find({isApproved: true}).select('-password');
+  if (!users || users.length === 0) {
+    throw new NotFoundException('No approved users found');
+  }
+  return users;
+}
+
+async getAllUnapprovedUsers(){
+  const users = await this.userModel.find({isApproved: false}).select('-password');
+  if (!users || users.length === 0) {
+    throw new NotFoundException('No unapproved users found');
+  }
+  return users;
 }
 
 }
