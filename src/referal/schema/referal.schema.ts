@@ -7,10 +7,16 @@ export class Referal extends Document {
   jobId: MongooseSchema.Types.ObjectId;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  userId: MongooseSchema.Types.ObjectId;
+  referredBy: MongooseSchema.Types.ObjectId;
 
   @Prop({type: String})
   referredEmail: string;
+
+  @Prop({type: String})
+  resume: string;
+
+  @Prop({type: String})
+  linkedinProfile: string;
 
   @Prop({ type: Date, default: Date.now })
   referedAt: Date;
