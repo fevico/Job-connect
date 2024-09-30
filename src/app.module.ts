@@ -13,6 +13,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { GoogleModule } from './google/google.module';
 import { ProductModule } from './product/product.module';
 import { ContactModule } from './contact/contact.module';
+import { ReviewModule } from './review/review.module';
 
 
 @Module({
@@ -33,6 +34,7 @@ import { ContactModule } from './contact/contact.module';
     GoogleModule,
     ProductModule,
     ContactModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

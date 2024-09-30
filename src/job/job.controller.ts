@@ -91,7 +91,7 @@ export class JobController {
     @Roles(['admin', 'employer', 'jobPoster'])
     @Post('shortlist-application/:id')
     shortlistJob(@Param('id') id: string, @Body() body: any){
-        return this.jobService.shortlistJob(id, body)
+        return this.jobService.shortlistApplicant(id, body)
     }
 
     @Post('reject-application/:id')

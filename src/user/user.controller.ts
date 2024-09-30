@@ -136,15 +136,19 @@ async registerUser(@Body() body: any) {
     return this.userService.subscribedPlan(userId);
   }
 
-  
-  // @Post('add-rating/:owner')
-  // @UseGuards(AuthenticationGuard)
-  // async rateProduct(
-  //     @Param('owner') owner: string,
-  //     @Body('rating') ratingValue: number,
-  //     @Req() req: Request
-  // ) {
-  //     const userId = req.user.id;
-  //     return this.userService.addRating(owner, userId, ratingValue);
-  // }
+  @Post('approve-user')
+  async approveUser(@Body() body: string) {
+    return this.userService.approveUser(body);
+  }
+
+  @Get('all-approved-users')
+  async getAllApprovedUsers() {
+    return this.userService.getAllApprovedUsers();
+  }
+
+  @Get("all-unapproved-users")
+  async getAllUnapprovedUsers() {
+    return this.userService.getAllUnapprovedUsers();
+  }
+
 }

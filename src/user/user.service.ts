@@ -49,7 +49,6 @@ export class UserService {
     if (!password) {
       throw new BadRequestException('Password is required');
     }
-  
     // Check if the user with email already exists
     const emailExist = await this.userModel.findOne({ email });
     if (emailExist) {
@@ -138,7 +137,7 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
+    const newUser = new this.linkedinOptimizerModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, 
       role: 'linkedinOptimizer'
@@ -173,7 +172,7 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
+    const newUser = new this.cvWriterModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
       role: 'cvWriter'
@@ -305,12 +304,8 @@ export class UserService {
     const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new NotFoundException({ message: 'User not found' })
-    }
-
-    // Generate reset token and expiry time
-    // const token = crypto.randomBytes(20).toString('hex'); // Generate a random token  
+    } 
     const token = generateToken()
-
 
     const hashedToken = await bcrypt.hash(token, 10)
     // Save token and expiry time to user document
@@ -454,35 +449,35 @@ export class UserService {
   }
   }
 
-  
-//   async addRating(owner: string, userId: string, ratingValue: number) {
-//     const product = await this.userModel.findById(owner);
-    
-//     if (!product) {
-//         throw new Error('Product not found');
-//     }
 
-//     // Check if the user has already rated
-//     const existingRatingIndex = product.ratings.findIndex(
-//         (rating) => rating.userId.toString() === userId
-//     );
+async approveUser(body: any) {
+  const { userId } = body;
+  const user = await this.userModel.findById(userId);
 
-//     if (existingRatingIndex > -1) {
-//         // Update the existing rating
-//         product.ratings[existingRatingIndex].rating = ratingValue;
-//     } else {
-//         // Add a new rating
-//         product.ratings.push({ userId: new Types.ObjectId(userId), rating: ratingValue });
-//     }
-//     // Recalculate the average rating
-//     const totalRatings = product.ratings.reduce((sum, r) => sum + r.rating, 0);
-//     product.averageRating = totalRatings / product.ratings.length;
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
 
-//     // Save the updated product
-//     await product.save();
-//     return product;
-// }
+  (user as any).isApproved = true; // Temporarily cast to `any`
+  await user.save();
+  return { message: 'User approved successfully' };
+}
 
+async getAllApprovedUsers(){
+  const users = await this.userModel.find({isApproved: true}).select('-password');
+  if (!users || users.length === 0) {
+    throw new NotFoundException('No approved users found');
+  }
+  return users;
+}
+
+async getAllUnapprovedUsers(){
+  const users = await this.userModel.find({isApproved: false}).select('-password');
+  if (!users || users.length === 0) {
+    throw new NotFoundException('No unapproved users found');
+  }
+  return users;
+}
 
 }
 
