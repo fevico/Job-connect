@@ -19,13 +19,13 @@ async registerUser(@Body() body: any) {
   const { role, ...userData } = body;
 
   switch (role) {
-    case 'jobSeeker':
+    case 'jobseeker':
       return this.userService.registerJobseeker(userData);
     case 'employer':
       return this.userService.registerEmployer(userData);
-    case 'cvWriter':
+    case 'cvwriter':
       return this.userService.registerLinkedinOptimizer(userData);
-    case 'linkedinOptimizer':
+    case 'linkedinoptimizer':
       return this.userService.registerCvWriter(userData);
     default:
       throw new BadRequestException('Invalid role provided');

@@ -62,7 +62,7 @@ export class UserService {
     const newUser = new this.jobSeekerModel({
       ...dto,
       password: hashedPassword,
-      role: 'jobSeeker',  // Make sure to set the role
+      role: 'jobseeker',  // Make sure to set the role
     });
   
     // Save the user to the database
@@ -140,7 +140,7 @@ export class UserService {
     const newUser = new this.linkedinOptimizerModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, 
-      role: 'linkedinOptimizer'
+      role: 'linkedinoptimizer'
     });
 
     // Save user to database
@@ -175,7 +175,7 @@ export class UserService {
     const newUser = new this.cvWriterModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
-      role: 'cvWriter'
+      role: 'cvwriter'
     });
 
     // Save user to database

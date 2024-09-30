@@ -38,7 +38,7 @@ export class User {
   // Role field
   @Prop({
     required: true,
-    enum: ['jobSeeker', 'employer', 'admin', 'cvWriter', 'linkedinOptimizer', 'jobPoster'],
+    enum: ['jobseeker', 'employer', 'admin', 'cvWriter', 'linkedinOptimizer', 'jobPoster'],
   })
   role: string;
 }
