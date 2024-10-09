@@ -122,5 +122,13 @@ export class ReferalService {
   
     return result;
   }
+
+  async getUserReferrals(userId: string) {
+    const referrals = await this.referralModel.find({ referredBy: userId });
+    if (!referrals || referrals.length === 0) {
+      throw new NotFoundException('No referral found');
+    }
+    return referrals;
+  }
   
 }

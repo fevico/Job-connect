@@ -58,4 +58,11 @@ export class ReferalController {
     getJobReferral(){
         return this.referalService.getReferralJob()
     }
+
+    @Get('user-referrals')
+    @UseGuards(AuthenticationGuard)
+    getUserReferrals(@Req() req: Request){
+        const userId = req.user.id;
+        return this.referalService.getUserReferrals(userId);
+    }
 }

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema()
+@Schema({timestamps: true})
 export class Job extends Document {
   @Prop({ type: String, required: true })
   title: string;
@@ -46,13 +46,7 @@ export class Job extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   userId: MongooseSchema.Types.ObjectId;
 
-  @Prop({
-    type: String,
-    enum: ['active', 'closed', 'expired'],
-    default: 'active',
-  })
-
-  @Prop({ default: Date.now })
+  @Prop({type: Date, default: Date.now })
   postedAt: Date; // When the job was posted
 
   @Prop({ type: Date })

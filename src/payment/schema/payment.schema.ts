@@ -27,6 +27,12 @@ export class Payment extends Document {
     @Prop({ type: Number, required: true })
     packagePrice: number;
 
+    @Prop({type: String })
+    resume: string;
+
+    @Prop({type: String })
+    linkdinUrl: string;
+
     @Prop({ type: String, required: true })
     status: string;
 
