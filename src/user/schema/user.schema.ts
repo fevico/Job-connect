@@ -72,6 +72,7 @@ export const EmployerSchema = UserSchema.discriminator(
     registrationNumber: { type: String },
     registrationImage: { type: String },
     isApproved: { type: Boolean, default: false },
+    aboutCompany: { type: String },
   })
 );
 
