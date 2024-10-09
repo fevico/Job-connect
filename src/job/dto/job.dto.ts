@@ -24,18 +24,11 @@ export class JobDto{
     @IsNotEmpty()
     skills: string
 
-    @IsNotEmpty()
-    aboutCompany: string
-
-    @IsString()
+      @IsString()
     @IsNotEmpty()
     categoryId: string
 
-    @IsString()
-    @IsNotEmpty()
-    companyName: string
-
-    @IsString()
+     @IsString()
     @IsNotEmpty()
     currency: string
 

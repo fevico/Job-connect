@@ -37,7 +37,7 @@ export class Job extends Document {
   @Prop({ type: String, required: true })
   description: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   companyName: string;
 
   @Prop({ type: Boolean, default: false })
@@ -61,7 +61,7 @@ export class Job extends Document {
   @Prop({ type: String, enum: ['active', 'closed'], default: 'active' })
   status: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   aboutCompany: string;
 
   @Prop({ type: String, enum: ['yes', 'no'], default: 'no' })
