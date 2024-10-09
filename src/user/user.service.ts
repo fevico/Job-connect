@@ -12,7 +12,6 @@ import { resetPasswordToken, sendVerificationToken } from 'src/utils/mail';
 import { CvWriterUpdateDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto } from './dto/profile.dto';
 import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment';
 
-
 @Injectable()
 export class UserService {
   constructor(

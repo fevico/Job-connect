@@ -60,6 +60,10 @@ export class EmployerSignUpDto {
 
   @IsNotEmpty()
   @IsString()
+  aboutCompany: string;
+
+  @IsNotEmpty()
+  @IsString()
   name: string;
 
   @IsNotEmpty()

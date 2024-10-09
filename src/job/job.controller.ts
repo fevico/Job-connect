@@ -18,6 +18,7 @@ export class JobController {
         const userId = req.userId;
         console.log(userId);
 
+
         // Use userId as needed for further business logic
         return this.jobService.createJob(jobDto, userId);
     }

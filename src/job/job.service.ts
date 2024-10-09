@@ -22,7 +22,10 @@ export class JobService {
 
     async createJob(jobDto: JobDto, userId: string): Promise<Job> {
         try {
-          const user = await this.userModel.findById(userId);
+          console.log(userId);
+      
+          const user = await this.userModel.findOne({ _id: userId });
+
       
           // Check if user exists
           if (!user) throw new NotFoundException("User not found!");
