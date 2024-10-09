@@ -35,6 +35,10 @@ export class JobDto{
     @IsNotEmpty()
     companyName: string
 
+    @IsString()
+    @IsNotEmpty()
+    currency: string
+
 }
 export class UpdateJobDto {
 
