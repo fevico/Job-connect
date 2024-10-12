@@ -18,6 +18,9 @@ export class AppliedJob extends Document {
   @Prop({ type: String, required: true })
   name: string;
 
+  @Prop({ type: String })
+  linkedIn: string;
+
   @Prop({ type: Date, default: Date.now })
   appliedAt: Date;
 

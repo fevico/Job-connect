@@ -52,6 +52,7 @@ export const JobSeekerSchema = UserSchema.discriminator(
     skills: { type: [String] },
     yearsOfExperience: { type: Number },
     qualification: { type: String },
+    linkedInProfile: { type: String },
     cv: { type: String },
     referralBalance: { type: Number, default: 0 },
   })
@@ -114,6 +115,7 @@ export interface JobSeeker extends User {
   skills: string[];
   yearsOfExperience: number;
   qualification: string;
+  linkedInProfile: string;
   cv: string;
   referralBalance: number;
 }

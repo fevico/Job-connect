@@ -124,6 +124,8 @@ export class JobService {
   
       const cv = resume || user.cv;
       const cvDetails = user.cv;
+
+      const linkedIn = user.linkedInProfile || "Not provided"
       
       if (!cvDetails) throw new BadRequestException("Please upload your CV before applying for a job!");
   
@@ -149,6 +151,7 @@ export class JobService {
           jobTitle: job.title,
           companyName: job.companyName,
           name: user.name,
+          linkedIn
       });
   
       await appliedJob.save();
