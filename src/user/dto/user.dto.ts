@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsNumber, IsOptional } from 'class-validator';
 
 export class JobseekerSignUpDto {
   @IsNotEmpty()
@@ -40,6 +40,10 @@ export class JobseekerSignUpDto {
   @IsNotEmpty()
   @IsString()
   gender: string;
+
+  @IsOptional()
+  @IsString()
+  linkedInProfile?: string;
 
   @IsNotEmpty()
   @IsString()
