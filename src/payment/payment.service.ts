@@ -278,4 +278,19 @@ export class PaymentService {
     return wallet;
   }
 
+  async getUserOrder(userId:string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const order = await this.paymentModel.findOne({userId});
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return {order: {status: order.serviceStatus, amount: order.packagePrice, productName: order.packageTitle, paidAt: order.paidAt}};
+
+  }
+
 }

@@ -31,9 +31,6 @@ export class Job extends Document {
   @Prop({ type: Number, required: true })
   priceTo: number;
 
-  @Prop({ type: String })
-  duration: string;
-
   @Prop({ type: String, required: true })
   description: string;
 

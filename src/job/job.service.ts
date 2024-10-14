@@ -35,7 +35,7 @@ export class JobService {
             throw new UnprocessableEntityException("Your account is not verified. Please verify your account before you can create a job!");
           }
       
-          let subscription = null;
+          let subscription = null;          
       
           // Check if user is neither 'admin' nor 'jobPoster'
           if (user.role !== 'admin' && user.role !== 'jobPoster') {
@@ -77,6 +77,8 @@ export class JobService {
             userId: user._id, // Assign the userId to the job
             expiresAt: subscription ? subscription.endDate : null, // Set expiration if applicable
           });
+          const isFeatured = user.role === 'admin' || user.role === 'jobPoster';
+          if(isFeatured) createdJob.isFeatured = true;
       
           await createdJob.save();
           return createdJob;
@@ -88,11 +90,12 @@ export class JobService {
       }
       
 
-    async getAllJobs() {
-        const jobs = await this.jobModel.find();
-        if (!jobs) throw new NotFoundException("Jobs not found!")
-        return jobs
+      async getAllJobs() {
+        const jobs = await this.jobModel.find().sort({ _id: -1 }); // Sort by _id in descending order
+        if (!jobs || jobs.length === 0) throw new NotFoundException("Jobs not found!");
+        return jobs;
     }
+    
 
     async getJobById(id: string) {
         const job = await this.jobModel.findById(id);

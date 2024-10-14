@@ -58,4 +58,11 @@ export class PaymentController {
     const userId = req.user.id
     return this.paymentService.getTotalSales(userId);
   }
+
+  @Get('get-user-orders')
+  @UseGuards(AuthenticationGuard)
+  getUserOrder(@Req() req: Request) {
+    const userId = req.user.id
+    return this.paymentService.getUserOrder(userId);
+  }
 }
