@@ -287,26 +287,6 @@ export class JobService {
 
     }
 
-    // async shortlistJob(applicationId: string, body: any) {
-    //     const { userId, jobId } = body;
-
-    //     const job = await this.jobModel.findById(jobId);
-    //     if (!job) throw new NotFoundException("Job not found!");
-
-    //     const application = await this.appliedJobModel.findById(applicationId);
-    //     if (!application) throw new NotFoundException("Application not found for this user!");
-
-    //     const user = await this.userModel.findById(userId);
-    //     if (!user) throw new NotFoundException("User not found!");
-
-    //     application.status = 'shortlisted';
-    //     await application.save();
-
-    //     // Send email to the applicant
-    //     rejectedMail(user.email, user.name, job.title, job.companyName);
-
-    //     return { message: "Application shortlisted successfully!" };
-    // }
 
     async shortlistApplicant(applicationId: string, body:any) {
       const { userId, jobId } = body;
@@ -334,7 +314,7 @@ export class JobService {
           referral.status = 'approved';
           await referral.save();
       }
-      rejectedMail(user.email, user.name, job.title, job.companyName);
+      shortlistMail(user.email, user.name, job.title, job.companyName);
 
       return { message: "Application shortlisted successfully!" };
     }
@@ -359,6 +339,14 @@ export class JobService {
         rejectedMail(user.email, user.name, job.title, job.companyName);
 
         return { message: "Application shortlisted successfully!" };
+    }
+
+    async deleteJob(id: string){
+      const job = await this.jobModel.findById(id)
+      if(!job) throw new NotFoundException("Job not found")
+
+        const deleteJob = await this.jobModel.findByIdAndDelete(id)
+        return {message: "Job deleted successfully"}
     }
     
 }

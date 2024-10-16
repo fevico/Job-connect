@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JobService } from './job.service';
 import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { AuthorizationGuard } from 'src/guards/authorization.guard';
@@ -90,6 +90,7 @@ export class JobController {
 
     @Roles(['admin', 'employer', 'jobPoster'])
     @Post('shortlist-application/:id')
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     shortlistJob(@Param('id') id: string, @Body() body: any){
         return this.jobService.shortlistApplicant(id, body)
     }
@@ -97,5 +98,12 @@ export class JobController {
     @Post('reject-application/:id')
     rejectApplication(@Param('id') id: string, @Body() body: any){
         return this.jobService.rejectApplication(id, body)
+    }
+
+    @Roles(['admin'])
+    @Delete(":id")
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
+    deleteJob(@Param('id') id: string){
+        return this.jobService.deleteJob(id)
     }
 }
