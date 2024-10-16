@@ -16,7 +16,6 @@ export class JobController {
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async createJob(@Body() jobDto: JobDto, @Req() req: Request) {
         const userId = req.userId;
-        console.log(userId);
 
        // Use userId as needed for further business logic
         return this.jobService.createJob(jobDto, userId);

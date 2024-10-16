@@ -1,50 +1,58 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class JobDto {
-    @IsNotEmpty()
-    title: string;
+  @IsNotEmpty()
+  title: string;
 
-    @IsNotEmpty()
-    description: string;
+  @IsNotEmpty()
+  description: string;
 
-    @IsNotEmpty()
-    location: string;
+  @IsNotEmpty()
+  location: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    priceFrom: number;
+  @IsNotEmpty()
+  @IsNumber()
+  priceFrom: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    priceTo: number;
+  @IsNotEmpty()
+  @IsNumber()
+  priceTo: number;
 
-    @IsNotEmpty()
-    duration: string
+  @IsNotEmpty()
+  skills: string;
 
-    @IsNotEmpty()
-    skills: string
+  @IsString()
+  @IsNotEmpty()
+  categoryId: string;
 
-      @IsString()
-    @IsNotEmpty()
-    categoryId: string
+  @IsString()
+  @IsNotEmpty()
+  currency: string;
 
-     @IsString()
-    @IsNotEmpty()
-    currency: string
+  @IsString()
+  @IsNotEmpty()
+  industry: string;
 
-    @IsString()
-    @IsNotEmpty()
-    industry: string
+  @IsString()
+  @IsNotEmpty()
+  aboutCompany: string;
 
-    @IsString()
-    @IsNotEmpty()
-    aboutCompany: string
+  @IsString()
+  @IsNotEmpty()
+  companyName: string;
 
-    @IsString()
-    @IsNotEmpty()
-    companyName: string
+  // Add the missing fields
 
+  @IsString()
+  @IsNotEmpty()
+  referral: string; // assuming referral is a string (yes/no)
+
+  @IsNumber()
+  @IsNotEmpty()
+  referralAmount: number; // assuming referralAmount is a number
 }
+
+
 export class UpdateJobDto {
 
     @IsOptional()
