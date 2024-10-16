@@ -139,7 +139,7 @@ export class UserService {
     const newUser = new this.linkedinOptimizerModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, 
-      role: 'linkedinoptimizer'
+      role: 'linkedinOptimizer'
     });
 
     // Save user to database
@@ -174,7 +174,7 @@ export class UserService {
     const newUser = new this.cvWriterModel({
       ...dto, // Spread registerDto first
       password: hashedPassword, // Then overwrite the password with the hashed password
-      role: 'cvwriter'
+      role: 'cvWriter'
     });
 
     // Save user to database
