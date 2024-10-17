@@ -5,6 +5,7 @@ import { AuthorizationGuard } from 'src/guards/authorization.guard';
 import { Roles } from 'src/decorator/role.decorator';
 import { JobDto, UpdateJobDto } from './dto/job.dto';
 import { Request } from "express";
+import { PARAMTYPES_METADATA } from '@nestjs/common/constants';
 
 
 @Controller('job')
@@ -105,5 +106,11 @@ export class JobController {
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     deleteJob(@Param('id') id: string){
         return this.jobService.deleteJob(id)
+    }
+
+    @Patch(':id')
+    updateJob (@Param("id") id: string, body: any, @Req() req: Request){
+        const userId = req.user.id
+        return this.jobService.updateJob(body, id, userId)
     }
 }
