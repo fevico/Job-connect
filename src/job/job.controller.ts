@@ -110,7 +110,7 @@ export class JobController {
     @Roles(['admin', 'employer', 'jobPoster'])
     @Patch(':id')
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
-    updateJob (@Param("id") id: string, body: any, @Req() req: Request){
+    updateJob (@Param("id") id: string, @Body() body: any, @Req() req: Request){
         const userId = req.user.id
         return this.jobService.updateJob(body, id, userId)
     }
