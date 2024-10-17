@@ -107,8 +107,9 @@ export class JobController {
     deleteJob(@Param('id') id: string){
         return this.jobService.deleteJob(id)
     }
-
+    @Roles(['admin', 'employer', 'jobPoster'])
     @Patch(':id')
+    @UseGuards(AuthenticationGuard, AuthorizationGuard)
     updateJob (@Param("id") id: string, body: any, @Req() req: Request){
         const userId = req.user.id
         return this.jobService.updateJob(body, id, userId)

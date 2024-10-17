@@ -349,7 +349,7 @@ export class JobService {
         return {message: "Job deleted successfully"}
     }
 
-    async updateJob(body, id, userId){
+    async updateJob(body: any, id: string, userId: string) {
       const jobExist = await this.jobModel.findOne({_id: id, userId})
       if(!jobExist) throw new NotFoundException("Job not found / you are not the owner of this job!")
         const updateJob = await this.jobModel.findByIdAndUpdate(id, {...body})
