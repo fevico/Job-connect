@@ -7,10 +7,10 @@ export class ReferralDto{
 
     @IsNotEmpty()
     @IsString()
-    email: string
+    candidateEmail: string
 
     @IsNotEmpty()
     @IsString()
-    fullName : string
+    candidateName: string
 
 }
