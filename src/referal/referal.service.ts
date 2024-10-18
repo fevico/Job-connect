@@ -15,8 +15,8 @@ export class ReferalService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async referCandidate(body: any, userId: string) {
-    const { jobId, candidateEmail, candidateName } = body;
+  async referCandidate(body: ReferralDto, userId: string) {
+    const { jobId, email, fullName } = body;
 
     const user = await this.userModel.findById(userId);
     if (!user) {
@@ -33,13 +33,13 @@ export class ReferalService {
     }
 
     const referral = await this.referralModel.create({
-      referredEmail: candidateEmail,
+      referredEmail: email,
       jobId,
       referredBy: userId,
     });
     referCandidateMail(
-      candidateEmail,
-      candidateName,
+      email,
+      fullName ,
       jobId,
       job.title,
       job.location.state,
