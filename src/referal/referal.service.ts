@@ -33,8 +33,9 @@ export class ReferalService {
     }
 
     const referral = await this.referralModel.create({
-      ...body,
-      userId,
+      referredEmail: candidateEmail,
+      jobId,
+      referredBy: userId,
     });
     referCandidateMail(
       candidateEmail,
