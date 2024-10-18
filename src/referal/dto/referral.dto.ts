@@ -13,11 +13,4 @@ export class ReferralDto{
     @IsString()
     candidateName: string
 
-    @IsNotEmpty()
-    @IsString()
-    linkedinProfile: string
-
-    @IsNotEmpty()
-    @IsString()
-    resume: string
 }
