@@ -44,7 +44,6 @@ export class ReferalService {
       job.title,
       job.location.state,
       job.companyName,
-      job.description,
     );
     return referral;
   }

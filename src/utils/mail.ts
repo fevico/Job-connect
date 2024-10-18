@@ -54,7 +54,7 @@ client
   })
 }
 
-export const referCandidateMail = async (email: string, name: string, jobId: string, title: string, location: string, companyName: string, description: string) => {
+export const referCandidateMail = async (email: string, name: string, jobId: string, title: string, location: string, companyName: string) => {
   const jobLink = `https://jobkonnecta.com/job/${jobId}`;
 
   const VERIFICATION_EMAIL = process.env.VERIFICATION_EMAIL;
@@ -79,7 +79,6 @@ export const referCandidateMail = async (email: string, name: string, jobId: str
       "Job_Title": title,
       "company_name": companyName,
       "job_location": location,
-      "job_description": description,
       "next_step_link": jobLink,
     }
   })
