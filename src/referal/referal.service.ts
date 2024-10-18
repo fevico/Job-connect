@@ -15,7 +15,7 @@ export class ReferalService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async referCandidate(body: any, userId: string) {
+  async referCandidate(body: ReferralDto, userId: string) {
     const { jobId, candidateEmail, candidateName } = body;
 
     const user = await this.userModel.findById(userId);
