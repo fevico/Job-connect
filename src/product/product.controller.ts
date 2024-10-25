@@ -10,7 +10,7 @@ import { ProductDto, UpdateProductDto, UploadCvDetails } from './dto/product.dto
 export class ProductController {
     constructor(private productService: ProductService) {}
 
-    @Roles(['cvWriter', 'linkdinOptimizer'])
+    @Roles(['cvWriter', 'linkedinOptimizer'])
     @Post('create')
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async createProduct(@Body() body: ProductDto, @Req() req: Request) {
@@ -19,7 +19,7 @@ export class ProductController {
          return this.productService.createProduct(body, userId, role );
     }
 
-    @Roles(['cvWriter', 'linkdinOptimizer'])
+    @Roles(['cvWriter', 'linkedinOptimizer'])
     @Patch('update/:id')
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async updateProduct(@Body() body: UpdateProductDto, @Req() req: Request, @Param('id') id: string) {
@@ -38,7 +38,7 @@ export class ProductController {
         return this.productService.getProductById(id);
     }
 
-    @Roles(['cvWriter', 'linkdinOptimizer'])
+    @Roles(['cvWriter', 'linkedinOptimizer'])
     @Delete(':id')
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async deleteProduct(@Req() req: Request, @Param('id') id: string) {
@@ -47,7 +47,7 @@ export class ProductController {
         return this.productService.deleteProduct(userId, role, id);
     }
 
-    @Roles(['cvWriter', 'linkdinOptimizer'])
+    @Roles(['cvWriter', 'linkedinOptimizer ']) 
     @Get('user/product')
     @UseGuards(AuthenticationGuard, AuthorizationGuard)
     async geUserProduct(@Req() req: Request) {

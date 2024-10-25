@@ -5,7 +5,6 @@ import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { CvWriterSignUpDto, EmployerSignUpDto, ForgetPasswordDto, JobseekerSignUpDto, LinkedinOptimizerSignUpDto, SignInDto, SignUpDto, SuspendUserDto } from './dto/user.dto';
 import { Request } from "express";
 import { CvWriterUpdateDto, EmployerDto, EmployerUpdateDto, JobseekerUpdateDto, LinkedinOptimizerUpdateDto, userDto } from './dto/profile.dto';
-import { validate } from 'class-validator';
 
 
 @Controller('user')
