@@ -23,9 +23,9 @@ export class UserController {
       case 'employer':
         return this.userService.registerEmployer(userData);
       case 'cvWriter':
-        return this.userService.registerLinkedinOptimizer(userData);
-      case 'linkedinOptimizer':
         return this.userService.registerCvWriter(userData);
+      case 'linkedinOptimizer':
+        return this.userService.registerLinkedinOptimizer(userData);
       default:
         throw new BadRequestException('Invalid role provided');
     }

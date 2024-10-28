@@ -66,5 +66,23 @@ async addRating(ownerId: string, userId: string, ratingValue: number, comment?: 
     // return review;
   }
 
+  async getRating(ownerId: string) {
+    const reviews = await this.reviewModel.find({ owner: ownerId }).populate<{user: { name: string }}>({ path: 'user', select: 'name' });
+
+    if (!reviews || reviews.length === 0) throw new NotFoundException('No reviews found for this product');
+
+    // Calculate average rating and extract other details
+    const ratings = reviews.map(review => review.rating); // Assuming each review has a `rating` field
+    const averageRating = ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
+
+    const comments = reviews.map(review => ({
+        comment: review.comment,
+        user: review.user.name 
+    }));
+
+    return { ratings, averageRating, comments };
+}
+
+
 
 }

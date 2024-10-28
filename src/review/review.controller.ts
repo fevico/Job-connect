@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { Request } from 'express';
@@ -17,5 +17,10 @@ export class ReviewController {
   ) {
       const userId = req.user.id;
       return this.reviewService.addRating(owner, userId, ratingValue);
+  }
+
+  @Get('get-rating/:owner')
+  async getRating(@Param('owner') owner: string) {
+      return this.reviewService.getRating(owner);
   }
 }

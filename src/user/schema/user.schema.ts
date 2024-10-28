@@ -2,8 +2,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Schema as MongooseSchema, Document } from "mongoose";
 
-// Base User Schema (common fields)
-// User Schema and its discriminators
 
 // Base User Schema (common fields)
 @Schema({ timestamps: true })
