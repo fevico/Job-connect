@@ -113,6 +113,8 @@ export class PaymentService {
               packagePrice: totalPrice,
               vendorId: metadata.vendorId,
               paidAt,
+              linkedinUrl: metadata.linkedinUrl,
+              resume: metadata.resume,
             };
 
             // Save the payment details

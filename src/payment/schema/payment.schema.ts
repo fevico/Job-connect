@@ -31,7 +31,7 @@ export class Payment extends Document {
     resume: string;
 
     @Prop({type: String })
-    linkdinUrl: string;
+    linkedinUrl: string;
 
     @Prop({ type: String })
     status: string;
