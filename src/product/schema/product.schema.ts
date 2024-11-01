@@ -20,6 +20,9 @@ export class Product extends Document {
 
     @Prop({ type: [String], required: true })
     images: string[]; // Expecting multiple image URLs
+
+    @Prop({ type: Number })
+    averageRating: {type: Number, default: 0 }
     
 
     // New field to store individual ratings
