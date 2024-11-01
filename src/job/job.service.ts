@@ -17,6 +17,10 @@ import { Referal } from 'src/referal/schema/referal.schema';
 import { hireApplicantMail, rejectedMail, shortlistMail } from 'src/utils/mail';
 import { SubscriptionPayment } from 'src/subscription/schema/subscriptionPayment';
 
+interface populatedCategory{
+  name: string;
+}
+
 @Injectable()
 export class JobService {
   constructor(
@@ -105,18 +109,92 @@ export class JobService {
     }
   }
 
+  // async getAllJobs() {
+  //   const jobs = await this.jobModel.find().populate<{categoryId: populatedCategory}>({path: "categoryId", select: "name"}).sort({ _id: -1 }); // Sort by _id in descending order
+  //   if (!jobs || jobs.length === 0)
+  //     throw new NotFoundException('Jobs not found!');
+  //   return jobs;
+  // }
+
   async getAllJobs() {
-    const jobs = await this.jobModel.find().sort({ _id: -1 }); // Sort by _id in descending order
-    if (!jobs || jobs.length === 0)
-      throw new NotFoundException('Jobs not found!');
-    return jobs;
+    // Find all jobs and populate the `categoryId` field with the `name` field of the related category
+    const jobs = await this.jobModel
+      .find()
+      .populate<{ categoryId: { name: string } }>({
+        path: "categoryId",
+        select: "name",
+      })
+      .sort({ _id: -1 }); // Sort by _id in descending order
+  
+    // Check if no jobs are found
+    if (!jobs || jobs.length === 0) {
+      throw new NotFoundException("Jobs not found!");
+    }
+  
+    // Map through each job to ensure a structured response if needed
+    const formattedJobs = jobs.map(job => ({
+      categoryName: job.categoryId?.name,
+      title: job.title,
+      description: job.description,
+      priceFrom: job.priceFrom,
+      priceTo: job.priceTo,
+      location: job.location,
+      status: job.status,
+      createdAt: job.postedAt,
+      companyName: job.companyName,
+      currency: job.currency,
+      skill: job.skills,
+      isFeatured: job.isFeatured,
+      referral: job.referral,
+    }));
+  
+    return formattedJobs;
   }
+  
+
+  // async getJobById(id: string) {
+  //   const job = await this.jobModel.findById(id);
+  //   if (!job) throw new NotFoundException('Job not found!');
+  //   return job;
+  // }
 
   async getJobById(id: string) {
-    const job = await this.jobModel.findById(id);
-    if (!job) throw new NotFoundException('Job not found!');
-    return job;
+    // Find the job by ID and populate the `categoryId` field with the `name` field of the related category
+    const job = await this.jobModel
+      .findById(id)
+      .populate<{ categoryId: { name: string } }>({
+        path: "categoryId",
+        select: "name",
+      });
+  
+    // Check if the job is not found
+    if (!job) {
+      throw new NotFoundException("Job not found!");
+    }
+  
+    // Structure the response to include the category name and other job details
+    const formattedJob = {
+      categoryName: job.categoryId?.name,
+      title: job.title,
+      description: job.description,
+      priceFrom: job.priceFrom,
+      priceTo: job.priceTo,
+      location: job.location,
+      status: job.status,
+      createdAt: job.postedAt,
+      companyName: job.companyName,
+      currency: job.currency,
+      skill: job.skills,
+      isFeatured: job.isFeatured,
+      referral: job.referral,
+
+      // Include other job fields as necessary
+    };
+  
+    return formattedJob;
   }
+  
+  
 
   async getJobsByEmployer(id: string, userId: string) {
     const user = await this.userModel.findById(userId);
