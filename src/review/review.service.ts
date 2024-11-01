@@ -6,32 +6,35 @@ import { Product } from 'src/product/schema/product.schema';
 
 @Injectable()
 export class ReviewService {
-    constructor(
-        @InjectModel(Review.name) private reviewModel: Model<Review>,
-        @InjectModel(Product.name) private productModel: Model<Product>,
-) {}
+  constructor(
+    @InjectModel(Review.name) private reviewModel: Model<Review>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
+  ) { }
 
-async addRating(ownerId: string, userId: string, ratingValue: number, comment?: string) {
+  async addRating(ownerId: string, userId: string, ratingValue: number, comment?: string) {
     // Find the product (or item) by the owner ID
+    console.log(ownerId)
     const product = await this.productModel.findById(ownerId);
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-    
-    const [result] = await this.reviewModel.aggregate<{averageRating: number}>([
-        {$match: {
-            owner: new Types.ObjectId(ownerId)
-        }},
-        {
-          $group:{
-            _id: null,
-            averageRating: {$avg: "$rating"},
-          }
-        }
-      ])  
 
-    const rating = await this.reviewModel.findOneAndUpdate({ owner: ownerId }, { ratingValue, comment, userId, averageRating: result.averageRating}, { new: true, upsert: true });
+    const [result] = await this.reviewModel.aggregate<{ averageRating: number }>([
+      {
+        $match: {
+          owner: new Types.ObjectId(ownerId)
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+        }
+      }
+    ])
+
+    const rating = await this.reviewModel.findOneAndUpdate({ owner: ownerId }, { ratingValue, comment, userId, averageRating: result.averageRating }, { new: true, upsert: true });
     return rating;
 
     // // Ensure the user is allowed to rate the product (in this case, must own the product)
@@ -67,7 +70,7 @@ async addRating(ownerId: string, userId: string, ratingValue: number, comment?: 
   }
 
   async getRating(ownerId: string) {
-    const reviews = await this.reviewModel.find({ owner: ownerId }).populate<{user: { name: string }}>({ path: 'user', select: 'name' });
+    const reviews = await this.reviewModel.find({ owner: ownerId }).populate<{ user: { name: string } }>({ path: 'user', select: 'name' });
 
     if (!reviews || reviews.length === 0) throw new NotFoundException('No reviews found for this product');
 
@@ -76,12 +79,12 @@ async addRating(ownerId: string, userId: string, ratingValue: number, comment?: 
     const averageRating = ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
 
     const comments = reviews.map(review => ({
-        comment: review.comment,
-        user: review.user.name 
+      comment: review.comment,
+      user: review.user.name
     }));
 
     return { ratings, averageRating, comments };
-}
+  }
 
 
 

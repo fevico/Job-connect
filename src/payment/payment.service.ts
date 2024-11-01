@@ -24,8 +24,8 @@ export class PaymentService {
       amount,
       email,
       metadata,
-      callback_url: 'https://jobkonnecta.com/',
-      // callback_url: 'http://localhost:5173/',
+      // callback_url: 'https://jobkonnecta.com/',
+      callback_url: 'http://localhost:5173/',
     });
 
     const options = {
@@ -114,7 +114,7 @@ export class PaymentService {
               vendorId: metadata.vendorId,
               paidAt,
               linkedinUrl: metadata.linkedinUrl,
-              resume: metadata.resume,
+              resume: metadata.Cv,
             };
 
             // Save the payment details
