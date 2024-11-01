@@ -87,6 +87,7 @@ export const CvWriterSchema = UserSchema.discriminator(
     workHours: { type: String },
     responseTime: { type: String },
     isApproved: { type: Boolean, default: false },
+    averageRating: {type: Number, default: 0 },
   })
 );
 
@@ -105,6 +106,7 @@ export const LinkedinOptimizerSchema = UserSchema.discriminator(
     workHours: { type: String },
     responseTime: { type: String },
     isApproved: { type: Boolean, default: false },
+    averageRating: {type: Number, default: 0 },
   })
 );
 

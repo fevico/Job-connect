@@ -20,6 +20,7 @@ export class Product extends Document {
 
     @Prop({ type: [String], required: true })
     images: string[]; // Expecting multiple image URLs
+    
 
     // New field to store individual ratings
     

@@ -7,7 +7,7 @@ export class Review extends Document {
   owner: Types.ObjectId; // This is the product being rated
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  user: Types.ObjectId; // This is the user giving the rating
+  user: Types.ObjectId; // This is that is been rated
 
   @Prop({ type: Number, required: true, min: 1, max: 5 })
   rating: number;

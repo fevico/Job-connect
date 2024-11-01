@@ -12,7 +12,7 @@ export class ReviewController {
     @UseGuards(AuthenticationGuard)
   async rateProduct(
       @Param('owner') owner: string,
-      @Body('rating') ratingValue: number,
+      @Body('ratingValue') ratingValue: number,
       @Req() req: Request
   ) {
       const userId = req.user.id;
