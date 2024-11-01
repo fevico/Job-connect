@@ -33,19 +33,19 @@ export class Payment extends Document {
     @Prop({type: String })
     linkdinUrl: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String })
     status: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String })
     workExperience: string;
 
-    @Prop({ type: String, required: true})
+    @Prop({ type: String})
     professionalSummary: string;
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String })
     education: string;
 
-    @Prop({ type: String, required: true }) 
+    @Prop({ type: String }) 
     skills: string;
 
     @Prop({ type: String, required: true})
