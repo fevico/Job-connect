@@ -133,6 +133,7 @@ export class JobService {
   
     // Map through each job to ensure a structured response if needed
     const formattedJobs = jobs.map(job => ({
+      id: job._id,
       categoryName: job.categoryId?.name,
       title: job.title,
       description: job.description,
@@ -174,6 +175,7 @@ export class JobService {
   
     // Structure the response to include the category name and other job details
     const formattedJob = {
+      id: job._id,
       categoryName: job.categoryId?.name,
       title: job.title,
       description: job.description,
