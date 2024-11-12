@@ -190,6 +190,7 @@ export class JobService {
       isFeatured: job.isFeatured,
       referral: job.referral,
       aboutCompany: job.aboutCompany,
+      referralAmount: job.referralAmount,
 
       // Include other job fields as necessary
     };
