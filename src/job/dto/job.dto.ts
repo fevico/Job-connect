@@ -26,16 +26,16 @@ export class JobDto {
   categoryId: string;
 
   @IsString()
-  @IsNotEmpty()
-  currency: string;
+  @IsOptional()
+  currency?: string;
 
   @IsString()
   @IsNotEmpty()
   industry: string;
 
   @IsString()
-  @IsNotEmpty()
-  aboutCompany: string;
+  @IsOptional()
+  aboutCompany?: string;
 
   @IsString()
   @IsNotEmpty()

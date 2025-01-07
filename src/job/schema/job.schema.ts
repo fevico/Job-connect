@@ -58,7 +58,7 @@ export class Job extends Document {
   @Prop({ type: String, enum: ['yes', 'no'], default: 'no' })
   referral: string;
 
-  @Prop({ type: String, required: true})
+  @Prop({ type: String, required: false})
   currency: string;
   
   @Prop({ type: String, required: true})

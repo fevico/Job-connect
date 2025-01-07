@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Job } from './schema/job.schema';
-import { Model } from 'mongoose';
+import { Document, Model, ObjectId } from 'mongoose';
 import { JobDto, UpdateJobDto } from './dto/job.dto';
-import { JobSeeker, User } from 'src/user/schema/user.schema';
+import { Employer, JobSeeker, User } from 'src/user/schema/user.schema';
 import { AppliedJob } from './schema/appliedJob.schema';
 import { Referal } from 'src/referal/schema/referal.schema';
 import { hireApplicantMail, rejectedMail, shortlistMail } from 'src/utils/mail';
@@ -92,6 +92,7 @@ export class JobService {
         await subscription.save();
       }
 
+    
       // Proceed with job creation
       const createdJob = new this.jobModel({
         ...jobDto,
@@ -109,12 +110,6 @@ export class JobService {
     }
   }
 
-  // async getAllJobs() {
-  //   const jobs = await this.jobModel.find().populate<{categoryId: populatedCategory}>({path: "categoryId", select: "name"}).sort({ _id: -1 }); // Sort by _id in descending order
-  //   if (!jobs || jobs.length === 0)
-  //     throw new NotFoundException('Jobs not found!');
-  //   return jobs;
-  // }
 
   async getAllJobs() {
     // Find all jobs and populate the `categoryId` field with the `name` field of the related category
@@ -152,12 +147,6 @@ export class JobService {
     return formattedJobs;
   }
   
-
-  // async getJobById(id: string) {
-  //   const job = await this.jobModel.findById(id);
-  //   if (!job) throw new NotFoundException('Job not found!');
-  //   return job;
-  // }
 
   async getJobById(id: string) {
     // Find the job by ID and populate the `categoryId` field with the `name` field of the related category
@@ -199,7 +188,6 @@ export class JobService {
   }
   
   
-
   async getJobsByEmployer(id: string, userId: string) {
     const user = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException('User not found!');
