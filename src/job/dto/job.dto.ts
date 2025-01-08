@@ -38,8 +38,8 @@ export class JobDto {
   aboutCompany?: string;
 
   @IsString()
-  @IsNotEmpty()
-  companyName: string;
+  @IsOptional()
+  companyName?: string;
 
   // Add the missing fields
 
