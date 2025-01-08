@@ -5,7 +5,7 @@ import { Schema as MongooseSchema, Document } from "mongoose";
 
 // Base User Schema (common fields)
 @Schema({ timestamps: true })
-export class User {
+export class User extends Document{
   @Prop({ type: String, required: true })
   name: string;
 
