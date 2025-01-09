@@ -110,6 +110,94 @@ export class JobService {
   //   }
   // }
 
+  // async createJob(jobDto: JobDto, userId: string): Promise<Job> {
+  //   try {
+  //     const user = await this.userModel.findOne({ _id: userId });
+  
+  //     // Check if user exists
+  //     if (!user) throw new NotFoundException('User not found!');
+  
+  //     // Check if user is verified
+  //     if (!user.isVerified) {
+  //       throw new UnprocessableEntityException(
+  //         'Your account is not verified. Please verify your account before you can create a job!',
+  //       );
+  //     }
+  
+  //     let subscription = null;
+  
+  //     // Check if user is neither 'admin' nor 'jobPoster'
+  //     if (user.role !== 'admin' && user.role !== 'jobPoster') {
+  //       subscription = await this.subscriptionPaymentModel.findOne({
+  //         user: userId,
+  //         status: 'active',
+  //         endDate: { $gte: new Date() }, // Ensure subscription is still active
+  //       });
+  
+  //       // Free Job Posting Logic
+  //       if (subscription) {
+  //         const currentDate = new Date();
+  //         const startOfMonth = new Date(
+  //           currentDate.getFullYear(),
+  //           currentDate.getMonth(),
+  //           1,
+  //         );
+  
+  //         // Check if user has already posted the free job for the current month
+  //         if (subscription.freeJobCount < 1) {
+  //           // Free job available, allow posting the free job
+  //           subscription.freeJobCount += 1; // Increment free job count for the month
+  //         } else {
+  //           // No free jobs left, check for remaining paid job posts
+  //           if (subscription.paidJobLimit <= 0) {
+  //             throw new UnprocessableEntityException(
+  //               'No remaining job posts in your subscription.',
+  //             );
+  //           }
+  
+  //           // Deduct one from the remaining paid jobs
+  //           subscription.paidJobLimit -= 1;
+  //         }
+  //       } else {
+  //         throw new UnprocessableEntityException(
+  //           'Subscription is not active or has expired.',
+  //         );
+  //       }
+  
+  //       // Save subscription changes (updated freeJobCount or paidJobLimit)
+  //       await subscription.save();
+  //     }
+  
+  //     // Safely determine the company name based on the user role
+  //     let company: string | undefined = '';
+  //     if (user.role === 'admin' || user.role === 'jobPoster') {
+  //       company = jobDto.companyName;
+  //     } else if (user.role === 'employer') {
+  //       // Cast user to Employer to access employer-specific fields
+  //       const employerUser = user as unknown as Employer;
+  //       company = employerUser.companyName;
+  //     }
+  
+  //     // Proceed with job creation
+  //     const createdJob = new this.jobModel({
+  //       ...jobDto,
+  //       userId: user._id,
+  //       expiresAt: subscription ? subscription.endDate : null,
+  //       companyName: company,
+  //     });
+  
+  //     const isFeatured = user.role === 'admin' || user.role === 'jobPoster';
+  //     if (isFeatured) createdJob.isFeatured = true;
+  
+  //     await createdJob.save();
+  //     return createdJob;
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new BadRequestException(error.message || 'Failed to create job');
+  //   }
+  // }
+  
+
   async createJob(jobDto: JobDto, userId: string): Promise<Job> {
     try {
       const user = await this.userModel.findOne({ _id: userId });
@@ -126,7 +214,6 @@ export class JobService {
   
       let subscription = null;
   
-      // Check if user is neither 'admin' nor 'jobPoster'
       if (user.role !== 'admin' && user.role !== 'jobPoster') {
         subscription = await this.subscriptionPaymentModel.findOne({
           user: userId,
@@ -134,34 +221,39 @@ export class JobService {
           endDate: { $gte: new Date() }, // Ensure subscription is still active
         });
   
-        // Free Job Posting Logic
-        if (subscription) {
-          const currentDate = new Date();
-          const startOfMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            1,
-          );
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   
-          // Check if user has already posted the free job for the current month
-          if (subscription.freeJobCount < 1) {
-            // Free job available, allow posting the free job
-            subscription.freeJobCount += 1; // Increment free job count for the month
-          } else {
-            // No free jobs left, check for remaining paid job posts
-            if (subscription.paidJobLimit <= 0) {
-              throw new UnprocessableEntityException(
-                'No remaining job posts in your subscription.',
-              );
-            }
+        // Handle Free Jobs
+        if (!subscription) {
+          // Create a default "free subscription" for tracking free job count
+          subscription = new this.subscriptionPaymentModel({
+            user: userId,
+            planName: 'Free Plan',
+            status: 'active',
+            startDate: startOfMonth,
+            endDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0),
+            freeJobCount: 0, // Start with 0 free jobs used
+            freeJobLimit: 3, // Allow up to 3 free jobs per month
+            paidJobLimit: 0, // No paid jobs for free users
+            amountPaid: 0,
+            paymentStatus: 'free',
+          });
+        }
   
-            // Deduct one from the remaining paid jobs
-            subscription.paidJobLimit -= 1;
-          }
+        // Check free job count for the current month
+        if (subscription.freeJobCount < subscription.freeJobLimit) {
+          subscription.freeJobCount += 1; // Increment free job count
         } else {
-          throw new UnprocessableEntityException(
-            'Subscription is not active or has expired.',
-          );
+          // No free jobs left, check for remaining paid jobs
+          if (subscription.paidJobLimit <= 0) {
+            throw new UnprocessableEntityException(
+              'No remaining job posts in your subscription.',
+            );
+          }
+  
+          // Deduct one from the remaining paid jobs
+          subscription.paidJobLimit -= 1;
         }
   
         // Save subscription changes (updated freeJobCount or paidJobLimit)
@@ -173,7 +265,6 @@ export class JobService {
       if (user.role === 'admin' || user.role === 'jobPoster') {
         company = jobDto.companyName;
       } else if (user.role === 'employer') {
-        // Cast user to Employer to access employer-specific fields
         const employerUser = user as unknown as Employer;
         company = employerUser.companyName;
       }
@@ -195,8 +286,7 @@ export class JobService {
       console.log(error);
       throw new BadRequestException(error.message || 'Failed to create job');
     }
-  }
-  
+  }  
 
 
   async getAllJobs() {
