@@ -14,16 +14,16 @@ export class SubscriptionPayment {
   @Prop({ required: true })
   planName: string; // Basic, Standard, Premium
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   transactionId: string;  // From the payment provider
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   companyName: string;  // From the payment provider
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   email: string;  // From the payment provider
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date, required: false })
   paymentDate: Date;
 
   @Prop({type: Number, default: 0})
@@ -35,13 +35,13 @@ export class SubscriptionPayment {
   @Prop({ type: String, enum:['active', 'inactive' ,'expired'], default: 'active', required: true })
   status: string; // E.g., "success", "failed", etc.
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   paymentStatus: string; // E.g., "success", "failed", etc.
 
   @Prop({type: Number, default: 0})
   paidJobLimit: number; // Number of jobs allowed for the subscribed plan
 
-  @Prop({type: Number, required: true })
+  @Prop({type: Number, required: false })
   amountPaid: number; // Amount paid for the subscription
 
   @Prop({ type: Date })
