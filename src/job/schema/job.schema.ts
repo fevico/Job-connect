@@ -25,10 +25,10 @@ export class Job extends Document {
   @Prop({ type: String, required: true })
   skills: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   priceFrom: number;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, required: false })
   priceTo: number;
 
   @Prop({ type: String, required: true })

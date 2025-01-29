@@ -10,11 +10,11 @@ export class JobDto {
   @IsNotEmpty()
   location: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  priceFrom: number;
+  priceFrom?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   priceTo: number;
 
