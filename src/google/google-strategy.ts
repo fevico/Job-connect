@@ -12,10 +12,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly jwtService: JwtService,
   ) {
-    super({
+    super({ 
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL, 
       scope: ['profile', 'email'],
       prompt: 'consent' // Ensure the consent screen is shown
     });

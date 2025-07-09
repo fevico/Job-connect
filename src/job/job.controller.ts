@@ -22,7 +22,7 @@ export class JobController {
         return this.jobService.createJob(jobDto, userId);
     }
 
-    @Get('all-jobs')
+    @Get('all-jobs') 
     getAllJobs(){
         return this.jobService.getAllJobs();
     }
